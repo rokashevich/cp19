@@ -1,5 +1,6 @@
-# native-sdl-starter-kit
+# Native/SDL starter kit
 
 SDL template for developing portable native mobile application.
 
-See https://github.com/playgameservices/native-sdl-starter-kit/pull/1.
+It bundles the official template for android and iOS from the [SDL project](https://www.libsdl.org/).
+
