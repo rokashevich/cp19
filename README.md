@@ -22,6 +22,7 @@ ln -s /path/to/sdl/source jni/SDL
 - Android build and deploy
 ```
 android update project -p .
+ndk-build
 ant debug
 adb install -r bin/SDLActivity-debug.apk
 ```
