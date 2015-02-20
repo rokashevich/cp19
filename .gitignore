@@ -4,3 +4,6 @@ xcuserdata
 *.xcuserstate
 bin/
 gen/
+build/
+jni/SDL
+local.properties
