@@ -27,5 +27,5 @@ adb install -r bin/SDLActivity-debug.apk
 
 - iOS build and deploy
 ```
-open nativesdlstarterkit.xcodeproj`
+open nativesdlstarterkit.xcodeproj
 ```
