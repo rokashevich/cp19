@@ -16,11 +16,12 @@ It bundles the official template for android and iOS from the [SDL project](http
 ```
 git clone https://github.com/proppy/native-sdl-starter-kit.git my-project
 cd my-project
-ln -s /path/to/sdl/source jni/SDL
+ln -s /path/to/sdl/source SDL
 ```
 
 - Android build and deploy
 ```
+cd android
 android update project -p .
 ndk-build
 ant debug
@@ -29,5 +30,6 @@ adb install -r bin/SDLActivity-debug.apk
 
 - iOS build and deploy
 ```
+cd ios
 open nativesdlstarterkit.xcodeproj
 ```

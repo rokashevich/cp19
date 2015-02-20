@@ -2,8 +2,10 @@
 .DS_Store
 xcuserdata
 *.xcuserstate
-bin/
-gen/
-build/
-jni/SDL
+xcshareddata
+android/bin/
+android/gen/
+android/obj/
+android/libs/
 local.properties
+SDL
