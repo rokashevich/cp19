@@ -32,9 +32,9 @@ cd ios
 open nativesdlstarterkit.xcodeproj
 ```
 
-- Native build & run
+- Desktop build & run
 ```
-cd native
+cd desktop
 cmake .
 make
 ./native-sdl-demo
