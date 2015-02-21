@@ -8,4 +8,9 @@ android/gen/
 android/obj/
 android/libs/
 local.properties
-
+native/CMakeFiles
+native/CMakeCache.txt
+native/cmake_install.cmake
+native/Makefile
+native/build
+native/native-sdl-demo

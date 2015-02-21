@@ -17,7 +17,7 @@ git clone --recursive https://github.com/proppy/native-sdl-starter-kit.git my-pr
 cd my-project
 ```
 
-- Android build and deploy
+- Android build & deploy
 ```
 cd android
 android update project -p .
@@ -26,8 +26,16 @@ ant debug
 adb install -r bin/SDLActivity-debug.apk
 ```
 
-- iOS build and deploy
+- iOS project
 ```
 cd ios
 open nativesdlstarterkit.xcodeproj
+```
+
+- Native build & run
+```
+cd native
+cmake .
+make
+./native-sdl-demo
 ```
