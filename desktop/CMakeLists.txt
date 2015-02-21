@@ -11,4 +11,4 @@ include_directories(../SDL/include)
 link_directories(build/sdl)
 link_libraries(SDL2)
 
-add_executable(native-sdl-demo main.c)
+add_executable(native-sdl-demo ../main.c)
