@@ -29,7 +29,7 @@ adb install -r bin/SDLActivity-debug.apk
 - iOS project
 ```
 cd ios
-open nativesdlstarterkit.xcodeproj
+open nativesdldemo.xcodeproj
 ```
 
 - Desktop build & run
