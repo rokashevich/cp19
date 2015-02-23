@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:nativesdlstarterkit.xcodeproj">
+      location = "self:nativesdldemo.xcodeproj">
    </FileRef>
 </Workspace>
