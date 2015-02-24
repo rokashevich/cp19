@@ -1,0 +1,8 @@
+language: objective-c
+before_install:
+  - brew update
+  - brew install android-ndk cmake
+script:
+  - cd android && ndk_build
+  - cd ios && xcodebuild nativesdldemo.xcodeproj
+  - cd desktop && cmake . && make
