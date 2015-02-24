@@ -1,14 +1,15 @@
-cmake_minimum_required(VERSION 2.6)
-cmake_policy(SET CMP0015 NEW)
+cmake_minimum_required(VERSION 2.8)
 project(native-sdl-demo)
 
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 
-# workaround for out of tree build
-set(CMAKE_BINARY_DIR ${CMAKE_BINARY_DIR}/.)
-add_subdirectory(../SDL ${CMAKE_BINARY_DIR}/build/sdl)
+include(ExternalProject)
+include(External_SDL2)
 
-include_directories(../SDL/include)
-link_directories(build/sdl)
+include_directories(${SDL2_DIR}/include/SDL2)
+link_directories(${SDL2_DIR}/lib)
 link_libraries(SDL2)
 
 add_executable(native-sdl-demo ../main.c)
+
+
