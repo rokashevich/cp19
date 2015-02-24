@@ -2,7 +2,7 @@ language: objective-c
 before_install:
 - brew update
 - brew install android-sdk ant
-- android update sdk --no-ui --all --filter "platform-tools,build-tools-21.1.2,android-21"
+- yes | android update sdk --no-ui --all --filter "platform-tools,build-tools-21.1.2,android-21"
 - travis_wait brew install android-ndk
 script:
 - (cd android && android update project -p . --target android-21 && ndk-build && ant debug)
