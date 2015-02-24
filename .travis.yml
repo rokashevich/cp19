@@ -2,7 +2,8 @@ language: objective-c
 before_install:
   - brew update
   - brew install android-ndk
+  - brew install ant
 script:
-  - (cd android && ndk-build)
+  - (cd android && ndk-build && ant debug)
   - (cd ios && xcodebuild -project ../SDL/Xcode-iOS/SDL/SDL.xcodeproj && xcodebuild -project nativesdldemo.xcodeproj)
   - (cd desktop && cmake . && make)
