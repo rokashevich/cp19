@@ -3,6 +3,6 @@ before_install:
   - brew update
   - brew install android-ndk
 script:
-  - cd android && ndk_build
-  - cd ios && xcodebuild nativesdldemo.xcodeproj
-  - cd desktop && cmake . && make
+  - (cd android && ndk-build)
+  - (cd ios && xcodebuild nativesdldemo.xcodeproj)
+  - (cd desktop && cmake . && make)
