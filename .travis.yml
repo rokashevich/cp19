@@ -1,7 +1,7 @@
 language: objective-c
 before_install:
 - brew update
-- brew install android-ndk
+- travis_wait brew install android-ndk
 - brew install ant
 script:
 - (cd android && ndk-build && ant debug)
