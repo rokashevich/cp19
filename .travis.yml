@@ -4,5 +4,5 @@ before_install:
   - brew install android-ndk
 script:
   - (cd android && ndk-build)
-  - (cd ios && xcodebuild nativesdldemo.xcodeproj)
+  - (cd ios && xcodebuild -project ../SDL/Xcode-iOS/SDL/SDL.xcodeproj && xcodebuild -project nativesdldemo.xcodeproj)
   - (cd desktop && cmake . && make)
