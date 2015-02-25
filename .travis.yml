@@ -4,12 +4,10 @@ before_install:
 - brew upgrade cmake
 - brew install android-sdk ant
 - echo y | android update sdk --no-ui --all --filter "platform-tools,build-tools-21.1.2,android-21"
-- travis_wait bash -c 'curl http://storage.googleapis.com/proppy-ndk/android-ndk-r10d.tgz | tar xvzf -'
+- curl http://storage.googleapis.com/proppy-ndk/android-ndk-r10d.tgz -o /tmp/android-ndk-r10d.tgz
+- travis_wait tar xvzf /tmp/android-ndk-r10d.tgz
 - export PATH=$PATH:$PWD/android-ndk-r10
 script:
 - (cd android && android update project -p . --target android-21 && ndk-build && ant debug)
 - (cd ios && xcodebuild -project ../SDL/Xcode-iOS/SDL/SDL.xcodeproj && xcodebuild  CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project nativesdldemo.xcodeproj)
 - (cd desktop && cmake . && make)
-cache:
-  directories:
-  - /Library/Caches/Homebrew
