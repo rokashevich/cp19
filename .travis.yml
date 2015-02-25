@@ -4,7 +4,7 @@ before_install:
 - brew upgrade cmake
 - brew install android-sdk ant
 - echo y | android update sdk --no-ui --all --filter "platform-tools,build-tools-21.1.2,android-21"
-- curl http://storage.googleapis.com/proppy-ndk/android-ndk-r10d.tgz | tar xvzf -
+- curl http://storage.googleapis.com/proppy-ndk/android-ndk-r10d.tgz | travis_wait tar xvzf -
 - export PATH=$PATH:$PWD/android-ndk-r10
 - travis_wait brew install android-ndk
 script:
