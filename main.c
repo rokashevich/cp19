@@ -5,6 +5,8 @@
  */
 
 #include "SDL.h"
+#include "SDL_opengl.h"
+#include <GL/gl.h>
 #include <time.h>
 
 #define SCREEN_WIDTH 320
@@ -16,35 +18,42 @@ randomInt(int min, int max)
     return min + rand() % (max - min + 1);
 }
 
-void
-render(SDL_Renderer *renderer)
-{
-
-    Uint8 r, g, b;
-
-    /* Clear the screen */
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-
-    /*  Come up with a random rectangle */
-    SDL_Rect rect;
-    rect.w = randomInt(64, 128);
-    rect.h = randomInt(64, 128);
-    rect.x = randomInt(0, SCREEN_WIDTH);
-    rect.y = randomInt(0, SCREEN_HEIGHT);
-
-    /* Come up with a random color */
-    r = randomInt(50, 255);
-    g = randomInt(50, 255);
-    b = randomInt(50, 255);
-    SDL_SetRenderDrawColor(renderer, r, g, b, 255);
-
-    /*  Fill the rectangle in the color */
-    SDL_RenderFillRect(renderer, &rect);
-
-    /* update screen */
-    SDL_RenderPresent(renderer);
+void render(){
+    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    glClearColor(1.f, 0.f, 1.f, 0.f);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
+
+// void
+// render(SDL_Renderer *renderer)
+// {
+
+//     return;
+//     Uint8 r, g, b;
+
+//     /* Clear the screen */
+//     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+//     SDL_RenderClear(renderer);
+
+//     /*  Come up with a random rectangle */
+//     SDL_Rect rect;
+//     rect.w = randomInt(64, 128);
+//     rect.h = randomInt(64, 128);
+//     rect.x = randomInt(0, SCREEN_WIDTH);
+//     rect.y = randomInt(0, SCREEN_HEIGHT);
+
+//     /* Come up with a random color */
+//     r = randomInt(50, 255);
+//     g = randomInt(50, 255);
+//     b = randomInt(50, 255);
+//     SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+
+//     /*  Fill the rectangle in the color */
+//     SDL_RenderFillRect(renderer, &rect);
+
+//     /* update screen */
+//     SDL_RenderPresent(renderer);
+// }
 
 int
 main(int argc, char *argv[])
@@ -73,11 +82,15 @@ main(int argc, char *argv[])
         return 1;
     }
 
-    renderer = SDL_CreateRenderer(window, -1, 0);
-    if (!renderer) {
-        printf("Could not create renderer\n");
-        return 1;
-    }
+
+    SDL_GLContext Context = SDL_GL_CreateContext(window);
+
+
+    // renderer = SDL_CreateRenderer(window, -1, 0);
+    // if (!renderer) {
+    //     printf("Could not create renderer\n");
+    //     return 1;
+    // }
 
     /* Enter render loop, waiting for user to quit */
     done = 0;
@@ -87,8 +100,10 @@ main(int argc, char *argv[])
                 done = 1;
             }
         }
-        render(renderer);
-        SDL_Delay(1);
+        //render(renderer);
+        render();
+        SDL_GL_SwapWindow(window);
+        //SDL_Delay(1);
     }
 
     /* shutdown SDL */

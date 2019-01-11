@@ -9,6 +9,7 @@ include(External_SDL2)
 include_directories(${SDL2_DIR}/include/SDL2)
 link_directories(${SDL2_DIR}/lib)
 link_libraries(SDL2)
+link_libraries(GL)
 
 add_executable(native-sdl-demo ../main.c)
 
