@@ -6,11 +6,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 include(ExternalProject)
 include(External_SDL2)
 
-include_directories(${SDL2_DIR}/include/SDL2)
+include_directories(${SDL2_DIR}/include/SDL2 ../include)
 link_directories(${SDL2_DIR}/lib)
 link_libraries(SDL2)
 link_libraries(GL)
+link_libraries(dl)
 
-add_executable(native-sdl-demo ../main.c)
+add_executable(native-sdl-demo ../src/main.cpp)
 
 
