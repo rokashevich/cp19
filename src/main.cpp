@@ -2,18 +2,20 @@
 #include "SDL_opengl.h"
 #include <time.h>
 #include <GLES3/gl3.h>
-//#include <GL/gl.h>
-//#include <GL/glext.h>
-//#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <iostream>
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 480
 
 const char *vertexShaderSource = "#version 300 es\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "uniform mat4 transform;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = transform * vec4(aPos, 1.0);\n"
     "}\0";
 const char *fragmentShaderSource = "#version 300 es\n"
         "precision mediump float;\n"
@@ -135,7 +137,7 @@ int main(int argc, char *argv[])
 
 
                 // uncomment this call to draw in wireframe polygons.
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     /* Enter render loop, waiting for user to quit */
     done = 0;
@@ -149,12 +151,20 @@ int main(int argc, char *argv[])
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT);
 
-                // draw our first triangle
-                glUseProgram(shaderProgram);
-                glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-                //glDrawArrays(GL_TRIANGLES, 0, 6);
-                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-                // glBindVertexArray(0); // no need to unbind it every time
+
+        // create transformations
+        glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+        transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
+        transform = glm::rotate(transform, (float)SDL_GetTicks(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        // draw our first triangle
+        glUseProgram(shaderProgram);
+        unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+        //glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // glBindVertexArray(0); // no need to unbind it every time
 
 
         SDL_GL_SwapWindow(window);
