@@ -1,11 +1,12 @@
-#include "SDL.h"
-#include "SDL_opengl.h"
-#include <time.h>
+#include <EGL/egl.h>
 #include <GLES3/gl3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "SDL.h"
+//#include "SDL_opengl.h"
+#include <time.h>
 #include <iostream>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
