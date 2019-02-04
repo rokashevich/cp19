@@ -9,50 +9,30 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+#define SCREEN_WIDTH 1024
+#define SCREEN_HEIGHT 768
 
 const char *vertexShaderSource = "#version 300 es\n"
     "layout (location = 0) in vec2 pos;"
     "layout (location = 1) in vec3 color;"
-    "//uniform mat4 model;"
-    "//uniform mat4 view;\n"
-    "//uniform mat4 projection;\n"
-    "out vec3 vColor;"
-    "void main()\n"
-    "{"
-    "   gl_Position = vec4(pos, 0.0, 1.0f);\n"
-    "   vColor = color;"
-    "}\0";
-const char *fragmentShaderSource = "#version 300 es\n"
-    "precision mediump float;\n"
-    "in vec3 fColor;"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(fColor, 1.0);"
-    "}\n\0";
-
-const char *geometryShaderSource = "#version 310 es\n"
-    "#extension GL_EXT_geometry_shader : enable\n"
-    "layout(points) in;\n"
-    "layout(triangle_strip, max_vertices = 4) out;\n"
-    "in vec3 vColor[];"
-    "out vec3 fColor;"
+    "layout (location = 2) in vec2 offset;"
     "uniform mat4 model;"
     "uniform mat4 view;"
     "uniform mat4 projection;"
-    "void main(){\n"
-        "fColor = vColor[0];"
-        "gl_Position = projection*view*model*(gl_in[0].gl_Position + vec4(-0.1, -0.1, 0.0, 0.0));"
-        "EmitVertex();\n"
-        "gl_Position = projection*view*model*(gl_in[0].gl_Position + vec4( 0.1, -0.1, 0.0, 0.0));"
-        "EmitVertex();\n"
-        "gl_Position = projection*view*model*(gl_in[0].gl_Position + vec4(-0.1,  0.1, 0.0, 0.0));"
-        "EmitVertex();\n"
-        "gl_Position = projection*view*model*(gl_in[0].gl_Position + vec4( 0.1,  0.1, 0.0, 0.0));"
-        "EmitVertex();\n"
-        "EndPrimitive();\n"
+    "out vec3 vColor;"
+    "void main()\n"
+    "{"
+    "   gl_Position = vec4(pos + offset, 0.0, 1.0);\n"
+    "   //gl_Position = model*view*projection*vec4(pos + offset, 0.0, 1.0);\n"
+    "   vColor = vec3(1,0,0);"
+    "}\0";
+const char *fragmentShaderSource = "#version 300 es\n"
+    "precision mediump float;\n"
+    "in vec3 vColor;"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = vec4(vColor, 1.0);"
     "}\n\0";
 
 // camera
@@ -104,7 +84,7 @@ int main(int argc, char *argv[]) {
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (!success){
       glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-      printf("ERROR: %s\n", infoLog);
+      printf("Vertex error: %s\n", infoLog);
     }
 
     // fragment shader
@@ -115,24 +95,13 @@ int main(int argc, char *argv[]) {
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        printf("ERROR: %s\n", infoLog);
-    }
-
-    // geometry shader
-    int geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
-    glShaderSource(geometryShader, 1, &geometryShaderSource, nullptr);
-    glCompileShader(geometryShader);
-    glGetShaderiv(geometryShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(geometryShader, 512, NULL, infoLog);
-        printf("ERROR: %s\n", infoLog);
+        printf("Fragment error: %s\n", infoLog);
     }
 
     // link shaders
     int shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
-    glAttachShader(shaderProgram, geometryShader);
     glLinkProgram(shaderProgram);
 
     // check for linking errors
@@ -143,34 +112,44 @@ int main(int argc, char *argv[]) {
     }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-    glDeleteShader(geometryShader);
 
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
+    glm::vec2 translations[5];
+    for (int i=0;i<5;++i) {
+        glm::vec2 translation;
+        translation.x = (float)i / 10.0f + 0.5f;
+        translation.y = (float)i / 10.0f + 0.5f;
+        translations[i] = translation;
+    }
 
-    float points[] = {
-        -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-         0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-         0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-        -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,
+    float quadVertices[] = {
+        -0.1f, -0.1f,  1.0f, 0.0f, 0.0f,
+        -0.1f,  0.1f,  0.0f, 1.0f, 0.0f,
+         0.1f, -0.1f,  0.0f, 0.0f, 1.0f,
+         0.1f,  0.1f,  1.0f, 1.0f, 0.0f
     };
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+    unsigned int instanceVBO;
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 5, &translations[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    GLint posAttrib = glGetAttribLocation(shaderProgram, "pos");
-    glEnableVertexAttribArray(posAttrib);
-    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-
-    GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
-    glEnableVertexAttribArray(colAttrib);
-    glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE,
-                           6 * sizeof(float), (void*) (3 * sizeof(float)));
+    unsigned int quadVAO, quadVBO;
+    glGenVertexArrays(1, &quadVAO);
+    glGenBuffers(1, &quadVBO);
+    glBindVertexArray(quadVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+    // also set instance data
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO); // this attribute comes from a different vertex buffer
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glVertexAttribDivisor(2, 1); // tell OpenGL this is an instanced vertex attribute.
 
     done = 0;
     while (!done) {
@@ -236,9 +215,8 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
         // pass projection matrix to shader (note that in this case it could change every frame)
@@ -249,16 +227,16 @@ int main(int argc, char *argv[]) {
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
 
-        //glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-
-
         glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
         model = glm::translate(model, glm::vec3( 0.0f,  0.0f,  0.0f));
         float angle = 0.0f;
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
 
-        glDrawArrays(GL_POINTS, 0, 4);
+        glBindVertexArray(quadVAO);
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 5); // 100 triangles of 6 vertices each
+        //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glBindVertexArray(0);
 
         SDL_GL_SwapWindow(window);
     }
