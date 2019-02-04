@@ -22,8 +22,8 @@ const char *vertexShaderSource = "#version 300 es\n"
     "out vec3 vColor;"
     "void main()\n"
     "{"
-    "   gl_Position = vec4(pos + offset, 0.0, 1.0);\n"
-    "   //gl_Position = model*view*projection*vec4(pos + offset, 0.0, 1.0);\n"
+    "   //gl_Position = vec4(pos + offset, 0.0, 1.0);\n"
+    "   gl_Position = projection * view * model * vec4(pos + offset, 0.0, 1.0);\n"
     "   vColor = vec3(1,0,0);"
     "}\0";
 const char *fragmentShaderSource = "#version 300 es\n"
@@ -122,10 +122,10 @@ int main(int argc, char *argv[]) {
     }
 
     float quadVertices[] = {
-        -0.1f, -0.1f,  1.0f, 0.0f, 0.0f,
-        -0.1f,  0.1f,  0.0f, 1.0f, 0.0f,
-         0.1f, -0.1f,  0.0f, 0.0f, 1.0f,
-         0.1f,  0.1f,  1.0f, 1.0f, 0.0f
+        -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+         0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
+         0.5f,  0.5f,  1.0f, 1.0f, 0.0f
     };
 
     unsigned int instanceVBO;
@@ -150,6 +150,8 @@ int main(int argc, char *argv[]) {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribDivisor(2, 1); // tell OpenGL this is an instanced vertex attribute.
+
+    //glBindVertexArray(0);
 
     done = 0;
     while (!done) {
