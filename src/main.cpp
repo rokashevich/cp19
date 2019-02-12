@@ -164,6 +164,14 @@ int main(int argc, char *argv[]) {
 
     //glBindVertexArray(0);
 
+
+    int res;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS,&res);
+    std::cout << "GL_MAX_VERTEX_ATTRIBS = " << res << std::endl;
+    glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &res);
+    std::cout << "GL_MAX_VERTEX_UNIFORM_VECTORS = " << res << std::endl;
+
+
     done = 0;
     while (!done) {
         float currentFrame = SDL_GetTicks();
