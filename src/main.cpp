@@ -12,28 +12,44 @@
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 768
 
-const char *vertexShaderSource = "#version 300 es\n"
-    "layout (location = 0) in vec3 pos;"
-    "layout (location = 1) in vec3 color;"
-    "layout (location = 2) in vec3 offset;"
-    "uniform mat4 model;"
-    "uniform mat4 view;"
-    "uniform mat4 projection;"
-    "//in int gl_InstanceID;\n"
-    "out vec3 vColor;"
-    "void main()\n"
-    "{"
-    "   if (gl_InstanceID == 3) {"
-    "   gl_Position = projection * view * model * vec4(pos + offset, 1.0);"
-    "   }"
-    "   gl_Position = projection * view * model * vec4(pos + offset, 1.0);\n"
-    "   if (gl_InstanceID == 0) vColor = vec3(1,0,0);"
-    "   else if (gl_InstanceID == 1) vColor = vec3(0,1,0);"
-    "   else if (gl_InstanceID == 2) vColor = vec3(0,0,1);"
-    "   else if (gl_InstanceID == 3) vColor = vec3(1,1,0);"
-    "   else vColor = color;"
-    "}\0";
-const char *fragmentShaderSource = "#version 300 es\n"
+static const char *vertexShaderSource =
+R"END(
+#version 300 es
+layout (location = 0) in vec3 pos;
+layout (location = 1) in float arg;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+out vec3 vColor;
+void main() {
+  vColor = vec3(1,0,0);
+
+  vec3 offset;
+  if (gl_InstanceID == 0) {
+    offset = vec3(-0.5,-0.5,-0.5);
+    vColor = vec3(0,0,0);
+  } else if (gl_InstanceID == 1) {
+    offset = vec3(0.5,0.5,0.5);
+    vColor = vec3(1,1,1);
+  } else if (gl_InstanceID == 2) {
+    offset = vec3(-0.5,0.5,0.5);
+    vColor = vec3(1,1,0);
+  } else if (gl_InstanceID == 3) {
+    offset = vec3(0.5,-0.5,0.5);
+    vColor = vec3(0,1,1);
+  } else if (gl_InstanceID == 4) {
+    offset = vec3(0,0,0);
+    vColor = vec3(1,0,1);
+  }
+
+  if (arg == 3.1) {
+    vColor = vec3(0,1,0);
+  }
+
+  gl_Position = projection * view * model * vec4(pos + offset, 1.0);
+}
+)END";
+static const char *fragmentShaderSource = "#version 300 es\n"
     "precision mediump float;\n"
     "in vec3 vColor;"
     "out vec4 FragColor;\n"
@@ -120,29 +136,27 @@ int main(int argc, char *argv[]) {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    glm::vec3 translations[5];
-    for (int i=0;i<5;++i) {
-        glm::vec3 translation;
-        translation.x = (float)i / 10.0f + 0.5f;
-        translation.y = (float)i / 10.0f + 0.5f;
-        translation.z = 0;
-        translations[i] = translation;
-        if (i == 4) {
+    glm::vec1 translations[5];
+    glm::vec1 a;
+    a.x = 3.0f;
+    translations[0] = a;
+    translations[1] = a;
+    translations[2] = a;
+    translations[3] = a;
+    translations[4] = a;
 
-        }
-    }
 
     float quadVertices[] = {
-        -0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 0.0f,
-        -0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 0.0f,
-         0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.0f,
-         0.5f,  0.5f,  0.0f, 1.0f, 1.0f, 1.0f
+        -0.5f, -0.5f,  0.0f,
+        -0.5f,  0.5f,  0.0f,
+         0.5f, -0.5f,  0.0f,
+         0.5f,  0.5f,  0.0f
     };
 
     unsigned int instanceVBO;
     glGenBuffers(1, &instanceVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 6, &translations[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec1) * 5, &translations[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     unsigned int quadVAO, quadVBO;
@@ -151,18 +165,16 @@ int main(int argc, char *argv[]) {
     glBindVertexArray(quadVAO);
     glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(2 * sizeof(float)));
-    // also set instance data
-    glEnableVertexAttribArray(2);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO); // this attribute comes from a different vertex buffer
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glVertexAttribDivisor(2, 1); // tell OpenGL this is an instanced vertex attribute.
 
-    //glBindVertexArray(0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO); // this attribute comes from a different vertex buffer
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 1 * sizeof(float), (void*)0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glVertexAttribDivisor(1, 1);
 
 
     int res;
@@ -240,6 +252,9 @@ int main(int argc, char *argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
+
+
+
         // pass projection matrix to shader (note that in this case it could change every frame)
         glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
@@ -253,6 +268,8 @@ int main(int argc, char *argv[]) {
         float angle = 0.0f;
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
+
+
 
         glBindVertexArray(quadVAO);
         glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 5); // 100 triangles of 6 vertices each
