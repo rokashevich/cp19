@@ -41,22 +41,26 @@ void main() {
     offset = vec3(0,0,0);
     vColor = vec3(1,0,1);
   }
-
-  if (arg == 3.1) {
+  int a = floatBitsToInt(arg);
+  if (a == 33) {
     vColor = vec3(0,1,0);
   }
 
   gl_Position = projection * view * model * vec4(pos + offset, 1.0);
 }
 )END";
-static const char *fragmentShaderSource = "#version 300 es\n"
-    "precision mediump float;\n"
-    "in vec3 vColor;"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(vColor, 1.0);"
-    "}\n\0";
+
+static const char *fragmentShaderSource =
+R"END(
+#version 300 es
+precision mediump float;
+in vec3 vColor;
+out vec4 FragColor;
+void main()
+{
+  FragColor = vec4(vColor, 1.0);
+}
+)END";
 
 // camera
 glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -79,6 +83,14 @@ void render(){
     glClearColor(1.f, 0.f, 1.f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
+
+struct Square {
+  float x;
+  float y;
+  float z;
+  float a;
+  float t;
+};
 
 int main(int argc, char *argv[]) {
     SDL_Window *window;
@@ -136,15 +148,11 @@ int main(int argc, char *argv[]) {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    glm::vec1 translations[5];
-    glm::vec1 a;
-    a.x = 3.0f;
-    translations[0] = a;
-    translations[1] = a;
-    translations[2] = a;
-    translations[3] = a;
-    translations[4] = a;
+    int a = 33;
+    float b = *((float*)&a);
+    float c[5] = {b,b,b,b,b};
 
+   // float d[5] = {17.0f, 17.0f, 17.0f, 17.0f, 17.0f};
 
     float quadVertices[] = {
         -0.5f, -0.5f,  0.0f,
@@ -156,7 +164,7 @@ int main(int argc, char *argv[]) {
     unsigned int instanceVBO;
     glGenBuffers(1, &instanceVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec1) * 5, &translations[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*5, &c[0], GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     unsigned int quadVAO, quadVBO;
