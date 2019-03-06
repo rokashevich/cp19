@@ -44,9 +44,14 @@ void main() {
   int a = floatBitsToInt(arg);
   if (a == 33) {
     vColor = vec3(0,1,0);
+    gl_Position = projection * view * model * vec4(pos + offset, 1.0);
+  } else if (a == 11) {
+    vColor = vec3(1,0,0);
+    vec3 newpos = vec3(pos.x, pos.y, pos.z);
+    gl_Position = projection * view * model * vec4(newpos + offset, 1.0);
+    //pos = ;
   }
 
-  gl_Position = projection * view * model * vec4(pos + offset, 1.0);
 }
 )END";
 
@@ -149,10 +154,11 @@ int main(int argc, char *argv[]) {
     glDeleteShader(fragmentShader);
 
     int a = 33;
-    float b = *((float*)&a);
-    float c[5] = {b,b,b,b,b};
+    float aa = *((float*)&a);
+    int b = 11;
+    float bb = *((float*)&b);
+    float c[5] = {aa,aa,aa,aa,bb};
 
-   // float d[5] = {17.0f, 17.0f, 17.0f, 17.0f, 17.0f};
 
     float quadVertices[] = {
         -0.5f, -0.5f,  0.0f,
