@@ -26,31 +26,32 @@ void main() {
 
   vec3 offset;
   if (gl_InstanceID == 0) {
-    offset = vec3(-0.5,-0.5,-0.5);
+    offset = vec3(-0.5,-0.5,0.0);
     vColor = vec3(0,0,0);
   } else if (gl_InstanceID == 1) {
-    offset = vec3(0.5,0.5,0.5);
+    offset = vec3(0.5,0.5,0.0);
     vColor = vec3(1,1,1);
   } else if (gl_InstanceID == 2) {
-    offset = vec3(-0.5,0.5,0.5);
+    offset = vec3(-0.5,0.5,0.0);
     vColor = vec3(1,1,0);
   } else if (gl_InstanceID == 3) {
-    offset = vec3(0.5,-0.5,0.5);
+    offset = vec3(0.5,-0.5,0.0);
     vColor = vec3(0,1,1);
   } else if (gl_InstanceID == 4) {
     offset = vec3(0,0,0);
     vColor = vec3(1,0,1);
   }
-  int a = floatBitsToInt(arg);
-  if (a == 33) {
-    vColor = vec3(0,1,0);
+//  int a = floatBitsToInt(arg);
+//  if (a == 33) {
+//    vColor = vec3(0,1,0);
+//    gl_Position = projection * view * model * vec4(pos + offset, 1.0);
+//  } else if (a == 11) {
+//    vColor = vec3(1,0,0);
+//    vec3 newpos = vec3(pos.x, pos.y, pos.z);
+//    gl_Position = projection * view * model * vec4(newpos + offset, 1.0);
+//    //pos = ;
+//  }
     gl_Position = projection * view * model * vec4(pos + offset, 1.0);
-  } else if (a == 11) {
-    vColor = vec3(1,0,0);
-    vec3 newpos = vec3(pos.x, pos.y, pos.z);
-    gl_Position = projection * view * model * vec4(newpos + offset, 1.0);
-    //pos = ;
-  }
 
 }
 )END";
@@ -161,10 +162,12 @@ int main(int argc, char *argv[]) {
 
 
     float quadVertices[] = {
-        -0.5f, -0.5f,  0.0f,
-        -0.5f,  0.5f,  0.0f,
-         0.5f, -0.5f,  0.0f,
-         0.5f,  0.5f,  0.0f
+      -0.05f,  0.05f, 0.0f,
+       0.05f, -0.05f, 0.0f,
+      -0.05f, -0.05f, 0.0f,
+      -0.05f,  0.05f, 0.0f,
+       0.05f, -0.05f, 0.0f,
+       0.05f,  0.05f, 0.0f
     };
 
     unsigned int instanceVBO;
@@ -209,7 +212,7 @@ int main(int argc, char *argv[]) {
             if (event.type == SDL_QUIT) {
                 done = 1;
             } else if( event.type == SDL_KEYDOWN ) {
-              float cameraSpeed = 0.01 * deltaTime;
+              float cameraSpeed = 0.01f * deltaTime;
               switch( event.key.keysym.sym ) {
                 case SDLK_UP:
                   cameraPos += cameraSpeed * cameraFront;
@@ -286,7 +289,7 @@ int main(int argc, char *argv[]) {
 
 
         glBindVertexArray(quadVAO);
-        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 5); // 100 triangles of 6 vertices each
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, 4);
         //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         glBindVertexArray(0);
 
