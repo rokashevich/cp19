@@ -16,30 +16,29 @@ static const char *vertexShaderSource =
 R"END(
 #version 300 es
 layout (location = 0) in vec3 pos;
-layout (location = 1) in float arg;
+//layout (location = 1) in float arg;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 out vec3 vColor;
 void main() {
-  vColor = vec3(1,0,0);
-
+//  pos = vec3(pos, 0);
   vec3 offset;
   if (gl_InstanceID == 0) {
-    offset = vec3(-0.5,-0.5,0.0);
-    vColor = vec3(0,0,0);
-  } else if (gl_InstanceID == 1) {
-    offset = vec3(0.5,0.5,0.0);
-    vColor = vec3(1,1,1);
-  } else if (gl_InstanceID == 2) {
     offset = vec3(-0.5,0.5,0.0);
-    vColor = vec3(1,1,0);
-  } else if (gl_InstanceID == 3) {
+    vColor = vec3(1,0,0);
+  } else if (gl_InstanceID == 1) {
     offset = vec3(0.5,-0.5,0.0);
-    vColor = vec3(0,1,1);
+    vColor = vec3(1,1,0);
+  } else if (gl_InstanceID == 2) {
+    offset = vec3(0.5,0.5,0.0);
+    vColor = vec3(0,1,0);
+  } else if (gl_InstanceID == 3) {
+    offset = vec3(-0.5,-0.5,0.0);
+    vColor = vec3(0,0,1);
   } else if (gl_InstanceID == 4) {
     offset = vec3(0,0,0);
-    vColor = vec3(1,0,1);
+    vColor = vec3(0,0,0);
   }
 //  int a = floatBitsToInt(arg);
 //  if (a == 33) {
@@ -162,12 +161,12 @@ int main(int argc, char *argv[]) {
 
 
     float quadVertices[] = {
-      -0.05f,  0.05f, 0.0f,
-       0.05f, -0.05f, 0.0f,
-      -0.05f, -0.05f, 0.0f,
-      -0.05f,  0.05f, 0.0f,
-       0.05f, -0.05f, 0.0f,
-       0.05f,  0.05f, 0.0f
+      -0.5f,  0.5f,
+       0.5f, -0.5f,
+      -0.5f, -0.5f,
+      -0.5f,  0.5f,
+       0.5f, -0.5f,
+       0.5f,  0.5f
     };
 
     unsigned int instanceVBO;
@@ -184,7 +183,7 @@ int main(int argc, char *argv[]) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
 
 
     glEnableVertexAttribArray(1);
