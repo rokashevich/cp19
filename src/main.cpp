@@ -20,23 +20,30 @@ layout (location = 0) in vec3 pos;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform float v[10];
 out vec3 vColor;
 void main() {
 //  pos = vec3(pos, 0);
   vec3 offset;
-  if (gl_InstanceID == 0) {
+  if (gl_InstanceID == 1) {
     offset = vec3(-0.5,0.5,0.0);
     vColor = vec3(1,0,0);
   } else if (gl_InstanceID == 1) {
     offset = vec3(0.5,-0.5,0.0);
-    vColor = vec3(1,1,0);
+    //if (v[2]==1.0)
+    //  vColor = vec3(1,1,0);
+    //else
+      vColor = vec3(1,0,1);
   } else if (gl_InstanceID == 2) {
     offset = vec3(0.5,0.5,0.0);
-    vColor = vec3(0,1,0);
+      if (v[2]==3.5)
+        vColor = vec3(1,1,0);
+      else
+        vColor = vec3(1,0,1);
   } else if (gl_InstanceID == 3) {
     offset = vec3(-0.5,-0.5,0.0);
     vColor = vec3(0,0,1);
-  } else if (gl_InstanceID == 4) {
+  } else {
     offset = vec3(0,0,0);
     vColor = vec3(0,0,0);
   }
@@ -285,7 +292,8 @@ int main(int argc, char *argv[]) {
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
 
-
+        GLfloat v[10] = {1,2,3.5f,4,5,6,7,8,9,10};
+        glUniform1fv(glGetUniformLocation(shaderProgram, "v"), 10, v);
 
         glBindVertexArray(quadVAO);
         glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, 4);
