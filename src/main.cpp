@@ -75,20 +75,20 @@ void main()
 )END";
 
 // camera
-glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
+static glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
+static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+static glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
 
-bool firstMouse = true;
-float yaw   = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
-float pitch =  0.0f;
-float lastX =  800.0f / 2.0;
-float lastY =  600.0 / 2.0;
-float fov   =  45.0f;
+static bool firstMouse = true;
+static float yaw   = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+static float pitch =  0.0f;
+static float lastX =  800 / 2.0;
+static float lastY =  600 / 2.0;
+static float fov   =  45.0f;
 
 // timing
-float deltaTime = 0.0f;	// time between current frame and last frame
-float lastFrame = 0.0f;
+static float deltaTime = 0.0f;	// time between current frame and last frame
+static float lastFrame = 0.0f;
 
 void render(){
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -104,9 +104,8 @@ struct Square {
   float t;
 };
 
-int main(int argc, char *argv[]) {
+int main() {
     SDL_Window *window;
-    SDL_Renderer *renderer;
     int done;
     SDL_Event event;
 
@@ -114,39 +113,38 @@ int main(int argc, char *argv[]) {
         printf("Could not initialize SDL\n");
         return 1;
     }
-    srand(time(NULL));
-    window = SDL_CreateWindow(NULL, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow(nullptr, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
     if (!window) {
         printf("Could not initialize Window\n");
         return 1;
     }
-    SDL_GLContext Context = SDL_GL_CreateContext(window);
+    SDL_GL_CreateContext(window);
 
     // vertext shader
-    int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
     glCompileShader(vertexShader);
     int success;
     char infoLog[512];
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (!success){
-      glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+      glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
       printf("Vertex error: %s\n", infoLog);
     }
 
     // fragment shader
-    int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
     glCompileShader(fragmentShader);
     // check for shader compile errors
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
         printf("Fragment error: %s\n", infoLog);
     }
 
     // link shaders
-    int shaderProgram = glCreateProgram();
+    GLuint shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
@@ -154,7 +152,7 @@ int main(int argc, char *argv[]) {
     // check for linking errors
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
-      glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+      glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
       printf("ERROR: %s\n", infoLog);
     }
     glDeleteShader(vertexShader);
