@@ -218,16 +218,16 @@ int main() {
             } else if( event.type == SDL_KEYDOWN ) {
               float cameraSpeed = 0.01f * deltaTime;
               switch( event.key.keysym.sym ) {
-                case SDLK_UP:
+                case SDLK_w:
                   cameraPos += cameraSpeed * cameraFront;
                   break;
-                case SDLK_DOWN:
+                case SDLK_s:
                   cameraPos -= cameraSpeed * cameraFront;
                   break;
-                case SDLK_LEFT:
+                case SDLK_a:
                   cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
                   break;
-                case SDLK_RIGHT:
+                case SDLK_d:
                   cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
                   break;
                 default:
