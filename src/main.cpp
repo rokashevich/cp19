@@ -104,7 +104,7 @@ struct Square {
   float t;
 };
 
-int main() {
+int main(int argc, char *argv[]) {
     SDL_Window *window;
     int done;
     SDL_Event event;
