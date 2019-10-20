@@ -104,7 +104,7 @@ struct Square {
   float t;
 };
 
-int main(int argc, char *argv[]) {
+int main(int, char**) { // аргументы не используются, но с пустым main() падает
     SDL_Window *window;
     int done;
     SDL_Event event;
