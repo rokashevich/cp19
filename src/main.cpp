@@ -79,11 +79,8 @@ static glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
 static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 static glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
 
-static bool firstMouse = true;
 static float yaw   = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
 static float pitch =  0.0f;
-static float lastX =  800 / 2.0;
-static float lastY =  600 / 2.0;
 static float fov   =  45.0f;
 
 // timing
@@ -119,6 +116,7 @@ int main(int, char**) { // аргументы не используются, н�
 		return 1;
 	}
 	SDL_GL_CreateContext(window);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	// vertext shader
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -234,26 +232,11 @@ int main(int, char**) { // аргументы не используются, н�
 					break;
 				}
 			} else if (event.type == SDL_MOUSEMOTION) {
-				int xpos, ypos;
-				SDL_GetMouseState( &xpos, &ypos );
-				if (firstMouse)
-				{
-					lastX = xpos;
-					lastY = ypos;
-					firstMouse = false;
-				}
 
-				float xoffset = xpos - lastX;
-				float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-				lastX = xpos;
-				lastY = ypos;
 
-				float sensitivity = 0.1f; // change this value to your liking
-				xoffset *= sensitivity;
-				yoffset *= sensitivity;
-
-				yaw += xoffset;
-				pitch += yoffset;
+				static float sensitivity = 0.1f; // change this value to your liking
+				yaw += event.motion.xrel * sensitivity;
+				pitch -= event.motion.yrel * sensitivity;
 
 				// make sure that when pitch is out of bounds, screen doesn't get flipped
 				if (pitch > 89.0f)
