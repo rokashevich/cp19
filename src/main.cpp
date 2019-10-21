@@ -15,7 +15,7 @@
 static const char *vertexShaderSource =
 		R"END(
 		#version 300 es
-		layout (location = 0) in vec3 pos;
+		layout (location = 0) in vec3 pos_in;
 		//layout (location = 1) in float arg;
 		uniform mat4 model;
 		uniform mat4 view;
@@ -23,29 +23,31 @@ static const char *vertexShaderSource =
 		uniform float v[10];
 		out vec3 vColor;
 		void main() {
-		//  pos = vec3(pos, 0);
+		vec3 pos = pos_in;
 		vec3 offset;
 		if (gl_InstanceID == 1) {
-		offset = vec3(-0.5,0.5,0.0);
+		offset = vec3(-1.0,1.0,0.0);
 		vColor = vec3(1,0,0);
 		} else if (gl_InstanceID == 1) {
-		offset = vec3(0.5,-0.5,0.0);
+		offset = vec3(1.0,-1.0,0.0);
 		//if (v[2]==1.0)
 		//  vColor = vec3(1,1,0);
 		//else
 		vColor = vec3(1,0,1);
 		} else if (gl_InstanceID == 2) {
-		offset = vec3(0.5,0.5,0.0);
+		offset = vec3(1.0,1.0,0.0);
 		if (v[2]==3.5)
 		vColor = vec3(1,1,0);
 		else
 		vColor = vec3(1,0,1);
 		} else if (gl_InstanceID == 3) {
-		offset = vec3(-0.5,-0.5,0.0);
+		offset = vec3(-1.0,-1.0,0.0);
 		vColor = vec3(0,0,1);
+			pos = vec3(0, pos_in.y, pos_in.x); // поворот в плоскость yz
 		} else {
-		offset = vec3(0,0,0);
-		vColor = vec3(0,0,0);
+			offset = vec3(0,0,0);
+			vColor = vec3(1,1,1);
+			pos = vec3(pos_in.x, 0, pos_in.y); // поворот в плоскость xz
 		}
 		//  int a = floatBitsToInt(arg);
 		//  if (a == 33) {
@@ -58,7 +60,6 @@ static const char *vertexShaderSource =
 		//    //pos = ;
 		//  }
 		gl_Position = projection * view * model * vec4(pos + offset, 1.0);
-
 		}
 		)END";
 
@@ -164,12 +165,12 @@ int main(int, char**) { // аргументы не используются, н�
 
 
 	float quadVertices[] = {
-		-0.5f,  0.5f,
-		0.5f, -0.5f,
-		-0.5f, -0.5f,
-		-0.5f,  0.5f,
-		0.5f, -0.5f,
-		0.5f,  0.5f
+		-1.0f,  1.0f,
+		1.0f, -1.0f,
+		-1.0f, -1.0f,
+		-1.0f,  1.0f,
+		1.0f, -1.0f,
+		1.0f,  1.0f
 	};
 
 	unsigned int instanceVBO;
