@@ -191,6 +191,8 @@ int main(int, char**) { // аргументы не используются, н�
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glVertexAttribDivisor(1, 1);
 
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 
 	int res;
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS,&res);
@@ -210,7 +212,7 @@ int main(int, char**) { // аргументы не используются, н�
 			if (event.type == SDL_QUIT) {
 				done = 1;
 			} else if( event.type == SDL_KEYDOWN ) {
-				float cameraSpeed = 0.5f * deltaTime;
+				float cameraSpeed = 0.005f * deltaTime;
 				switch( event.key.keysym.sym ) {
 				case SDLK_w:
 					cameraPos += cameraSpeed * cameraFront;
