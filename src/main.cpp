@@ -1,6 +1,5 @@
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
-#include <GLES3/gl3ext.h>
 #include "SDL.h"
 //#include "SDL_opengl.h"
 #include <time.h>
@@ -13,7 +12,7 @@
 #define SCREEN_HEIGHT 768
 
 static const char *vertexShaderSource =
-    R"END(
+		R"END(
 		#version 300 es
 		layout (location = 0) in vec3 pos_in;
 		//layout (location = 1) in float arg;
@@ -25,26 +24,26 @@ static const char *vertexShaderSource =
 		void main() {
 		vec3 pos = pos_in;
 		vec3 offset;
-    if (gl_InstanceID == 1) {  // 4 red
-      offset = vec3(-2,1,-1);
-      vColor = vec3(1,0,0);
-      pos = vec3(0, pos_in.y, pos_in.x); // поворот в плоскость yz
-    } else if (gl_InstanceID == 2) { // 3 green
-      offset = vec3(0,1,-1);
-      vColor = vec3(0,1,0);
-      pos = vec3(0, pos_in.y, pos_in.x); // поворот в плоскость yz
-    } else if (gl_InstanceID == 3) { // 2 yellow
-      offset = vec3(-1,2,-1);
-      vColor = vec3(1,1,0);
-      pos = vec3(pos_in.x, 0, pos_in.y); // поворот в плоскость xz
-    } else if (gl_InstanceID == 4) { // 1 blue
-      offset = vec3(-1,0,-1);
-      vColor = vec3(0,0,1);
-      pos = vec3(pos_in.x, 0, pos_in.y); // поворот в плоскость xz
-    } else {
-      offset = vec3(-1,1,-2);
-      vColor = vec3(1,1,1);
-    }
+		if (gl_InstanceID == 1) {  // 4 red
+			offset = vec3(-2,1,-1);
+			vColor = vec3(1,0,0);
+			pos = vec3(0, pos_in.y, pos_in.x); // поворот в плоскость yz
+		} else if (gl_InstanceID == 2) { // 3 green
+			offset = vec3(0,1,-1);
+			vColor = vec3(0,1,0);
+			pos = vec3(0, pos_in.y, pos_in.x); // поворот в плоскость yz
+		} else if (gl_InstanceID == 3) { // 2 yellow
+			offset = vec3(-1,2,-1);
+			vColor = vec3(1,1,0);
+			pos = vec3(pos_in.x, 0, pos_in.y); // поворот в плоскость xz
+		} else if (gl_InstanceID == 4) { // 1 blue
+			offset = vec3(-1,0,-1);
+			vColor = vec3(0,0,1);
+			pos = vec3(pos_in.x, 0, pos_in.y); // поворот в плоскость xz
+		} else {
+			offset = vec3(-1,1,-2);
+			vColor = vec3(1,1,1);
+		}
 		//  int a = floatBitsToInt(arg);
 		//  if (a == 33) {
 		//    vColor = vec3(0,1,0);
@@ -57,7 +56,7 @@ static const char *vertexShaderSource =
 		//  }
 		gl_Position = projection * view * model * vec4(pos + offset, 1.0);
 		}
-    )END";
+		)END";
 
 static const char *fragmentShaderSource =
 		R"END(
@@ -211,7 +210,7 @@ int main(int, char**) { // аргументы не используются, н�
 			if (event.type == SDL_QUIT) {
 				done = 1;
 			} else if( event.type == SDL_KEYDOWN ) {
-        float cameraSpeed = 0.5f * deltaTime;
+				float cameraSpeed = 0.5f * deltaTime;
 				switch( event.key.keysym.sym ) {
 				case SDLK_w:
 					cameraPos += cameraSpeed * cameraFront;
@@ -231,7 +230,7 @@ int main(int, char**) { // аргументы не используются, н�
 			} else if (event.type == SDL_MOUSEMOTION) {
 
 
-        static float sensitivity = 0.1f; // change this value to your liking
+				static float sensitivity = 0.1f; // change this value to your liking
 				yaw += event.motion.xrel * sensitivity;
 				pitch -= event.motion.yrel * sensitivity;
 
@@ -274,7 +273,7 @@ int main(int, char**) { // аргументы не используются, н�
 		glUniform1fv(glGetUniformLocation(shaderProgram, "v"), 10, v);
 
 		glBindVertexArray(quadVAO);
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, 5);
+		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, 5);
 		//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glBindVertexArray(0);
 
