@@ -13,8 +13,9 @@ rm -rf $PROJECT_ROOT/SDL/build/github.rokashevich.cp19
 ./androidbuild.sh github.rokashevich.cp19 $PROJECT_ROOT/src/main.cpp
 
 cd $PROJECT_ROOT/SDL/build/github.rokashevich.cp19/app/jni/src
-rm main.cpp
-ln -s $PROJECT_ROOT/src/*.*pp .
+rm *.cpp *.h
+ln -s $PROJECT_ROOT/src/*.cpp .
+ln -s $PROJECT_ROOT/src/*.h .
 
 cd $PROJECT_ROOT/SDL/build/github.rokashevich.cp19/app/jni
 ln -s $PROJECT_ROOT/glm .
