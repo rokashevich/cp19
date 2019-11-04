@@ -34,7 +34,7 @@ const char vertex_shader [] =
 "		pos = vec3(pos_in.x, 0, pos_in.y); // поворот в плоскость xz\n"
 "	} else {\n"
 "		offset = vec3(-1,1,-2);\n"
-"		vColor = vec3(0.5,0.5,0.5);\n"
+"		vColor = vec3(0,0,0);\n"
 "	}\n"
 "	//  int a = floatBitsToInt(arg);\n"
 "	//  if (a == 33) {\n"

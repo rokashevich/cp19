@@ -28,7 +28,7 @@ void main() {
 		pos = vec3(pos_in.x, 0, pos_in.y); // поворот в плоскость xz
 	} else {
 		offset = vec3(-1,1,-2);
-		vColor = vec3(0.5,0.5,0.5);
+		vColor = vec3(0,0,0);
 	}
 	//  int a = floatBitsToInt(arg);
 	//  if (a == 33) {

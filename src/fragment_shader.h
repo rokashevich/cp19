@@ -10,6 +10,9 @@ const char fragment_shader [] =
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
+"	if (vColor == vec3(0,0,0)) {\n"
+"		discard;\n"
+"	}\n"
 "	FragColor = vec4(vColor, 1.0);\n"
 "}\n"
 ;
