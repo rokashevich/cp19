@@ -16,16 +16,9 @@ link_libraries(dl)
 
 
 add_executable(embedfile ../tools/embedfile.cpp)
-add_custom_command(
-	OUTPUT  ${SRC}/vertex_shader.h
-	COMMAND embedfile vertex_shader ${SRC}/shader.vert ${SRC}/vertex_shader.h
-)
-add_custom_command(
-	OUTPUT  ${SRC}/fragment_shader.h
-	COMMAND embedfile fragment_shader ${SRC}/shader.frag ${SRC}/fragment_shader.h
-)
-add_custom_target(shader_headers ALL DEPENDS ${SRC}/vertex_shader.h ${SRC}/fragment_shader.h)
 
+add_custom_target(vertex_shader ALL COMMAND embedfile vertex_shader ${SRC}/shader.vert ${SRC}/vertex_shader.h)
+add_custom_target(fragment_shader ALL COMMAND embedfile fragment_shader ${SRC}/shader.frag ${SRC}/fragment_shader.h)
 
 add_executable(native-sdl-demo ../src/main.cpp)
 
