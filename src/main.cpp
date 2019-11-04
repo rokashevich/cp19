@@ -65,7 +65,6 @@ int main(int, char**) { // аргументы не используются, н�
 	float bb = *((float*)&b);
 	float c[5] = {bb,bb,aa,bb,bb};
 
-
 	float quadVertices[] = {
 		-1.0f,  1.0f,
 		1.0f, -1.0f,
@@ -81,6 +80,14 @@ int main(int, char**) { // аргументы не используются, н�
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*5, &c[0], GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	int cube_dimension = 9;
+	GLint const_params[1] = {
+		cube_dimension
+	};
+	ourShader.Use();
+	glUniform1iv(glGetUniformLocation(ourShader.Program, "const_params"),
+							 1, const_params);
+
 	unsigned int quadVAO, quadVBO;
 	glGenVertexArrays(1, &quadVAO);
 	glGenBuffers(1, &quadVBO);
@@ -90,7 +97,6 @@ int main(int, char**) { // аргументы не используются, н�
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
-
 
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO); // this attribute comes from a different vertex buffer
