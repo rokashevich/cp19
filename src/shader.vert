@@ -6,7 +6,7 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform float v[10];
 out vec3 vColor;
-//in int gl_InstanceID;
+
 void main() {
 	vec3 pos = pos_in;
 	vec3 offset;
@@ -28,7 +28,7 @@ void main() {
 		pos = vec3(pos_in.x, 0, pos_in.y); // поворот в плоскость xz
 	} else {
 		offset = vec3(-1,1,-2);
-		vColor = vec3(1,0,1);
+		vColor = vec3(0.5,0.5,0.5);
 	}
 	//  int a = floatBitsToInt(arg);
 	//  if (a == 33) {
