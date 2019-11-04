@@ -63,7 +63,7 @@ int main(int, char**) { // аргументы не используются, н�
 	float aa = *((float*)&a);
 	int b = 11;
 	float bb = *((float*)&b);
-	float c[5] = {aa,aa,aa,aa,bb};
+	float c[5] = {bb,bb,aa,bb,bb};
 
 
 	float quadVertices[] = {
@@ -178,9 +178,6 @@ int main(int, char**) { // аргументы не используются, н�
 		float angle = 0.0f;
 		model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 		glUniformMatrix4fv(glGetUniformLocation(ourShader.Program, "model"), 1, GL_FALSE, &model[0][0]);
-
-		GLfloat v[10] = {1,2,3.5f,4,5,6,7,8,9,10};
-		glUniform1fv(glGetUniformLocation(ourShader.Program, "v"), 10, v);
 
 		glBindVertexArray(quadVAO);
 		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, 5);
