@@ -16,11 +16,11 @@ link_libraries(dl)
 
 add_executable(embedfile ../tools/embedfile.cpp)
 
-add_custom_target(vertex_shader ALL COMMAND embedfile vertex_shader ${SRC}/shader.vert ${SRC}/vertex_shader.h)
-add_custom_target(fragment_shader ALL COMMAND embedfile fragment_shader ${SRC}/shader.frag ${SRC}/fragment_shader.h)
+add_custom_target(vertex_shader ALL COMMAND embedfile vertex_shader ${SRC}/vert_cube.glsl ${SRC}/vertex_shader.h)
+add_custom_target(fragment_shader ALL COMMAND embedfile fragment_shader ${SRC}/frag_cube.glsl ${SRC}/fragment_shader.h)
 
 add_executable(native-sdl-demo
 	${SRC}/main.cpp
 	${SRC}/shader.h
-	${SRC}/shader.vert
-	${SRC}/shader.frag)
+	${SRC}/vert_cube.glsl
+	${SRC}/frag_cube.glsl)
