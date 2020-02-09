@@ -21,6 +21,8 @@ add_custom_target(fragment_shader ALL COMMAND embedfile fragment_shader ${SRC}/f
 
 add_executable(native-sdl-demo
 	${SRC}/main.cpp
+        ${SRC}/maze.cpp
+        ${SRC}/maze.h
 	${SRC}/shader.h
 	${SRC}/vert_cube.glsl
 	${SRC}/frag_cube.glsl)
