@@ -8,7 +8,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#include "shader.h"
+#include "maze.hpp"
+#include "shader.hpp"
 
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 768
@@ -26,8 +27,8 @@ static float pitch = 0.0f;
 static float fov = 45.0f;
 
 // timing
-static float deltaTime = 0.0f;  // time between current frame and last frame
-static float lastFrame = 0.0f;
+static unsigned int deltaTicks = 0;
+static unsigned int lastTicks = 0;
 
 void render() {
   glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -115,20 +116,24 @@ int main(int,
 
   done = 0;
   while (!done) {
-    float currentFrame = SDL_GetTicks();
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
+    std::cout << SDL_GetTicks() << std::endl;
+    unsigned int currentTicks = SDL_GetTicks();
+    deltaTicks = currentTicks - lastTicks;
+    lastTicks = currentTicks;
+    if (deltaTicks == 0) deltaTicks = 1;
 
     while (SDL_PollEvent(&event)) {
+      // std::cout << deltaTicks << std::endl;
       if (event.type == SDL_QUIT) {
         done = 1;
       } else if (event.type == SDL_KEYDOWN) {
-        float cameraSpeed = 0.005f * deltaTime;
+        float cameraSpeed = 0.05f * deltaTicks;
         switch (event.key.keysym.sym) {
           case SDLK_w:
             cameraPos += cameraSpeed * cameraFront;
             break;
           case SDLK_s:
+            std::cout << "s";
             cameraPos -= cameraSpeed * cameraFront;
             break;
           case SDLK_a:
