@@ -8,7 +8,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#include "maze.hpp"
+#include "helpers.hpp"
 #include "shader.hpp"
 
 #define SCREEN_WIDTH 1024
@@ -44,8 +44,11 @@ struct Square {
   float t;
 };
 
-int main(int,
-         char **) {  // аргументы не используются, но с пустым main() падает
+int main(int, char **) {  // С пустым main() падает на андроиде!
+
+  Helpers::GenerateMaze(10);
+  return 1;
+
   SDL_Window *window;
   int done;
   SDL_Event event;
@@ -116,7 +119,6 @@ int main(int,
 
   done = 0;
   while (!done) {
-    std::cout << SDL_GetTicks() << std::endl;
     unsigned int currentTicks = SDL_GetTicks();
     deltaTicks = currentTicks - lastTicks;
     lastTicks = currentTicks;
@@ -127,7 +129,7 @@ int main(int,
       if (event.type == SDL_QUIT) {
         done = 1;
       } else if (event.type == SDL_KEYDOWN) {
-        float cameraSpeed = 0.05f * deltaTicks;
+        float cameraSpeed = 0.005f * deltaTicks;
         switch (event.key.keysym.sym) {
           case SDLK_w:
             cameraPos += cameraSpeed * cameraFront;
