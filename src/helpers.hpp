@@ -7,7 +7,7 @@
 
 namespace Helpers {
 
-void GenerateMaze(int);
+void GenerateMaze(size_t);
 
 }  // namespace Helpers
 
