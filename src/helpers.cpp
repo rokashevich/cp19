@@ -2,6 +2,7 @@
 #include <array>
 #include <chrono>
 #include <random>
+#include <stack>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -15,11 +16,12 @@ unsigned int unvisitedCount(const std::vector<std::vector<char> >& maze) {
   return count;
 }
 
-std::vector<std::pair<size_t, size_t> > GetNeighbours(
-    std::pair<size_t, size_t> cell, const std::vector<std::vector<char> >& maze,
-    size_t dimension) {
-  std::vector<std::pair<size_t, size_t> > neighbours;
+std::vector<std::pair<size_t, size_t>> GetNeighbours(
+    std::pair<size_t, size_t> cell,
+    const std::vector<std::vector<char>>& maze) {
+  std::vector<std::pair<size_t, size_t>> neighbours;
 
+  size_t dimension = maze.size();
   size_t distance = 2;
   size_t x = cell.first;
   size_t y = cell.second;
@@ -80,19 +82,33 @@ void GenerateMaze(size_t dimenstion) {
     }
   }
 
-  maze[1][1] = ' ';  // Начинаем обход с левой верхней клетки.
+  // Инициализируем генератор случайных чисел.
   std::default_random_engine generator;
-  std::uniform_int_distribution<size_t> distribution(0, 3);
-  do {
-    std::vector<std::pair<size_t, size_t> > neighbours =
-        GetNeighbours(std::make_pair(1, 1), maze, dimenstion);
-    if (neighbours.size() != 0) {
-      // У клетки есть непосещённые соседи.
-      size_t rand = distribution(generator);
-      // Выбираем случайного соседа.
-      std::pair<size_t, size_t> neighbour_cell = neighbours[rand];
 
+  std::pair<size_t, size_t> start_cell = std::make_pair(1, 1);
+  std::pair<size_t, size_t> current_cell = start_cell;
+  maze[1][1] = ' ';  // Начинаем обход с левой верхней клетки.
+  std::stack<std::pair<size_t, size_t>> stack;
+  do {
+    std::vector<std::pair<size_t, size_t>> neighbours = GetNeighbours(
+        std::make_pair(current_cell.first, current_cell.second), maze);
+    if (neighbours.size() != 0) {  // У клетки есть непосещённые соседи.
+
+      std::uniform_int_distribution<size_t> distribution(0,
+                                                         neighbours.size() - 1);
+      size_t rand = distribution(generator);
+      std::pair<size_t, size_t> neighbour_cell =
+          neighbours[rand];  // Выбираем случайного соседа.
+      maze[neighbour_cell.first][neighbour_cell.second] = ' ';
+      RemoveWall(current_cell, neighbour_cell, maze);
+      stack.push(current_cell);
+      current_cell = neighbour_cell;
       // std::this_thread::sleep_for(std::chrono::seconds(1));
+    } else if (stack.size() > 0) {
+      stack.pop();
+      current_cell = stack.top();
+    } else {  // Если нет соседей и точек в стеке, но не все точки посещены,
+              // выбираем случайную из непосещенных.
     }
   } while (unvisitedCount(maze));
 
