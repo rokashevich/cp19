@@ -20,9 +20,9 @@ add_custom_target(vertex_shader ALL COMMAND embedfile vertex_shader ${SRC}/vert_
 add_custom_target(fragment_shader ALL COMMAND embedfile fragment_shader ${SRC}/frag_cube.glsl ${SRC}/fragment_shader.h)
 
 add_executable(native-sdl-demo
-	${SRC}/main.cpp
-        ${SRC}/helpers.cpp
-        ${SRC}/helpers.hpp
+  ${SRC}/main.cpp
+  ${SRC}/gameworld.cpp
+  ${SRC}/helpers/maze2d.cpp
   ${SRC}/shader.hpp
-	${SRC}/vert_cube.glsl
-	${SRC}/frag_cube.glsl)
+  ${SRC}/vert_cube.glsl
+  ${SRC}/frag_cube.glsl)

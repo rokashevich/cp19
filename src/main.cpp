@@ -1,14 +1,14 @@
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
 #include "SDL.h"
-//#include "SDL_opengl.h"
 #include <time.h>
 #include <iostream>
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#include "helpers.hpp"
+#include "gameworld.hpp"
 #include "shader.hpp"
 
 #define SCREEN_WIDTH 1024
@@ -46,7 +46,7 @@ struct Square {
 
 int main(int, char **) {  // С пустым main() падает на андроиде!
 
-  Helpers::GenerateMaze(10);
+  GameWorld game_world = GameWorld();
   return 1;
 
   SDL_Window *window;

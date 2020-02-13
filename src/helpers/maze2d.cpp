@@ -1,11 +1,11 @@
-#include "helpers.hpp"
 #include <array>
 #include <chrono>
 #include <random>
 #include <stack>
 #include <thread>
 #include <utility>
-#include <vector>
+
+#include "maze2d.hpp"
 
 unsigned int unvisitedCount(const std::vector<std::vector<char> >& maze) {
   unsigned int count = 0;
@@ -64,15 +64,15 @@ void RemoveWall(std::pair<int, int> first, std::pair<int, int> second,
 }
 namespace Helpers {
 
-void GenerateMaze(size_t dimenstion) {
+std::vector<std::vector<char>> GenerateMaze(size_t dimenstion) {
   // '#' - стена
   // ' ' - посещённая клетка
   // '?' - непосещённая клетка
 
   dimenstion = dimenstion * 2 + 1;
 
-  std::vector<std::vector<char> > maze(dimenstion,
-                                       std::vector<char>(dimenstion, '#'));
+  std::vector<std::vector<char>> maze(dimenstion,
+                                      std::vector<char>(dimenstion, '#'));
   for (size_t i = 0; i < dimenstion; ++i) {
     for (size_t j = 0; j < dimenstion; ++j) {
       if ((i % 2 != 0 && j % 2 != 0) &&
@@ -112,9 +112,6 @@ void GenerateMaze(size_t dimenstion) {
     }
   } while (unvisitedCount(maze));
 
-  for (auto i : maze) {
-    for (auto j : i) std::cout << j;
-    std::cout << std::endl;
-  }
+  return maze;
 }
 }  // namespace Helpers

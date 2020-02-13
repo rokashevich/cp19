@@ -2,12 +2,13 @@
 #define HELPERS_HPP
 
 #include <iostream>
+#include <vector>
 
 // Различные независимые вспомогательные функции.
 
 namespace Helpers {
 
-void GenerateMaze(size_t);
+std::vector<std::vector<char> > GenerateMaze(size_t);
 
 }  // namespace Helpers
 
