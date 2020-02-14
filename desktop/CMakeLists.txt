@@ -26,3 +26,5 @@ add_executable(native-sdl-demo
   ${SRC}/shader.hpp
   ${SRC}/vert_cube.glsl
   ${SRC}/frag_cube.glsl)
+
+add_dependencies(native-sdl-demo vertex_shader fragment_shader)
