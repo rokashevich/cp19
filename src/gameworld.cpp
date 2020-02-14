@@ -13,3 +13,5 @@ GameWorld::GameWorld() {
     std::cout << std::endl;
   }
 }
+
+GameWorld::~GameWorld(){}
