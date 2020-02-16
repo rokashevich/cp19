@@ -72,7 +72,16 @@ std::pair<axis, axis> GenerateMaze(const int dimension) {
   axis ay(d2, std::vector<bool>(d1, true));
   std::pair<axis, axis> grid(ax, ay);
 
-  // Отрисовка получившегося лабиринта ascii символами.
+  // Генерируем матрицу, где все клетки непосещены.
+  std::vector<std::vector<bool>> maze(d1, std::vector<bool>(d1, false));
+
+  // Инициализируем генератор случайных чисел.
+  std::default_random_engine generator;
+
+  // Начинаем обход с левой верхней клетки.
+  std::pair<int, int> current_cell(0, 0);
+
+  // Отрисовка каркаса ascii символами.
   for (int i = 0; i < d2; ++i) {
     for (int j = 0; j < d1; ++j) {
       std::cout << " ─";
