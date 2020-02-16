@@ -4,12 +4,10 @@
 #include <iostream>
 #include <vector>
 
-// Различные независимые вспомогательные функции.
-
 namespace Helpers {
-
-std::vector<std::vector<char> > GenerateMaze(size_t);
-
+typedef std::vector<std::vector<bool>> axis;
+std::pair<axis, axis> GenerateMaze(const int dimension);
+std::vector<std::vector<char>> GenerateMaze2(size_t);
 }  // namespace Helpers
 
 #endif  // HELPERS_HPP

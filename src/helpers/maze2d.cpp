@@ -7,7 +7,7 @@
 
 #include "maze2d.hpp"
 
-unsigned int unvisitedCount(const std::vector<std::vector<char> >& maze) {
+unsigned int unvisitedCount(const std::vector<std::vector<char>>& maze) {
   unsigned int count = 0;
   size_t dimension = maze.size();
   for (size_t i = 0; i < dimension; i++)
@@ -62,9 +62,33 @@ void RemoveWall(std::pair<int, int> first, std::pair<int, int> second,
   maze[static_cast<size_t>(target.second)][static_cast<size_t>(target.first)] =
       ' ';
 }
+
 namespace Helpers {
 
-std::vector<std::vector<char>> GenerateMaze(size_t dimenstion) {
+std::pair<axis, axis> GenerateMaze(const int dimension) {
+  const int d1 = dimension;
+  const int d2 = dimension + 1;
+  axis ax(d2, std::vector<bool>(d1, true));
+  axis ay(d2, std::vector<bool>(d1, true));
+  std::pair<axis, axis> grid(ax, ay);
+
+  // Отрисовка получившегося лабиринта ascii символами.
+  for (int i = 0; i < d2; ++i) {
+    for (int j = 0; j < d1; ++j) {
+      std::cout << " ─";
+    }
+    std::cout << std::endl;
+    if (i < d1) {
+      for (int k = 0; k < d2; ++k) {
+        std::cout << "│ ";
+      }
+      std::cout << std::endl;
+    }
+  }
+  return grid;
+}
+
+std::vector<std::vector<char>> GenerateMaze2(size_t dimenstion) {
   // '#' - стена
   // ' ' - посещённая клетка
   // '?' - непосещённая клетка
@@ -111,7 +135,6 @@ std::vector<std::vector<char>> GenerateMaze(size_t dimenstion) {
               // выбираем случайную из непосещенных.
     }
   } while (unvisitedCount(maze));
-
-  return maze;
+      return maze;
 }
 }  // namespace Helpers
