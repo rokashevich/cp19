@@ -7,6 +7,11 @@
 
 #include "maze2d.hpp"
 
+unsigned int unvisitedCount(const std::vector<std::vector<bool>>& maze) {
+  unsigned int count = 0;
+  return count;
+}
+
 unsigned int unvisitedCount(const std::vector<std::vector<char>>& maze) {
   unsigned int count = 0;
   size_t dimension = maze.size();
@@ -80,6 +85,12 @@ std::pair<axis, axis> GenerateMaze(const int dimension) {
 
   // Начинаем обход с левой верхней клетки.
   std::pair<int, int> current_cell(0, 0);
+
+  std::stack<std::pair<int, int>> stack;
+
+  do {
+
+  } while (unvisitedCount(maze));
 
   // Отрисовка каркаса ascii символами.
   for (int i = 0; i < d2; ++i) {
