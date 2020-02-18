@@ -9,16 +9,49 @@
 
 unsigned int unvisitedCount(const std::vector<std::vector<bool>>& maze) {
   unsigned int count = 0;
+  int dimension = maze.size();
+  for (int i = 0; i < dimension; i++)
+    for (int j = 0; j < dimension; j++)
+      if (!maze[i][j]) count++;
   return count;
 }
 
-unsigned int unvisitedCount(const std::vector<std::vector<char>>& maze) {
+unsigned int unvisitedCount(
+    const std::vector<std::vector<char>>& maze) {  // old
   unsigned int count = 0;
   size_t dimension = maze.size();
   for (size_t i = 0; i < dimension; i++)
     for (size_t j = 0; j < dimension; j++)
       if (maze[i][j] != '#' && maze[i][j] != ' ') count++;
   return count;
+}
+
+std::vector<std::pair<int, int>> GetNeighbours(
+    const std::pair<int, int> cell,
+    const std::vector<std::vector<bool>>& maze) {
+  std::vector<std::pair<int, int>> neighbours;
+
+  int dimension = maze.size();
+  int distance = 1;
+  int x = cell.first;
+  int y = cell.second;
+  std::pair<int, int> up = std::make_pair(x, y - distance);
+  std::pair<int, int> rt = std::make_pair(x + distance, y);
+  std::pair<int, int> dn = std::make_pair(x, y + distance);
+  std::pair<int, int> lt = std::make_pair(x - distance, y);
+  std::array<std::pair<int, int>, 4> neighbours_possible = {up, rt, dn, lt};
+  for (int i = 0; i < 4; i++) {  // Для каждого направления.
+    if (neighbours_possible[i].first > 0 &&
+        neighbours_possible[i].first < dimension &&
+        neighbours_possible[i].second > 0 &&
+        neighbours_possible[i].second < dimension) {
+      // Если не выходит за границы лабиринта.
+      bool cell_is_visited = maze.at(neighbours_possible[i].first)
+                                 .at(neighbours_possible[i].second);
+      if (!cell_is_visited) neighbours.push_back(neighbours_possible[i]);
+    }
+  }
+  return neighbours;
 }
 
 std::vector<std::pair<size_t, size_t>> GetNeighbours(
@@ -52,7 +85,21 @@ std::vector<std::pair<size_t, size_t>> GetNeighbours(
 }
 
 void RemoveWall(std::pair<int, int> first, std::pair<int, int> second,
-                std::vector<std::vector<char> >& maze) {
+                std::pair<axis, axis>& grid) {
+  const int addx = second.first - first.first;
+  const int addy = second.second - first.second;
+  if (addx != 0) {  // Смещение вправо или влево.
+    if (addx > 0) grid.first[second.first][first.second] = false;  // Вправо.
+    if (addx < 0) grid.first[first.first][first.second] = false;  // Влево.
+  }
+  if (addy != 0) {  // Смещение вверх или вниз.
+    if (addy > 0) grid.first[first.first][second.second] = false;  // Вверх.
+    if (addy < 0) grid.first[first.first][second.first] = false;   // Вниз.
+  }
+}
+
+void RemoveWall(std::pair<int, int> first, std::pair<int, int> second,
+                std::vector<std::vector<char>>& maze) {  // old
   int xDiff = second.first - first.first;
   int yDiff = second.second - first.second;
 
@@ -77,6 +124,8 @@ std::pair<axis, axis> GenerateMaze(const int dimension) {
   axis ay(d2, std::vector<bool>(d1, true));
   std::pair<axis, axis> grid(ax, ay);
 
+  std::stack<std::pair<int, int>> stack;
+
   // Генерируем матрицу, где все клетки непосещены.
   std::vector<std::vector<bool>> maze(d1, std::vector<bool>(d1, false));
 
@@ -85,11 +134,18 @@ std::pair<axis, axis> GenerateMaze(const int dimension) {
 
   // Начинаем обход с левой верхней клетки.
   std::pair<int, int> current_cell(0, 0);
-
-  std::stack<std::pair<int, int>> stack;
-
+  maze[current_cell.first][current_cell.second] = true;
   do {
-
+    std::vector<std::pair<int, int>> neighbours = GetNeighbours(
+        std::make_pair(current_cell.first, current_cell.second), maze);
+    if (neighbours.size() != 0) {
+      std::uniform_int_distribution<size_t> distribution(0,
+                                                         neighbours.size() - 1);
+      int rand = distribution(generator);
+      std::pair<int, int> neighbour_cell =
+          neighbours[rand];  // Выбираем случайного соседа.
+      maze[neighbour_cell.first][neighbour_cell.second] = ' ';
+    }
   } while (unvisitedCount(maze));
 
   // Отрисовка каркаса ascii символами.
