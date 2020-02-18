@@ -41,20 +41,23 @@ std::vector<std::pair<int, int>> GetNeighbours(
   std::pair<int, int> lt = std::make_pair(x - distance, y);
   std::array<std::pair<int, int>, 4> neighbours_possible = {up, rt, dn, lt};
   for (int i = 0; i < 4; i++) {  // Для каждого направления.
-    if (neighbours_possible[i].first > 0 &&
+    // std::cout << neighbours_possible[i].first << " "
+    //          << neighbours_possible[i].second << std::endl;
+    if (neighbours_possible[i].first >= 0 &&
         neighbours_possible[i].first < dimension &&
-        neighbours_possible[i].second > 0 &&
+        neighbours_possible[i].second >= 0 &&
         neighbours_possible[i].second < dimension) {
       // Если не выходит за границы лабиринта.
-      bool cell_is_visited = maze.at(neighbours_possible[i].first)
-                                 .at(neighbours_possible[i].second);
-      if (!cell_is_visited) neighbours.push_back(neighbours_possible[i]);
+      bool cell_visited = maze.at(neighbours_possible[i].first)
+                              .at(neighbours_possible[i].second);
+      //      std::cout << "cel=" << cell_visited << std::endl;
+      if (!cell_visited) neighbours.push_back(neighbours_possible[i]);
     }
   }
   return neighbours;
 }
 
-std::vector<std::pair<size_t, size_t>> GetNeighbours(
+std::vector<std::pair<size_t, size_t>> GetNeighbours(  // old
     std::pair<size_t, size_t> cell,
     const std::vector<std::vector<char>>& maze) {
   std::vector<std::pair<size_t, size_t>> neighbours;
@@ -114,7 +117,20 @@ void RemoveWall(std::pair<int, int> first, std::pair<int, int> second,
   maze[static_cast<size_t>(target.second)][static_cast<size_t>(target.first)] =
       ' ';
 }
-
+void PrintMaze(std::pair<axis, axis>& grid) {
+  int d2 = grid.first.size();
+  int d1 = d2 - 1;
+  for (int i = 0; i < d1; ++i) {
+    for (int j = 0; j < d1; ++j) {
+      std::cout << " " << (grid.first[i][j] ? "─" : " ");
+    }
+    std::cout << std::endl;
+    for (int j = 0; j < d2; ++j) {
+      std::cout << (grid.first[i][j] ? "│" : " ") << " ";
+    }
+    std::cout << std::endl;
+  }
+}
 namespace Helpers {
 
 std::pair<axis, axis> GenerateMaze(const int dimension) {
@@ -123,6 +139,8 @@ std::pair<axis, axis> GenerateMaze(const int dimension) {
   axis ax(d2, std::vector<bool>(d1, true));
   axis ay(d2, std::vector<bool>(d1, true));
   std::pair<axis, axis> grid(ax, ay);
+  std::cout << "--- before ---" << std::endl;
+  PrintMaze(grid);
 
   std::stack<std::pair<int, int>> stack;
 
@@ -130,11 +148,11 @@ std::pair<axis, axis> GenerateMaze(const int dimension) {
   std::vector<std::vector<bool>> maze(d1, std::vector<bool>(d1, false));
 
   // Инициализируем генератор случайных чисел.
-  std::default_random_engine generator;
+  std::random_device generator;
 
   // Начинаем обход с левой верхней клетки.
   std::pair<int, int> current_cell(0, 0);
-  maze[current_cell.first][current_cell.second] = true;
+  maze[current_cell.first][current_cell.second] = false;
   do {
     std::vector<std::pair<int, int>> neighbours = GetNeighbours(
         std::make_pair(current_cell.first, current_cell.second), maze);
@@ -144,23 +162,24 @@ std::pair<axis, axis> GenerateMaze(const int dimension) {
       int rand = distribution(generator);
       std::pair<int, int> neighbour_cell =
           neighbours[rand];  // Выбираем случайного соседа.
-      maze[neighbour_cell.first][neighbour_cell.second] = ' ';
+      std::cout << "rand:" << rand << std::endl;
+      maze[neighbour_cell.first][neighbour_cell.second] = true;
+      RemoveWall(current_cell, neighbour_cell, grid);
+      stack.push(current_cell);
+      current_cell = neighbour_cell;
+    } else if (stack.size() > 0) {
+      stack.pop();
+      current_cell = stack.top();
+    } else {
+      // Если нет соседей и точек в стеке, но не все точки посещены, выбираем
+      // случайную из непосещенных.
     }
   } while (unvisitedCount(maze));
 
   // Отрисовка каркаса ascii символами.
-  for (int i = 0; i < d2; ++i) {
-    for (int j = 0; j < d1; ++j) {
-      std::cout << " ─";
-    }
-    std::cout << std::endl;
-    if (i < d1) {
-      for (int k = 0; k < d2; ++k) {
-        std::cout << "│ ";
-      }
-      std::cout << std::endl;
-    }
-  }
+  std::cout << "--- after ---" << std::endl;
+  PrintMaze(grid);
+
   return grid;
 }
 
@@ -211,6 +230,6 @@ std::vector<std::vector<char>> GenerateMaze2(size_t dimenstion) {
               // выбираем случайную из непосещенных.
     }
   } while (unvisitedCount(maze));
-      return maze;
+  return maze;
 }
 }  // namespace Helpers

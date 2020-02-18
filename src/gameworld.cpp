@@ -5,7 +5,7 @@
 #include "helpers/maze2d.hpp"
 
 GameWorld::GameWorld() {
-  dimension_ = 5;  // TODO: Вынести в конфиг.
+  dimension_ = 10;  // TODO: Вынести в конфиг.
   // std::vector<std::vector<char> > maze2d = Helpers::GenerateMaze(dimension_);
   Helpers::GenerateMaze(dimension_);
 
