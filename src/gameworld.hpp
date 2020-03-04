@@ -11,7 +11,7 @@ class GameWorld {
   ~GameWorld();
 
  private:
-  size_t dimension_;
+  size_t dimension_;  // Размерность куба игрового мира.
 };
 
 #endif  // GAMEWORLD_HPP

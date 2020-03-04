@@ -1,8 +1,8 @@
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
-#include "SDL.h"
 #include <time.h>
 #include <iostream>
+#include "SDL.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -47,7 +47,6 @@ struct Square {
 int main(int, char **) {  // С пустым main() падает на андроиде!
 
   GameWorld game_world = GameWorld();
-  return 1;
 
   SDL_Window *window;
   int done;
@@ -68,20 +67,14 @@ int main(int, char **) {  // С пустым main() падает на андро
 
   Shader ourShader;
 
-  int a = 33;
-  float aa = *((float *)&a);
-  int b = 11;
-  float bb = *((float *)&b);
-  float c[5] = {bb, bb, aa, bb, bb};
-
   float quadVertices[] = {-1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f,
                           -1.0f, 1.0f, 1.0f, -1.0f, 1.0f,  1.0f};
 
-  unsigned int instanceVBO;
-  glGenBuffers(1, &instanceVBO);
-  glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5, &c[0], GL_DYNAMIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  //  unsigned int instanceVBO;
+  //  glGenBuffers(1, &instanceVBO);
+  //  glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+  //  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5, &c[0], GL_DYNAMIC_DRAW);
+  //  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   int cube_dimension = 9;
   GLint const_params[1] = {cube_dimension};
@@ -89,24 +82,17 @@ int main(int, char **) {  // С пустым main() падает на андро
   glUniform1iv(glGetUniformLocation(ourShader.Program, "const_params"), 1,
                const_params);
 
-  unsigned int quadVAO, quadVBO;
+  unsigned int quadVAO;
   glGenVertexArrays(1, &quadVAO);
-  glGenBuffers(1, &quadVBO);
   glBindVertexArray(quadVAO);
+
+  unsigned int quadVBO;
+  glGenBuffers(1, &quadVBO);
   glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices,
                GL_STATIC_DRAW);
-
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
-
-  glEnableVertexAttribArray(1);
-  glBindBuffer(
-      GL_ARRAY_BUFFER,
-      instanceVBO);  // this attribute comes from a different vertex buffer
-  glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 1 * sizeof(float), (void *)0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glVertexAttribDivisor(1, 1);
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -194,9 +180,25 @@ int main(int, char **) {  // С пустым main() падает на андро
     glUniformMatrix4fv(glGetUniformLocation(ourShader.Program, "model"), 1,
                        GL_FALSE, &model[0][0]);
 
+    int a = 33;
+    float aa = *((float *)&a);
+    int b = 11;
+    float bb = *((float *)&b);
+    float translations[6] = {bb, aa, bb, aa, bb, aa};
+    unsigned int instanceVBO;
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, translations,
+                 GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void *)0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glVertexAttribDivisor(1, 1);
+
     glBindVertexArray(quadVAO);
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, 5);
-    // glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glBindVertexArray(0);
 
     SDL_GL_SwapWindow(window);

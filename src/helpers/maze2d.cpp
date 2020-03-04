@@ -6,7 +6,8 @@
 #include <utility>
 
 #include "maze2d.hpp"
-
+namespace {  // Вспомогательные функции, используемые в главной функции
+             // генерации лабиринта GenerateMaze.
 unsigned int unvisitedCount(const std::vector<std::vector<bool>>& maze) {
   unsigned int count = 0;
   int dimension = maze.size();
@@ -56,7 +57,6 @@ void RemoveWall(std::pair<int, int> first, std::pair<int, int> second,
   const int addy = second.second - first.second;
   axis& ax = grid.first;
   axis& ay = grid.second;
-  std::cout << "addx=" << addx << " addy=" << addy << std::endl;
 
   if (addx > 0)
     ax[second.first][first.second] = false;  // Вниз.
@@ -86,9 +86,9 @@ void PrintMaze(std::pair<axis, axis>& grid) {
     }
   }
 }
+}  // namespace
 
 namespace Helpers {
-
 std::pair<axis, axis> GenerateMaze(const int dimension) {
   const int d1 = dimension;
   const int d2 = dimension + 1;
