@@ -180,16 +180,19 @@ int main(int, char **) {  // С пустым main() падает на андро
     glUniformMatrix4fv(glGetUniformLocation(ourShader.Program, "model"), 1,
                        GL_FALSE, &model[0][0]);
 
-    int a = 33;
-    float aa = *((float *)&a);
-    int b = 11;
-    float bb = *((float *)&b);
-    float translations[6] = {bb, aa, bb, aa, bb, aa};
+    // Отправляем в шейдер инстансированный массив.
+    //    int a = 33;
+    //    float aa = *((float *)&a);
+    //    int b = 11;
+    //    float bb = *((float *)&b);
+    //    float translations[6] = {bb, aa, bb, aa, bb, aa};
+    const float *translations = game_world.InstancedArray();
+    const int instanced_array_size = game_world.InstancedArraySize();
     unsigned int instanceVBO;
     glGenBuffers(1, &instanceVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, translations,
-                 GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * instanced_array_size,
+                 translations, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
@@ -198,7 +201,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glVertexAttribDivisor(1, 1);
 
     glBindVertexArray(quadVAO);
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, 5);
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, instanced_array_size);
     glBindVertexArray(0);
 
     SDL_GL_SwapWindow(window);

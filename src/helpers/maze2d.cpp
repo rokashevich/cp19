@@ -6,6 +6,9 @@
 #include <utility>
 
 #include "maze2d.hpp"
+
+typedef std::vector<std::vector<bool>> axis;
+
 namespace {  // Вспомогательные функции, используемые в главной функции
              // генерации лабиринта GenerateMaze.
 unsigned int unvisitedCount(const std::vector<std::vector<bool>>& maze) {
@@ -90,21 +93,19 @@ void PrintMaze(std::pair<axis, axis>& grid) {
 
 namespace Helpers {
 std::pair<axis, axis> GenerateMaze(const int dimension) {
+  // Инициализируем генератор случайных чисел.
+  std::random_device generator;
+
   const int d1 = dimension;
   const int d2 = dimension + 1;
   axis ax(d2, std::vector<bool>(d1, true));  // Горизонтальные стены.
   axis ay(d2, std::vector<bool>(d1, true));  // Вертикальные стены.
   std::pair<axis, axis> grid(ax, ay);
 
-  PrintMaze(grid);
-
   std::stack<std::pair<int, int>> stack;
 
   // Генерируем матрицу, где все клетки непосещены.
   std::vector<std::vector<bool>> maze(d1, std::vector<bool>(d1, false));
-
-  // Инициализируем генератор случайных чисел.
-  std::random_device generator;
 
   // Начинаем обход с левой верхней клетки.
   std::pair<int, int> current_cell(0, 0);

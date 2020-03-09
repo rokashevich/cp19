@@ -3,10 +3,9 @@
 
 #include <iostream>
 #include <vector>
-typedef std::vector<std::vector<bool>> axis;
 namespace Helpers {
-std::pair<axis, axis> GenerateMaze(const int dimension);
-std::vector<std::vector<char>> GenerateMaze2(size_t);
+std::pair<std::vector<std::vector<bool>>, std::vector<std::vector<bool>>>
+GenerateMaze(const int dimension);
 }  // namespace Helpers
 
 #endif  // HELPERS_HPP
