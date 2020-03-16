@@ -46,7 +46,9 @@ struct Square {
 
 int main(int, char **) {  // С пустым main() падает на андроиде!
 
-  GameWorld game_world = GameWorld();
+  GameWorld game_world = GameWorld(5);  // TODO размер мира вынести в конфиг.
+
+  std::cout << game_world;
 
   SDL_Window *window;
   int done;
@@ -67,8 +69,8 @@ int main(int, char **) {  // С пустым main() падает на андро
 
   Shader ourShader;
 
-  float quadVertices[] = {-1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f,
-                          -1.0f, 1.0f, 1.0f, -1.0f, 1.0f,  1.0f};
+  float quadVertices[] = {-0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f,
+                          -0.5f, 0.5f, 0.5f, -0.5f, 0.5f,  0.5f};
 
   //  unsigned int instanceVBO;
   //  glGenBuffers(1, &instanceVBO);
@@ -76,11 +78,11 @@ int main(int, char **) {  // С пустым main() падает на андро
   //  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5, &c[0], GL_DYNAMIC_DRAW);
   //  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  int cube_dimension = 9;
-  GLint const_params[1] = {cube_dimension};
+  // Константные значения, которые не будут меняться в течение всей игры.
   ourShader.Use();
-  glUniform1iv(glGetUniformLocation(ourShader.Program, "const_params"), 1,
-               const_params);
+  glUniform1iv(glGetUniformLocation(ourShader.Program, "panels_permanent"),
+               GameWorld::kPanelsPermanentParamsCount,
+               game_world.panels_permanent_parameters());
 
   unsigned int quadVAO;
   glGenVertexArrays(1, &quadVAO);
@@ -97,12 +99,6 @@ int main(int, char **) {  // С пустым main() падает на андро
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
 
-  int res;
-  glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &res);
-  std::cout << "GL_MAX_VERTEX_ATTRIBS = " << res << std::endl;
-  glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &res);
-  std::cout << "GL_MAX_VERTEX_UNIFORM_VECTORS = " << res << std::endl;
-
   done = 0;
   while (!done) {
     unsigned int currentTicks = SDL_GetTicks();
@@ -115,7 +111,7 @@ int main(int, char **) {  // С пустым main() падает на андро
       if (event.type == SDL_QUIT) {
         done = 1;
       } else if (event.type == SDL_KEYDOWN) {
-        float cameraSpeed = 0.005f * deltaTicks;
+        float cameraSpeed = 0.05f * deltaTicks;
         switch (event.key.keysym.sym) {
           case SDLK_w:
             cameraPos += cameraSpeed * cameraFront;
@@ -186,8 +182,8 @@ int main(int, char **) {  // С пустым main() падает на андро
     //    int b = 11;
     //    float bb = *((float *)&b);
     //    float translations[6] = {bb, aa, bb, aa, bb, aa};
-    const float *translations = game_world.InstancedArray();
-    const int instanced_array_size = game_world.InstancedArraySize();
+    const float *translations = game_world.panels_instanced_array();
+    const int instanced_array_size = game_world.panels_instanced_size();
     unsigned int instanceVBO;
     glGenBuffers(1, &instanceVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);

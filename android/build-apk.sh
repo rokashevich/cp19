@@ -1,10 +1,11 @@
 #!/bin/bash
 
-PATH="$ANDROID/ndk:$PATH"                   # for 'ndk-build'
-PATH="$ANDROID/tools:$PATH"             # for 'android'
+PATH="$ANDROID/ndk/current:$PATH"       # for 'ndk-build'
+PATH="$ANDROID/ndk/current/simpleperf/bin:$PATH"             # for 'android'
 PATH="$ANDROID/platform-tools:$PATH"    # for 'adb'
+PATH="/home/r/Android/android-studio/jre/bin:$PATH" # for 'java'
 export ANDROID_HOME="$ANDROID"          # for gradle
-export ANDROID_NDK_HOME="$ANDROID/ndk"      # for gradle
+export ANDROID_NDK_HOME="$ANDROID/ndk/current"      # for gradle
 
 PROJECT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd )"
 
