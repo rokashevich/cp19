@@ -11,8 +11,8 @@
 #include "gameworld.hpp"
 #include "shader.hpp"
 
-#define SCREEN_WIDTH 1024
-#define SCREEN_HEIGHT 768
+#define SCREEN_WIDTH 700
+#define SCREEN_HEIGHT 700
 
 // camera
 static glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -117,7 +117,6 @@ int main(int, char **) {  // С пустым main() падает на андро
             cameraPos += cameraSpeed * cameraFront;
             break;
           case SDLK_s:
-            std::cout << "s";
             cameraPos -= cameraSpeed * cameraFront;
             break;
           case SDLK_a:

@@ -31,8 +31,7 @@ void main() {
     int row = range / resolution;
     int col = range - row * resolution;
     offset = vec3(col,storey,row);
-    if (material == 1) vColor = vec3(0.1,0.1,0.1); else vColor = vec3(0.3,0.3,0.3);
-    if (gl_InstanceID == 0) vColor = vec3(1,1,1);
+    if (range == 0 && storey == 0) vColor = vec3(1,1,1);
   } else if (range >= slab_panels_count + storey_coherent_walls_count) {
     // Плоскость yz.
     pos = vec3(0, pos_in.y, pos_in.x); // Поворот панели в плоскость yz.
@@ -40,7 +39,7 @@ void main() {
     int col = range / resolution;
     int row = range - col * resolution;
     offset = vec3(float(col)-0.5,float(storey)+0.5,row);
-    if (material == 1) vColor = vec3(0,0,1); else vColor = vec3(1,1,0);
+    if (range == 0 && storey == 0) vColor = vec3(1,1,1);
   } else {
     // Плоскость xy.
     pos = vec3(pos_in.x, pos_in.y, 0);
@@ -49,13 +48,15 @@ void main() {
     int col = range - row * resolution;
     offset = vec3(col,float(storey)+0.5,float(row)-0.5);
    // offset = vec3(-gl_InstanceID,storey,-1);
-    if (material == 1) vColor = vec3(1,0,0); else vColor = vec3(0,1,0);
+    if (range == 0 && storey == 0) vColor = vec3(1,1,1);
   }
   gl_Position = projection * view * model * vec4(pos + offset, 1.0);
 
-
-
-
-
+  switch (material) {
+  case 1: vColor = vec3(0,0,0); break; // Пол.
+  case 2: vColor = vec3(1,0,0); break;
+  case 3: vColor = vec3(0,0,1); break;
+  default:vColor = vec3(1,1,1);
+  }
 
 }

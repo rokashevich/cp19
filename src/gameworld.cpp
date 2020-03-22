@@ -4,66 +4,83 @@
 
 #include "helpers/maze2d.hpp"
 
-GameWorld::GameWorld(int resolution) : resolution_(resolution) {
-  surfaces_count_ = resolution_ + 1;
-  slab_panels_count_ = resolution_ * resolution_;
-  storey_coherent_walls_count_ = resolution_ * surfaces_count_;
-  storey_walls_count_ = storey_coherent_walls_count_ * 2;
-  storey_panels_total_ = storey_walls_count_ + slab_panels_count_;
-  total_panels_ = storey_panels_total_ * resolution_ + slab_panels_count_;
-  panels_permanent_parameters_[0] = resolution_;
-  panels_permanent_parameters_[1] = surfaces_count_;
-  panels_permanent_parameters_[2] = slab_panels_count_;
-  panels_permanent_parameters_[3] = storey_coherent_walls_count_;
-  panels_permanent_parameters_[4] = storey_walls_count_;
-  panels_permanent_parameters_[5] = storey_panels_total_;
-  panels_permanent_parameters_[6] = total_panels_;
+GameWorld::GameWorld(int resolution) {
+  const int surfaces_count = resolution + 1;
+  const int slab_panels_count = resolution * resolution;
+  const int storey_coherent_walls_count = resolution * surfaces_count;
+  const int storey_walls_count = storey_coherent_walls_count * 2;
+  const int storey_panels_total = storey_walls_count + slab_panels_count;
+  const int total_panels = storey_panels_total * resolution + slab_panels_count;
 
-  // Генерируем кубический лабиринт.
-  const Panel initial_panel1{100, 1};
-  const Panel initial_panel2{100, 2};
-  for (int i = 0; i < 3; ++i) {  // Проходим по трём пластинам.
-    skeleton_.at(i).resize(surfaces_count_);
-    for (int j = 0; j < surfaces_count_; ++j) {
-      skeleton_.at(i).at(j).resize(resolution_);
-      for (int k = 0; k < resolution_; ++k) {
-        const Panel& initial_panel = k % 2 ? initial_panel1 : initial_panel2;
-        skeleton_.at(i).at(j).at(k).resize(resolution_, initial_panel);
-      }
+  panels_permanent_parameters_[0] = resolution;
+  panels_permanent_parameters_[1] = surfaces_count;
+  panels_permanent_parameters_[2] = slab_panels_count;
+  panels_permanent_parameters_[3] = storey_coherent_walls_count;
+  panels_permanent_parameters_[4] = storey_walls_count;
+  panels_permanent_parameters_[5] = storey_panels_total;
+  panels_permanent_parameters_[6] = total_panels;
+
+  // Генерируем лабиринт.
+
+  std::pair<std::vector<std::vector<bool>>, std::vector<std::vector<bool>>>
+      maze = Helpers::GenerateMaze(resolution);
+
+  for (int i = 0; i < total_panels; ++i) {
+    const int storey = i / storey_panels_total;
+    int range = i - storey * storey_panels_total;
+    if (range < slab_panels_count) {  // Пол.
+      panels_instanced_.push_back(100001);
+    } else if (range >= slab_panels_count + storey_coherent_walls_count) {
+      std::vector<std::vector<bool>>& maze_yz = maze.first;
+      range = range - slab_panels_count - storey_coherent_walls_count;
+      const int col = range / resolution;
+      const int row = range - col * resolution;
+      const bool wall = maze_yz.at(col).at(row);
+      if (wall)
+        panels_instanced_.push_back(100002);
+      else
+        panels_instanced_.push_back(100001);
+    } else {
+      std::vector<std::vector<bool>>& maze_xy = maze.second;
+      range = range - slab_panels_count;
+      const int row = range / resolution;
+      const int col = range - row * resolution;
+      const bool wall = maze_xy.at(row).at(col);
+      if (wall)
+        panels_instanced_.push_back(100003);
+      else
+        panels_instanced_.push_back(100001);
     }
   }
 
-  for (int i = 0; i < 3; ++i) {
-    for (int j = 0; j < surfaces_count_; ++j) {
-      for (int k = 0; k < resolution_; ++k) {
-        for (int m = 0; m < resolution_; ++m) {
-          panels_instanced_.push_back(panels_instanced_.size() % 2 ? 100000
-                                                                   : 100001);
-        }
-      }
-    }
-  }
-
-  // std::vector<std::vector<char> > maze2d = Helpers::GenerateMaze(dimension_);
-  Helpers::GenerateMaze(resolution_);
-
-  //  for (auto i : maze2d) {
-  //    for (auto j : i) std::cout << j;
-  //    std::cout << std::endl;
+  //  for (int i = 0; i < 3; ++i) {
+  //    for (int j = 0; j < surfaces_count_; ++j) {
+  //      for (int k = 0; k < resolution_; ++k) {
+  //        for (int m = 0; m < resolution_; ++m) {
+  //          panels_instanced_.push_back(panels_instanced_.size() % 2 ? 100000
+  //                                                                   :
+  //                                                                   100001);
+  //        }
+  //      }
+  //    }
   //  }
+
 }
 
 GameWorld::~GameWorld(){}
 
 std::ostream& operator<<(std::ostream& os, const GameWorld& gw) {
-  os << "resolution = " << gw.resolution_ << std::endl;
-  os << "surfaces_count = " << gw.surfaces_count_ << std::endl;
-  os << "slab_panels_count = " << gw.slab_panels_count_ << std::endl;
-  os << "storey_coherent_walls_count_ = " << gw.storey_coherent_walls_count_
+  os << "resolution = " << gw.panels_permanent_parameters_[0] << std::endl;
+  os << "surfaces_count = " << gw.panels_permanent_parameters_[1] << std::endl;
+  os << "slab_panels_count = " << gw.panels_permanent_parameters_[2]
      << std::endl;
-  os << "storey_walls_count_ = " << gw.storey_walls_count_ << std::endl;
-  os << "storey_panels_total_ = " << gw.storey_panels_total_ << std::endl;
-  os << "total_panels_ = " << gw.total_panels_ << std::endl;
+  os << "storey_coherent_walls_count_ = " << gw.panels_permanent_parameters_[3]
+     << std::endl;
+  os << "storey_walls_count_ = " << gw.panels_permanent_parameters_[4]
+     << std::endl;
+  os << "storey_panels_total_ = " << gw.panels_permanent_parameters_[5]
+     << std::endl;
+  os << "total_panels_ = " << gw.panels_permanent_parameters_[6] << std::endl;
   os << "panels_instanced_.size = " << gw.panels_instanced_.size() << std::endl;
   return os;
 }
