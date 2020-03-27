@@ -9,8 +9,9 @@
 //#include <GL/glew.h>
 #include <GLES3/gl32.h>
 
-#include "vertex_shader.h"
 #include "fragment_shader.h"
+#include "vertex_shader_panel.h"
+#include "vertex_shader_rib.h"
 
 class Shader
 {

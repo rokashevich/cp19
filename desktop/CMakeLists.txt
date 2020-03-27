@@ -16,15 +16,23 @@ link_libraries(dl)
 
 add_executable(embedfile ../tools/embedfile.cpp)
 
-add_custom_target(vertex_shader ALL COMMAND embedfile vertex_shader ${SRC}/vert_cube.glsl ${SRC}/vertex_shader.h)
-add_custom_target(fragment_shader ALL COMMAND embedfile fragment_shader ${SRC}/frag_cube.glsl ${SRC}/fragment_shader.h)
+add_custom_target(vertex_shader_panel ALL COMMAND embedfile vertex_shader
+  ${SRC}/vertex_shader_panel.glsl ${SRC}/vertex_shader_panel.h)
+add_custom_target(vertex_shader_rib ALL COMMAND embedfile vertex_shader
+  ${SRC}/vertex_shader_rib.glsl ${SRC}/vertex_shader_rib.h)
+add_custom_target(fragment_shader ALL COMMAND embedfile fragment_shader
+  ${SRC}/frag_cube.glsl ${SRC}/fragment_shader.h)
 
 add_executable(native-sdl-demo
   ${SRC}/main.cpp
   ${SRC}/gameworld.cpp
   ${SRC}/helpers/maze2d.cpp
   ${SRC}/shader.hpp
-  ${SRC}/vert_cube.glsl
+  ${SRC}/vertex_shader_panel.glsl
+  ${SRC}/vertex_shader_rib.glsl
   ${SRC}/frag_cube.glsl)
 
-add_dependencies(native-sdl-demo vertex_shader fragment_shader)
+add_dependencies(native-sdl-demo
+  vertex_shader_panel
+  vertex_shader_rib
+  fragment_shader)
