@@ -51,6 +51,13 @@ GameWorld::GameWorld(int resolution) {
       else
         panels_instanced_.push_back(100001);
     }
+
+    // Генерируем рёбра.
+    ribs_instanced_.clear();
+    ribs_instanced_.push_back(-1);
+    ribs_instanced_.push_back(-1);
+    ribs_instanced_.push_back(-1);
+    ribs_instanced_.push_back(-1);
   }
 
   //  for (int i = 0; i < 3; ++i) {

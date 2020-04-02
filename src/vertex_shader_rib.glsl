@@ -51,6 +51,7 @@ void main() {
     if (range == 0 && storey == 0) vColor = vec3(1,1,1);
   }
   gl_Position = projection * view * model * vec4(pos + offset, 1.0);
+  gl_Position.y = -gl_Position.y;
 
   switch (material) {
   case 1: vColor = vec3(0,0,0); break; // Пол.

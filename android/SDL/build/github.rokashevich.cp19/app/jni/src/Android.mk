@@ -10,7 +10,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../glm
 
 # Add your application source files here...
-LOCAL_SRC_FILES :=  main.cpp
+LOCAL_SRC_FILES :=  main.cpp gameworld.cpp helpers/maze2d.cpp
 
 LOCAL_SHARED_LIBRARIES := SDL2
 

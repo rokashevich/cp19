@@ -67,10 +67,12 @@ int main(int, char **) {  // С пустым main() падает на андро
   SDL_GL_CreateContext(window);
   SDL_SetRelativeMouseMode(SDL_TRUE);
 
-  Shader ourShader;
+  Shader panel_shader;
+  Shader rib_shader;
 
-  float quadVertices[] = {-0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f,
-                          -0.5f, 0.5f, 0.5f, -0.5f, 0.5f,  0.5f};
+  float panel_vertices[] = {-0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f,
+                            -0.5f, 0.5f, 0.5f, -0.5f, 0.5f,  0.5f};
+  float rib_vertices[] = {-0.5, 0.5};
 
   //  unsigned int instanceVBO;
   //  glGenBuffers(1, &instanceVBO);
@@ -79,19 +81,17 @@ int main(int, char **) {  // С пустым main() падает на андро
   //  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   // Константные значения, которые не будут меняться в течение всей игры.
-  ourShader.Use();
-  glUniform1iv(glGetUniformLocation(ourShader.Program, "panels_permanent"),
+  panel_shader.Use();
+  glUniform1iv(glGetUniformLocation(panel_shader.Program, "panels_permanent"),
                GameWorld::kPanelsPermanentParamsCount,
                game_world.panels_permanent_parameters());
-
   unsigned int quadVAO;
   glGenVertexArrays(1, &quadVAO);
   glBindVertexArray(quadVAO);
-
   unsigned int quadVBO;
   glGenBuffers(1, &quadVBO);
   glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices,
+  glBufferData(GL_ARRAY_BUFFER, sizeof(panel_vertices), panel_vertices,
                GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
@@ -150,32 +150,29 @@ int main(int, char **) {  // С пустым main() падает на андро
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // glUseProgram(shaderProgram);
-    ourShader.Use();
 
+    panel_shader.Use();
     // pass projection matrix to shader (note that in this case it could change
     // every frame)
     glm::mat4 projection = glm::perspective(
         glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f,
         100.0f);
-    glUniformMatrix4fv(glGetUniformLocation(ourShader.Program, "projection"), 1,
-                       GL_FALSE, &projection[0][0]);
-
+    glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "projection"),
+                       1, GL_FALSE, &projection[0][0]);
     // camera/view transformation
     glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-    glUniformMatrix4fv(glGetUniformLocation(ourShader.Program, "view"), 1,
+    glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "view"), 1,
                        GL_FALSE, &view[0][0]);
-
     glm::mat4 model = glm::mat4(
         1.0f);  // make sure to initialize matrix to identity matrix first
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
     float angle = 0.0f;
     model =
         glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-    glUniformMatrix4fv(glGetUniformLocation(ourShader.Program, "model"), 1,
+    glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "model"), 1,
                        GL_FALSE, &model[0][0]);
 
-    // Отправляем в шейдер инстансированный массив.
+    // Отправляем в шейдер инстансированный массив панелей.
     //    int a = 33;
     //    float aa = *((float *)&a);
     //    int b = 11;
@@ -198,6 +195,15 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindVertexArray(quadVAO);
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, instanced_array_size);
     glBindVertexArray(0);
+
+    // Отправляем в шейдер инстансированный массив рёбер.
+    const float *ribs_array = game_world.ribs_instanced_array();
+    const int ribs_count = game_world.ribs_instanced_size();
+    unsigned int instanceVBO_ribs;
+    glGenBuffers(1, &instanceVBO_ribs);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO_ribs);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ribs_count, ribs_array,
+                 GL_STATIC_DRAW);
 
     SDL_GL_SwapWindow(window);
   }
