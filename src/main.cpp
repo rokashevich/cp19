@@ -85,12 +85,10 @@ int main(int, char **) {  // С пустым main() падает на андро
   glUniform1iv(glGetUniformLocation(panel_shader.Program, "panels_permanent"),
                GameWorld::kPanelsPermanentParamsCount,
                game_world.panels_permanent_parameters());
-  unsigned int quadVAO;
-  glGenVertexArrays(1, &quadVAO);
-  glBindVertexArray(quadVAO);
-  unsigned int quadVBO;
-  glGenBuffers(1, &quadVBO);
-  glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+
+  unsigned int panel_VBO;
+  glGenBuffers(1, &panel_VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, panel_VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(panel_vertices), panel_vertices,
                GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
@@ -114,16 +112,20 @@ int main(int, char **) {  // С пустым main() падает на андро
         float cameraSpeed = 0.05f * deltaTicks;
         switch (event.key.keysym.sym) {
           case SDLK_w:
+            std::cout << "w" << std::endl;
             cameraPos += cameraSpeed * cameraFront;
             break;
           case SDLK_s:
+            std::cout << "s" << std::endl;
             cameraPos -= cameraSpeed * cameraFront;
             break;
           case SDLK_a:
+            std::cout << "a" << std::endl;
             cameraPos -=
                 glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
             break;
           case SDLK_d:
+            std::cout << "d" << std::endl;
             cameraPos +=
                 glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
             break;
@@ -148,27 +150,28 @@ int main(int, char **) {  // С пустым main() падает на андро
       }
     }
 
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    panel_shader.Use();
     // pass projection matrix to shader (note that in this case it could change
     // every frame)
     glm::mat4 projection = glm::perspective(
         glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f,
         100.0f);
-    glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "projection"),
-                       1, GL_FALSE, &projection[0][0]);
     // camera/view transformation
     glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-    glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "view"), 1,
-                       GL_FALSE, &view[0][0]);
-    glm::mat4 model = glm::mat4(
-        1.0f);  // make sure to initialize matrix to identity matrix first
+    // make sure to initialize matrix to identity matrix first
+    glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
     float angle = 0.0f;
     model =
         glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    panel_shader.Use();
+    glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "projection"),
+                       1, GL_FALSE, &projection[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "view"), 1,
+                       GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "model"), 1,
                        GL_FALSE, &model[0][0]);
 
@@ -178,23 +181,17 @@ int main(int, char **) {  // С пустым main() падает на андро
     //    int b = 11;
     //    float bb = *((float *)&b);
     //    float translations[6] = {bb, aa, bb, aa, bb, aa};
-    const float *translations = game_world.panels_instanced_array();
-    const int instanced_array_size = game_world.panels_instanced_size();
-    unsigned int instanceVBO;
-    glGenBuffers(1, &instanceVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * instanced_array_size,
-                 translations, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    const float *panels_array = game_world.panels_instanced_array();
+    const int panels_count = game_world.panels_instanced_size();
+    unsigned int panels_VBO;
+    glGenBuffers(1, &panels_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, panels_VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * panels_count, panels_array,
+                 GL_STATIC_DRAW);
     glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void *)0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribDivisor(1, 1);
-
-    glBindVertexArray(quadVAO);
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, instanced_array_size);
-    glBindVertexArray(0);
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, panels_count);
 
     // Отправляем в шейдер инстансированный массив рёбер.
     const float *ribs_array = game_world.ribs_instanced_array();
