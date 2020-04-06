@@ -21,6 +21,7 @@ COPYSOURCE=0 ./androidbuild.sh github.rokashevich.cp19 $PROJECT_ROOT/src/main.cp
 cd $PROJECT_ROOT/SDL/build/github.rokashevich.cp19/app/jni/src
 rm *.cpp
 ln -s $PROJECT_ROOT/src/* .
+ln -s $PROJECT_ROOT/generated/* .
 cd $PROJECT_ROOT/SDL/build/github.rokashevich.cp19/app/jni
 ln -s $PROJECT_ROOT/glm .
 read -p "dbg"

@@ -92,6 +92,7 @@ int main(int, char **) {  // С пустым main() падает на андро
                GL_STATIC_DRAW);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glEnableVertexAttribArray(0);
+  glBindVertexArray(0);
 
   // Константные значенияn для шейдера рёбер.
   rib_shader.Use();
@@ -101,8 +102,8 @@ int main(int, char **) {  // С пустым main() падает на андро
   glBufferData(GL_ARRAY_BUFFER, sizeof(rib_vertices), rib_vertices,
                GL_STATIC_DRAW);
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
-
   glEnableVertexAttribArray(0);
+  glBindVertexArray(0);
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -200,13 +201,13 @@ int main(int, char **) {  // С пустым main() падает на андро
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, panels_count);
 
     // Отправляем в шейдер инстансированный массив рёбер.
-    const float *ribs_array = game_world.ribs_instanced_array();
-    const int ribs_count = game_world.ribs_instanced_size();
-    unsigned int instanceVBO_ribs;
-    glGenBuffers(1, &instanceVBO_ribs);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO_ribs);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ribs_count, ribs_array,
-                 GL_STATIC_DRAW);
+    //    const float *ribs_array = game_world.ribs_instanced_array();
+    //    const int ribs_count = game_world.ribs_instanced_size();
+    //    unsigned int instanceVBO_ribs;
+    //    glGenBuffers(1, &instanceVBO_ribs);
+    //    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO_ribs);
+    //    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ribs_count, ribs_array,
+    //                 GL_STATIC_DRAW);
 
     SDL_GL_SwapWindow(window);
   }
