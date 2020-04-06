@@ -2,11 +2,17 @@
 #include <GLES3/gl32.h>
 #include <time.h>
 #include <iostream>
-#include "SDL.h"
 
+// Сторонние библиотеки идут вместе с проектом.
+#include "SDL.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+
+// Сгенерированные из glsl файлов.
+#include "shader_fragment_panel.hpp"
+#include "shader_vertex_panel.hpp"
+#include "shader_vertex_rib.hpp"
 
 #include "gameworld.hpp"
 #include "shader.hpp"
@@ -67,32 +73,36 @@ int main(int, char **) {  // С пустым main() падает на андро
   SDL_GL_CreateContext(window);
   SDL_SetRelativeMouseMode(SDL_TRUE);
 
-  Shader panel_shader;
-  Shader rib_shader;
+  Shader panel_shader(shader_vertex_panel, shader_fragment_panel);
+  Shader rib_shader(shader_vertex_rib, shader_fragment_panel);
 
   float panel_vertices[] = {-0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f,
                             -0.5f, 0.5f, 0.5f, -0.5f, 0.5f,  0.5f};
-  float rib_vertices[] = {-0.5, 0.5};
+  float rib_vertices[] = {-0.5, 0.0, 0.5, 0.0};
 
-  //  unsigned int instanceVBO;
-  //  glGenBuffers(1, &instanceVBO);
-  //  glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-  //  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5, &c[0], GL_DYNAMIC_DRAW);
-  //  glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  // Константные значения, которые не будут меняться в течение всей игры.
+  // Константные значения для шейдера панелей.
   panel_shader.Use();
   glUniform1iv(glGetUniformLocation(panel_shader.Program, "panels_permanent"),
                GameWorld::kPanelsPermanentParamsCount,
                game_world.panels_permanent_parameters());
-
   unsigned int panel_VBO;
   glGenBuffers(1, &panel_VBO);
   glBindBuffer(GL_ARRAY_BUFFER, panel_VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(panel_vertices), panel_vertices,
                GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
+  glEnableVertexAttribArray(0);
+
+  // Константные значенияn для шейдера рёбер.
+  rib_shader.Use();
+  unsigned int rib_VBO;
+  glGenBuffers(1, &rib_VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, rib_VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(rib_vertices), rib_vertices,
+               GL_STATIC_DRAW);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
+
+  glEnableVertexAttribArray(0);
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -109,6 +119,7 @@ int main(int, char **) {  // С пустым main() падает на андро
       if (event.type == SDL_QUIT) {
         done = 1;
       } else if (event.type == SDL_KEYDOWN) {
+        std::cout << "key down" << std::endl;
         float cameraSpeed = 0.05f * deltaTicks;
         switch (event.key.keysym.sym) {
           case SDLK_w:
@@ -176,11 +187,6 @@ int main(int, char **) {  // С пустым main() падает на андро
                        GL_FALSE, &model[0][0]);
 
     // Отправляем в шейдер инстансированный массив панелей.
-    //    int a = 33;
-    //    float aa = *((float *)&a);
-    //    int b = 11;
-    //    float bb = *((float *)&b);
-    //    float translations[6] = {bb, aa, bb, aa, bb, aa};
     const float *panels_array = game_world.panels_instanced_array();
     const int panels_count = game_world.panels_instanced_size();
     unsigned int panels_VBO;
