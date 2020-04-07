@@ -96,12 +96,14 @@ int main(int, char **) {  // С пустым main() падает на андро
 
   // Константные значенияn для шейдера рёбер.
   rib_shader.Use();
-  unsigned int rib_VBO;
-  glGenBuffers(1, &rib_VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, rib_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(rib_vertices), rib_vertices,
+  glUniform1iv(glGetUniformLocation(rib_shader.Program, "panels_permanent"),
+               GameWorld::kPanelsPermanentParamsCount,
+               game_world.panels_permanent_parameters());
+  glGenBuffers(1, &panel_VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, panel_VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(panel_vertices), panel_vertices,
                GL_STATIC_DRAW);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glEnableVertexAttribArray(0);
   glBindVertexArray(0);
 
@@ -179,6 +181,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // Отправляем в шейдер инстансированный массив панелей.
     panel_shader.Use();
     glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "projection"),
                        1, GL_FALSE, &projection[0][0]);
@@ -186,8 +189,6 @@ int main(int, char **) {  // С пустым main() падает на андро
                        GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "model"), 1,
                        GL_FALSE, &model[0][0]);
-
-    // Отправляем в шейдер инстансированный массив панелей.
     const float *panels_array = game_world.panels_instanced_array();
     const int panels_count = game_world.panels_instanced_size();
     unsigned int panels_VBO;
@@ -199,15 +200,26 @@ int main(int, char **) {  // С пустым main() падает на андро
     glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void *)0);
     glVertexAttribDivisor(1, 1);
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, panels_count);
+    glBindVertexArray(0);
 
     // Отправляем в шейдер инстансированный массив рёбер.
-    //    const float *ribs_array = game_world.ribs_instanced_array();
-    //    const int ribs_count = game_world.ribs_instanced_size();
-    //    unsigned int instanceVBO_ribs;
-    //    glGenBuffers(1, &instanceVBO_ribs);
-    //    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO_ribs);
-    //    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ribs_count, ribs_array,
-    //                 GL_STATIC_DRAW);
+    rib_shader.Use();
+    glUniformMatrix4fv(glGetUniformLocation(rib_shader.Program, "projection"),
+                       1, GL_FALSE, &projection[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(rib_shader.Program, "view"), 1,
+                       GL_FALSE, &view[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(rib_shader.Program, "model"), 1,
+                       GL_FALSE, &model[0][0]);
+    unsigned int ribs_VBO;
+    glGenBuffers(1, &ribs_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, ribs_VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * panels_count, panels_array,
+                 GL_STATIC_DRAW);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void *)0);
+    glVertexAttribDivisor(1, 1);
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, panels_count);
+    glBindVertexArray(0);
 
     SDL_GL_SwapWindow(window);
   }

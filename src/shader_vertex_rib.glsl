@@ -50,13 +50,14 @@ void main() {
    // offset = vec3(-gl_InstanceID,storey,-1);
     if (range == 0 && storey == 0) vColor = vec3(1,1,1);
   }
+  offset.y = -offset.y;
   gl_Position = projection * view * model * vec4(pos + offset, 1.0);
-  gl_Position.y = -gl_Position.y;
+
 
   switch (material) {
   case 1: vColor = vec3(0,0,0); break; // Пол.
-  case 2: vColor = vec3(1,0,0); break;
-  case 3: vColor = vec3(0,0,1); break;
+  case 2: vColor = vec3(1,1,0); break;
+  case 3: vColor = vec3(0,1,1); break;
   default:vColor = vec3(1,1,1);
   }
 
