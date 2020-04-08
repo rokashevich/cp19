@@ -73,14 +73,10 @@ int main(int, char **) {  // С пустым main() падает на андро
   SDL_GL_CreateContext(window);
   SDL_SetRelativeMouseMode(SDL_TRUE);
 
+  // Настраиваем панели.
   Shader panel_shader(shader_vertex_panel, shader_fragment_panel);
-  Shader rib_shader(shader_vertex_rib, shader_fragment_panel);
-
   float panel_vertices[] = {-0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f,
                             -0.5f, 0.5f, 0.5f, -0.5f, 0.5f,  0.5f};
-  float rib_vertices[] = {-0.5, 0.0, 0.5, 0.0};
-
-  // Константные значения для шейдера панелей.
   panel_shader.Use();
   glUniform1iv(glGetUniformLocation(panel_shader.Program, "panels_permanent"),
                GameWorld::kPanelsPermanentParamsCount,
@@ -94,14 +90,18 @@ int main(int, char **) {  // С пустым main() падает на андро
   glEnableVertexAttribArray(0);
   glBindVertexArray(0);
 
-  // Константные значенияn для шейдера рёбер.
+  // Настраиваем рёбра.
+  Shader rib_shader(shader_vertex_rib, shader_fragment_panel);
+  float rib_vertices[] = {-0.25f, 0.25f, 0.25f, -0.25f, -0.25f, -0.25f,
+                          -0.25f, 0.25f, 0.25f, -0.25f, 0.25f,  0.25f};
   rib_shader.Use();
-  glUniform1iv(glGetUniformLocation(rib_shader.Program, "panels_permanent"),
+  glUniform1iv(glGetUniformLocation(rib_shader.Program, "ribs_permanent"),
                GameWorld::kPanelsPermanentParamsCount,
                game_world.panels_permanent_parameters());
-  glGenBuffers(1, &panel_VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, panel_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(panel_vertices), panel_vertices,
+  unsigned int rib_VBO;
+  glGenBuffers(1, &rib_VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, rib_VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(rib_vertices), rib_vertices,
                GL_STATIC_DRAW);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glEnableVertexAttribArray(0);

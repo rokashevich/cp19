@@ -3,7 +3,7 @@
 layout (location = 0) in vec3 pos_in;
 layout (location = 1) in float instanced_arg;
 
-uniform int panels_permanent[7];  // Массив готовится в GameWorld.
+uniform int ribs_permanent[7];  // Массив готовится в GameWorld.
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -17,10 +17,10 @@ void main() {
   vec3 pos;
   vec3 offset;
 
-  int resolution = panels_permanent[0];
-  int slab_panels_count = panels_permanent[2];
-  int storey_coherent_walls_count = panels_permanent[3];
-  int storey_panels_total_ = panels_permanent[5];
+  int resolution = ribs_permanent[0];
+  int slab_panels_count = ribs_permanent[2];
+  int storey_coherent_walls_count = ribs_permanent[3];
+  int storey_panels_total_ = ribs_permanent[5];
 
   int storey = gl_InstanceID / storey_panels_total_;  // Текущий этаж.
   int range = gl_InstanceID - storey * storey_panels_total_;
@@ -58,7 +58,7 @@ void main() {
   case 1: vColor = vec3(0,0,0); break; // Пол.
   case 2: vColor = vec3(1,1,0); break;
   case 3: vColor = vec3(0,1,1); break;
-  default:vColor = vec3(1,1,1);
+  default:vColor = vec3(1,0,1);
   }
 
 }
