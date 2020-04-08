@@ -1,7 +1,7 @@
 #version 300 es
 
 layout (location = 0) in vec3 pos_in;
-layout (location = 1) in float instanced_arg;
+layout (location = 2) in float instanced_arg;
 
 uniform int panels_permanent[7];  // Массив готовится в GameWorld.
 uniform mat4 model;

@@ -1,7 +1,7 @@
 #version 300 es
 
-layout (location = 0) in vec3 pos_in;
-layout (location = 1) in float instanced_arg;
+layout (location = 1) in vec3 pos_in;
+layout (location = 3) in float instanced_arg;
 
 uniform int ribs_permanent[7];  // Массив готовится в GameWorld.
 uniform mat4 model;
@@ -58,7 +58,7 @@ void main() {
   case 1: vColor = vec3(0,0,0); break; // Пол.
   case 2: vColor = vec3(1,1,0); break;
   case 3: vColor = vec3(0,1,1); break;
-  default:vColor = vec3(1,0,1);
+  default:vColor = vec3(0,1,0);
   }
 
 }

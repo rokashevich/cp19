@@ -103,8 +103,8 @@ int main(int, char **) {  // С пустым main() падает на андро
   glBindBuffer(GL_ARRAY_BUFFER, rib_VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(rib_vertices), rib_vertices,
                GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
-  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
+  glEnableVertexAttribArray(1);
   glBindVertexArray(0);
 
   glEnable(GL_DEPTH_TEST);
@@ -182,6 +182,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Отправляем в шейдер инстансированный массив панелей.
+    // glEnableVertexAttribArray(0);
     panel_shader.Use();
     glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "projection"),
                        1, GL_FALSE, &projection[0][0]);
@@ -196,13 +197,14 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, panels_VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * panels_count, panels_array,
                  GL_STATIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void *)0);
-    glVertexAttribDivisor(1, 1);
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void *)0);
+    glVertexAttribDivisor(2, 1);
+    glEnableVertexAttribArray(2);
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, panels_count);
     glBindVertexArray(0);
 
     // Отправляем в шейдер инстансированный массив рёбер.
+    // glEnableVertexAttribArray(1);
     rib_shader.Use();
     glUniformMatrix4fv(glGetUniformLocation(rib_shader.Program, "projection"),
                        1, GL_FALSE, &projection[0][0]);
@@ -215,9 +217,9 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, ribs_VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * panels_count, panels_array,
                  GL_STATIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void *)0);
-    glVertexAttribDivisor(1, 1);
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void *)0);
+    glVertexAttribDivisor(3, 1);
+    glEnableVertexAttribArray(3);
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, panels_count);
     glBindVertexArray(0);
 
