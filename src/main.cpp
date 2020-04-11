@@ -75,8 +75,10 @@ int main(int, char **) {  // С пустым main() падает на андро
 
   // Настраиваем панели.
   Shader panel_shader(shader_vertex_panel, shader_fragment_panel);
-  float panel_vertices[] = {-0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f,
-                            -0.5f, 0.5f, 0.5f, -0.5f, 0.5f,  0.5f};
+  const float panel_vertices[] = {-0.5f, -0.5f, 0.5f, -0.5f,
+                                  -0.5f, 0.5f,  0.5f, 0.5f};
+  const int panel_vertices_count =
+      sizeof(panel_vertices) / sizeof(*panel_vertices);
   panel_shader.Use();
   glUniform1iv(glGetUniformLocation(panel_shader.Program, "panels_permanent"),
                GameWorld::kPanelsPermanentParamsCount,
@@ -92,8 +94,26 @@ int main(int, char **) {  // С пустым main() падает на андро
 
   // Настраиваем рёбра.
   Shader rib_shader(shader_vertex_rib, shader_fragment_panel);
-  float rib_vertices[] = {-0.25f, 0.25f, 0.25f, -0.25f, -0.25f, -0.25f,
-                          -0.25f, 0.25f, 0.25f, -0.25f, 0.25f,  0.25f};
+  const float rib_vertices[] = {
+      -0.1, -0.2, -0.1, -0.1, -0.2, 0.1,  0.1,  -0.2, -0.1,  // Нижняя крышка.
+      0.1,  -0.2, 0.1,  -0.1, -0.2, 0.1,  0.1,  -0.2, -0.1,
+
+      -0.1, 0.2,  -0.1, -0.1, 0.2,  0.1,  0.1,  0.2,  -0.1,  // Верхняя крышка.
+      0.1,  0.2,  0.1,  -0.1, 0.2,  0.1,  0.1,  0.2,  -0.1,
+
+      -0.1, -0.2, 0.1,  -0.1, 0.2,  0.1,  0.1,  -0.2, 0.1,  // Стенка xy.
+      0.1,  0.2,  0.1,  -0.1, 0.2,  0.1,  0.1,  -0.2, 0.1,
+
+      0.1,  -0.2, -0.1, 0.1,  0.2,  -0.1, 0.1,  -0.2, 0.1,  // Стенка zy.
+      0.1,  0.2,  0.1,  0.1,  0.2,  -0.1, 0.1,  -0.2, 0.1,
+
+      -0.1, -0.2, -0.1, -0.1, 0.2,  -0.1, 0.1,  -0.2, -0.1,  // Стенка -xy.
+      0.1,  0.2,  -0.1, -0.1, 0.2,  -0.1, 0.1,  -0.2, -0.1,
+
+      -0.1, -0.2, -0.1, -0.1, 0.2,  -0.1, -0.1, -0.2, 0.1,  // Стенка -zy.
+      -0.1, 0.2,  0.1,  -0.1, 0.2,  -0.1, -0.1, -0.2, 0.1,
+  };
+  const int rib_vertices_count = sizeof(rib_vertices) / sizeof(*rib_vertices);
   rib_shader.Use();
   glUniform1iv(glGetUniformLocation(rib_shader.Program, "ribs_permanent"),
                GameWorld::kPanelsPermanentParamsCount,
@@ -103,7 +123,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   glBindBuffer(GL_ARRAY_BUFFER, rib_VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(rib_vertices), rib_vertices,
                GL_STATIC_DRAW);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glEnableVertexAttribArray(1);
   glBindVertexArray(0);
 
@@ -111,6 +131,9 @@ int main(int, char **) {  // С пустым main() падает на андро
   glDepthFunc(GL_LESS);
 
   done = 0;
+
+  int test = 0;
+
   while (!done) {
     unsigned int currentTicks = SDL_GetTicks();
     deltaTicks = currentTicks - lastTicks;
@@ -200,11 +223,13 @@ int main(int, char **) {  // С пустым main() падает на андро
     glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void *)0);
     glVertexAttribDivisor(2, 1);
     glEnableVertexAttribArray(2);
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, panels_count);
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, panel_vertices_count,
+                          panels_count);
     glBindVertexArray(0);
 
     // Отправляем в шейдер инстансированный массив рёбер.
-    // glEnableVertexAttribArray(1);
+
+    ++test;
     rib_shader.Use();
     glUniformMatrix4fv(glGetUniformLocation(rib_shader.Program, "projection"),
                        1, GL_FALSE, &projection[0][0]);
@@ -212,6 +237,7 @@ int main(int, char **) {  // С пустым main() падает на андро
                        GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(rib_shader.Program, "model"), 1,
                        GL_FALSE, &model[0][0]);
+    // if (test < 50) {
     unsigned int ribs_VBO;
     glGenBuffers(1, &ribs_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, ribs_VBO);
@@ -220,8 +246,9 @@ int main(int, char **) {  // С пустым main() падает на андро
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void *)0);
     glVertexAttribDivisor(3, 1);
     glEnableVertexAttribArray(3);
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 6, panels_count);
     glBindVertexArray(0);
+    //}
+    glDrawArraysInstanced(GL_TRIANGLES, 0, rib_vertices_count, panels_count);
 
     SDL_GL_SwapWindow(window);
   }
