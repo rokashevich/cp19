@@ -145,7 +145,7 @@ int main(int, char **) {  // С пустым main() падает на андро
       if (event.type == SDL_QUIT) {
         done = 1;
       } else if (event.type == SDL_KEYDOWN) {
-        std::cout << "key down" << std::endl;
+        std::cout << "key down: " << event.key.keysym.sym << std::endl;
         float cameraSpeed = 0.05f * deltaTicks;
         switch (event.key.keysym.sym) {
           case SDLK_w:
