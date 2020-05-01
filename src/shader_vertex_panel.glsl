@@ -31,17 +31,17 @@ void main() {
   vec3 offset;
   vec3 pos;
 
-  if (surface == 1) { // xy
+  if (surface == 0) { // xy
     offset = vec3(instanced_arg.x,instanced_arg.y,instanced_arg.z);
     pos = vec3(pos_in.x, pos_in.y, pos_in.z);
     vColor = color(health);
   }
-  else if (surface == 2) { // yz
+  else if (surface == 1) { // yz
     offset = vec3(instanced_arg.x,instanced_arg.y,instanced_arg.z);
     pos = vec3(pos_in.z, pos_in.y, pos_in.x);
     vColor = color(health);
   }
-  else if (surface == 3) { // xz
+  else if (surface == 2) { // xz
     offset = vec3(instanced_arg.x,instanced_arg.y,instanced_arg.z);
     pos = vec3(pos_in.y, pos_in.z, pos_in.x);
     vColor = color(health);

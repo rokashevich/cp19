@@ -110,31 +110,25 @@ GameWorld::GameWorld(int resolution) {
   panels_data_.push_back(0);
   panels_data_.push_back(0);
   panels_data_.push_back(0);
-  panels_data_.push_back(107);
+  panels_data_.push_back(7);
   panels_count_++;
 
   panels_data_.push_back(0);
   panels_data_.push_back(0);
   panels_data_.push_back(-1);
-  panels_data_.push_back(101);
+  panels_data_.push_back(1);
+  panels_count_++;
+
+  panels_data_.push_back(0.5);
+  panels_data_.push_back(0);
+  panels_data_.push_back(0);
+  panels_data_.push_back(109);
   panels_count_++;
 
   panels_data_.push_back(0.5);
   panels_data_.push_back(0);
   panels_data_.push_back(0);
   panels_data_.push_back(209);
-  panels_count_++;
-
-  panels_data_.push_back(0.5);
-  panels_data_.push_back(0);
-  panels_data_.push_back(0);
-  panels_data_.push_back(309);
-  panels_count_++;
-
-  panels_data_.push_back(0.5);
-  panels_data_.push_back(0);
-  panels_data_.push_back(0);
-  panels_data_.push_back(409);
   panels_count_++;
 }
 
