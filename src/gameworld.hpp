@@ -15,15 +15,23 @@ class GameWorld {
  public:
   GameWorld(int resolution);
   ~GameWorld();
-  enum { kXYZ = 3, kPanelsPermanentParamsCount = 7 };
+  enum {
+    kSurfaceX = 0,
+    kSurfaceY = 1,
+    kSurfaceZ = 2,
+    kSurfacesCount = 3,
+    kPanelsPermanentParamsCount = 7,
+    kPanelDataSize = 4
+  };
 
   int* panels_permanent_parameters() {
     return panels_permanent_parameters_.data();
   }
+
   float* panels_instanced_array() { return panels_instanced_.data(); }
   int panels_instanced_size() { return panels_instanced_.size(); }
-  float* ribs_instanced_array() { return ribs_instanced_.data(); }
-  int ribs_instanced_size() { return ribs_instanced_.size(); }
+  std::vector<float>& panels_data_array() { return panels_data_; }
+  int panels_count() { return panels_count_; }
 
  private:
   std::array<int, kPanelsPermanentParamsCount> panels_permanent_parameters_;
@@ -32,9 +40,10 @@ class GameWorld {
   // перекрытия (полы, потолки) в плоскости xz. Каждых наборов плоскостей по
   // resolution_ + 1 т.е. на одну больше размерности игрового куба.
   std::vector<float> panels_instanced_;
-
-  // Подготовленный массив рёбер.
-  std::vector<float> ribs_instanced_;
+  std::vector<float> panels_data_;
+  int panels_count_;
+  std::array<std::vector<std::vector<std::vector<float>>>, kSurfacesCount>
+      panels_;
 
   friend std::ostream& operator<<(std::ostream& os, const GameWorld& gw);
 };

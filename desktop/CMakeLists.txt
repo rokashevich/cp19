@@ -19,8 +19,7 @@ link_libraries(dl)
 
 set(Shaders
   ${SRC}/shader_fragment_panel.glsl
-  ${SRC}/shader_vertex_panel.glsl
-  ${SRC}/shader_vertex_rib.glsl)
+  ${SRC}/shader_vertex_panel.glsl)
 
 add_executable(native-sdl-demo
   ${SRC}/main.cpp
@@ -35,12 +34,6 @@ add_custom_target(shader_vertex_panel ALL COMMAND
     ${SRC}/shader_vertex_panel.glsl
     ${GENERATED}/shader_vertex_panel.hpp)
 
-add_custom_target(shader_vertex_rib ALL COMMAND
-  python3 ${TOOLS}/embedfile.py
-    shader_vertex_rib
-    ${SRC}/shader_vertex_rib.glsl
-    ${GENERATED}/shader_vertex_rib.hpp)
-
 add_custom_target(shader_fragment_panel ALL COMMAND
   python3 ${TOOLS}/embedfile.py
     shader_fragment_panel
@@ -49,6 +42,5 @@ add_custom_target(shader_fragment_panel ALL COMMAND
 
 add_dependencies(native-sdl-demo
   shader_vertex_panel
-  shader_vertex_rib
   shader_fragment_panel)
 

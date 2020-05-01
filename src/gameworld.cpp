@@ -1,6 +1,7 @@
 #include "gameworld.hpp"
 
 #include <array>
+#include <iostream>
 
 #include "helpers/maze2d.hpp"
 
@@ -51,27 +52,90 @@ GameWorld::GameWorld(int resolution) {
       else
         panels_instanced_.push_back(100001);
     }
-
-    // Генерируем рёбра.
-    ribs_instanced_.clear();
-    ribs_instanced_.push_back(-1);
-    ribs_instanced_.push_back(-1);
-    ribs_instanced_.push_back(-1);
-    ribs_instanced_.push_back(-1);
   }
 
-  //  for (int i = 0; i < 3; ++i) {
-  //    for (int j = 0; j < surfaces_count_; ++j) {
-  //      for (int k = 0; k < resolution_; ++k) {
-  //        for (int m = 0; m < resolution_; ++m) {
-  //          panels_instanced_.push_back(panels_instanced_.size() % 2 ? 100000
-  //                                                                   :
-  //                                                                   100001);
-  //        }
-  //      }
-  //    }
-  //  }
+  // Генерируем рабочую структуру панелей.
+  for (int i = 0; i < kSurfacesCount; ++i) {
+    panels_.at(i).resize(surfaces_count);
+    for (int j = 0; j < surfaces_count; ++j) {
+      panels_.at(i).at(j).resize(resolution);
+      for (int k = 0; k < resolution; ++k) {
+        //        if (i == kSurfaceY)
+        //          panels_.at(i).at(j).at(k).resize(resolution, 1);
+        //        else
+        panels_.at(i).at(j).at(k).resize(resolution, 100);
+      }
+    }
+  }
 
+  // Из рабочей структуры получаем инстансированный массив.
+  panels_data_.clear();
+  panels_count_ = 0;
+  for (int i = 0; i < kSurfacesCount; ++i) {
+    for (int s = 0; s < surfaces_count; ++s) {
+      for (int x = 0; x < resolution; ++x) {
+        for (int y = 0; y < resolution; ++y) {
+          const int health = panels_.at(i).at(s).at(x).at(y);
+          if (health < 0) continue;
+          //          float offset_x;
+          //          float offset_y;
+          //          float offset_z;
+          //          switch (i) {
+          //            case kSurfaceX:
+          //              break;
+          //            case kSurfaceY:
+          //              break;
+          //            case kSurfaceZ:
+
+          //              break;
+          //          }
+          const float offset_x = (i == kSurfaceX ? -1 : 1) * (s + 1);
+          const float offset_y = (i == kSurfaceY ? -1 : 1) * (x + 1);
+          const float offset_z = (i == kSurfaceZ ? -1 : 1) * (y + 1);
+          std::cout << offset_x << " " << offset_y << " " << offset_z
+                    << std::endl;
+          panels_data_.push_back(offset_x);
+          panels_data_.push_back(offset_y);
+          panels_data_.push_back(offset_z);
+          panels_data_.push_back(panels_count_ / 100);
+          ++panels_count_;
+        }
+      }
+    }
+  }
+
+  panels_data_.clear();
+  panels_count_ = 0;
+
+  panels_data_.push_back(0);
+  panels_data_.push_back(0);
+  panels_data_.push_back(0);
+  panels_data_.push_back(107);
+  panels_count_++;
+
+  panels_data_.push_back(0);
+  panels_data_.push_back(0);
+  panels_data_.push_back(-1);
+  panels_data_.push_back(101);
+  panels_count_++;
+
+  panels_data_.push_back(0.5);
+  panels_data_.push_back(0);
+  panels_data_.push_back(0);
+  panels_data_.push_back(209);
+  panels_count_++;
+
+  panels_data_.push_back(0.5);
+  panels_data_.push_back(0);
+  panels_data_.push_back(0);
+  panels_data_.push_back(309);
+  panels_count_++;
+
+  panels_data_.push_back(0.5);
+  panels_data_.push_back(0);
+  panels_data_.push_back(0);
+  panels_data_.push_back(409);
+  panels_count_++;
 }
 
 GameWorld::~GameWorld(){}
