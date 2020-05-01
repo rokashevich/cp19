@@ -75,7 +75,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   // Настраиваем панели.
   Shader panel_shader(shader_vertex_panel, shader_fragment_panel);
   const float d = 0.01;
-  const float w = 0.40;
+  const float w = 0.45;
   const float panel_vertices[] = {
       -w, -w, -d, -w, -w, d,  w,  -w, -d,  // Нижняя крышка.
       w,  -w, d,  -w, -w, d,  w,  -w, -d,

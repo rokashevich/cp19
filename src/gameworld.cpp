@@ -63,7 +63,7 @@ GameWorld::GameWorld(int resolution) {
         //        if (i == kSurfaceY)
         //          panels_.at(i).at(j).at(k).resize(resolution, 1);
         //        else
-        panels_.at(i).at(j).at(k).resize(resolution, 100);
+        panels_.at(i).at(j).at(k).resize(resolution, rand() % 10 + 1);
       }
     }
   }
@@ -77,59 +77,31 @@ GameWorld::GameWorld(int resolution) {
         for (int y = 0; y < resolution; ++y) {
           const int health = panels_.at(i).at(s).at(x).at(y);
           if (health < 0) continue;
-          //          float offset_x;
-          //          float offset_y;
-          //          float offset_z;
-          //          switch (i) {
-          //            case kSurfaceX:
-          //              break;
-          //            case kSurfaceY:
-          //              break;
-          //            case kSurfaceZ:
+          const float param = i * 100 + health;
 
-          //              break;
-          //          }
-          const float offset_x = (i == kSurfaceX ? -1 : 1) * (s + 1);
-          const float offset_y = (i == kSurfaceY ? -1 : 1) * (x + 1);
-          const float offset_z = (i == kSurfaceZ ? -1 : 1) * (y + 1);
-          std::cout << offset_x << " " << offset_y << " " << offset_z
-                    << std::endl;
-          panels_data_.push_back(offset_x);
-          panels_data_.push_back(offset_y);
-          panels_data_.push_back(offset_z);
-          panels_data_.push_back(panels_count_ / 100);
+          switch (i) {
+            case kSurfaceXY:
+              panels_data_.push_back(x);
+              panels_data_.push_back(y);
+              panels_data_.push_back(s);
+              break;
+            case kSurfaceYZ:
+              panels_data_.push_back(s - 0.5);
+              panels_data_.push_back(y);
+              panels_data_.push_back(x + 0.5);
+              break;
+            case kSurfaceXZ:
+              panels_data_.push_back(x);
+              panels_data_.push_back(s - 0.5);
+              panels_data_.push_back(y + 0.5);
+              break;
+          }
+          panels_data_.push_back(param);
           ++panels_count_;
         }
       }
     }
   }
-
-  panels_data_.clear();
-  panels_count_ = 0;
-
-  panels_data_.push_back(0);
-  panels_data_.push_back(0);
-  panels_data_.push_back(0);
-  panels_data_.push_back(7);
-  panels_count_++;
-
-  panels_data_.push_back(0);
-  panels_data_.push_back(0);
-  panels_data_.push_back(-1);
-  panels_data_.push_back(1);
-  panels_count_++;
-
-  panels_data_.push_back(0.5);
-  panels_data_.push_back(0);
-  panels_data_.push_back(0);
-  panels_data_.push_back(109);
-  panels_count_++;
-
-  panels_data_.push_back(0.5);
-  panels_data_.push_back(0);
-  panels_data_.push_back(0);
-  panels_data_.push_back(209);
-  panels_count_++;
 }
 
 GameWorld::~GameWorld(){}

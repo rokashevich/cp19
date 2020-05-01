@@ -16,9 +16,9 @@ class GameWorld {
   GameWorld(int resolution);
   ~GameWorld();
   enum {
-    kSurfaceX = 0,
-    kSurfaceY = 1,
-    kSurfaceZ = 2,
+    kSurfaceXY = 0,
+    kSurfaceYZ = 1,
+    kSurfaceXZ = 2,
     kSurfacesCount = 3,
     kPanelsPermanentParamsCount = 7,
     kPanelDataSize = 4
