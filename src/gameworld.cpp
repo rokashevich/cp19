@@ -22,48 +22,38 @@ GameWorld::GameWorld(int resolution) {
   panels_permanent_parameters_[6] = total_panels;
 
   // Генерируем лабиринт.
-
   std::pair<std::vector<std::vector<bool>>, std::vector<std::vector<bool>>>
       maze = Helpers::GenerateMaze(resolution);
 
-  for (int i = 0; i < total_panels; ++i) {
-    const int storey = i / storey_panels_total;
-    int range = i - storey * storey_panels_total;
-    if (range < slab_panels_count) {  // Пол.
-      panels_instanced_.push_back(100001);
-    } else if (range >= slab_panels_count + storey_coherent_walls_count) {
-      std::vector<std::vector<bool>>& maze_yz = maze.first;
-      range = range - slab_panels_count - storey_coherent_walls_count;
-      const int col = range / resolution;
-      const int row = range - col * resolution;
-      const bool wall = maze_yz.at(col).at(row);
-      if (wall)
-        panels_instanced_.push_back(100002);
-      else
-        panels_instanced_.push_back(100001);
-    } else {
-      std::vector<std::vector<bool>>& maze_xy = maze.second;
-      range = range - slab_panels_count;
-      const int row = range / resolution;
-      const int col = range - row * resolution;
-      const bool wall = maze_xy.at(row).at(col);
-      if (wall)
-        panels_instanced_.push_back(100003);
-      else
-        panels_instanced_.push_back(100001);
-    }
-  }
-
-  // Генерируем рабочую структуру панелей.
   for (int i = 0; i < kSurfacesCount; ++i) {
     panels_.at(i).resize(surfaces_count);
-    for (int j = 0; j < surfaces_count; ++j) {
-      panels_.at(i).at(j).resize(resolution);
-      for (int k = 0; k < resolution; ++k) {
-        //        if (i == kSurfaceY)
-        //          panels_.at(i).at(j).at(k).resize(resolution, 1);
-        //        else
-        panels_.at(i).at(j).at(k).resize(resolution, rand() % 10 + 1);
+    for (int s = 0; s < surfaces_count; ++s) {
+      panels_.at(i).at(s).resize(resolution);
+      for (int x = 0; x < resolution; ++x) {
+        for (int y = 0; y < resolution; ++y) {
+          // Удаляем наружные стены!
+          // if (((i == kSurfaceXY || i == kSurfaceYZ) &&
+          //     (s == 0 || s == resolution)))
+          //  panels_.at(i).at(s).at(x).push_back(-1);
+          // else {
+          switch (i) {
+            case kSurfaceXY:
+              if (maze.first.at(s).at(y))
+                panels_.at(i).at(s).at(y).push_back(rand() % 10 + 1);
+              else
+                panels_.at(i).at(s).at(y).push_back(-1);
+              break;
+            case kSurfaceYZ:
+              if (maze.second.at(s).at(y))
+                panels_.at(i).at(s).at(y).push_back(rand() % 10 + 1);
+              else
+                panels_.at(i).at(s).at(y).push_back(-1);
+              break;
+            case kSurfaceXZ:
+              panels_.at(i).at(s).at(x).push_back(-1);
+          }
+          //}
+        }
       }
     }
   }
