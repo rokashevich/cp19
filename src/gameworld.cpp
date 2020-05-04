@@ -5,25 +5,24 @@
 
 #include "helpers/maze2d.hpp"
 
-GameWorld::GameWorld(int resolution) {
+GameWorld::GameWorld(const int resolution) {
   const int surfaces_count = resolution + 1;
-  const int slab_panels_count = resolution * resolution;
+  const int floor_panels_count = resolution * resolution;
   const int storey_coherent_walls_count = resolution * surfaces_count;
   const int storey_walls_count = storey_coherent_walls_count * 2;
-  const int storey_panels_total = storey_walls_count + slab_panels_count;
-  const int total_panels = storey_panels_total * resolution + slab_panels_count;
+  const int storey_panels_total = storey_walls_count + floor_panels_count;
+  const int total_panels =
+      storey_panels_total * resolution + floor_panels_count;
 
   panels_permanent_parameters_[0] = resolution;
   panels_permanent_parameters_[1] = surfaces_count;
-  panels_permanent_parameters_[2] = slab_panels_count;
+  panels_permanent_parameters_[2] = floor_panels_count;
   panels_permanent_parameters_[3] = storey_coherent_walls_count;
   panels_permanent_parameters_[4] = storey_walls_count;
   panels_permanent_parameters_[5] = storey_panels_total;
   panels_permanent_parameters_[6] = total_panels;
 
   // Генерируем лабиринт.
-  std::pair<std::vector<std::vector<bool>>, std::vector<std::vector<bool>>>
-      maze = Helpers::GenerateMaze(resolution);
 
   for (int i = 0; i < kSurfacesCount; ++i) {
     panels_.at(i).resize(surfaces_count);
@@ -31,32 +30,86 @@ GameWorld::GameWorld(int resolution) {
       panels_.at(i).at(s).resize(resolution);
       for (int x = 0; x < resolution; ++x) {
         for (int y = 0; y < resolution; ++y) {
-          // Удаляем наружные стены!
-          // if (((i == kSurfaceXY || i == kSurfaceYZ) &&
-          //     (s == 0 || s == resolution)))
-          //  panels_.at(i).at(s).at(x).push_back(-1);
-          // else {
-          switch (i) {
-            case kSurfaceXY:
-              if (maze.first.at(s).at(y))
-                panels_.at(i).at(s).at(y).push_back(rand() % 10 + 1);
-              else
-                panels_.at(i).at(s).at(y).push_back(-1);
-              break;
-            case kSurfaceYZ:
-              if (maze.second.at(s).at(y))
-                panels_.at(i).at(s).at(y).push_back(rand() % 10 + 1);
-              else
-                panels_.at(i).at(s).at(y).push_back(-1);
-              break;
-            case kSurfaceXZ:
-              panels_.at(i).at(s).at(x).push_back(-1);
-          }
-          //}
+          panels_.at(i).at(s).at(y).push_back(10);
         }
       }
     }
   }
+
+  for (int x = 0; x < resolution; ++x) {
+    std::pair<std::vector<std::vector<bool>>, std::vector<std::vector<bool>>>
+        maze = Helpers::GenerateMaze(resolution);
+    for (int y = 0; y < resolution; ++y) {
+      for (int i = 0; i < kSurfacesCount; ++i) {
+        for (int s = 0; s < surfaces_count; ++s) {
+          // Удаляем наружные стены и самый верзний потолок!
+          if (((i == kSurfaceXY || i == kSurfaceYZ) &&
+               (s == 0 || s == resolution)) ||
+              (i == kSurfaceXZ && s == resolution))
+            panels_.at(i).at(s).at(x).at(y) = -1;
+          else {
+            switch (i) {
+              case kSurfaceXY:
+                if (maze.first.at(s).at(y))
+                  panels_.at(i).at(s).at(y).at(x) = 10;
+                else
+                  panels_.at(i).at(s).at(y).at(x) = -1;
+                break;
+              case kSurfaceYZ:
+                if (maze.second.at(s).at(y))
+                  panels_.at(i).at(s).at(y).at(x) = 8;
+                else
+                  panels_.at(i).at(s).at(y).at(x) = -1;
+                break;
+              case kSurfaceXZ:
+                panels_.at(i).at(s).at(y).at(x) = 1;
+            }
+          }
+        }
+      }
+    }
+  }
+  // Делаем проходы в полах, кроме первого этажа.
+  for (int i = 1; i < resolution; ++i) {
+    panels_.at(kSurfaceXZ)
+        .at(i)
+        .at(rand() % resolution)
+        .at(rand() % resolution) = -1;
+  }
+
+  //  for (int i = 0; i < kSurfacesCount; ++i) {
+  //    panels_.at(i).resize(surfaces_count);
+  //    for (int s = 0; s < surfaces_count; ++s) {
+  //      panels_.at(i).at(s).resize(resolution);
+  //      for (int x = 0; x < resolution; ++x) {
+  //        for (int y = 0; y < resolution; ++y) {
+  //          // Удаляем наружные стены и самый верзний потолок!
+  //          if (((i == kSurfaceXY || i == kSurfaceYZ) &&
+  //               (s == 0 || s == resolution)) ||
+  //              (i == kSurfaceXZ && s == resolution))
+  //            panels_.at(i).at(s).at(x).push_back(-1);
+  //          else {
+  //            switch (i) {
+  //              case kSurfaceXY:
+  //                if (maze.first.at(s).at(y))
+  //                  panels_.at(i).at(s).at(y).push_back(10);
+  //                else
+  //                  panels_.at(i).at(s).at(y).push_back(-1);
+  //                break;
+  //              case kSurfaceYZ:
+  //                if (maze.second.at(s).at(y))
+  //                  panels_.at(i).at(s).at(y).push_back(8);
+  //                else
+  //                  panels_.at(i).at(s).at(y).push_back(-1);
+  //                break;
+  //              case kSurfaceXZ:
+  //                panels_.at(i).at(s).at(y).push_back(1);
+  //            }
+  //          }
+  //        }
+  //      }
+  //    }
+  //  }
 
   // Из рабочей структуры получаем инстансированный массив.
   panels_data_.clear();
@@ -94,7 +147,7 @@ GameWorld::GameWorld(int resolution) {
   }
 }
 
-GameWorld::~GameWorld(){}
+GameWorld::~GameWorld() {}
 
 std::ostream& operator<<(std::ostream& os, const GameWorld& gw) {
   os << "resolution = " << gw.panels_permanent_parameters_[0] << std::endl;
