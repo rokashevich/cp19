@@ -2,6 +2,7 @@
 #include <GLES3/gl32.h>
 #include <time.h>
 #include <iostream>
+#include <list>
 
 // Сторонние библиотеки идут вместе с проектом.
 #include "SDL.h"
@@ -10,10 +11,13 @@
 #include "glm/gtc/type_ptr.hpp"
 
 // Сгенерированные из glsl файлов.
+#include "shader_fragment_missile.hpp"
 #include "shader_fragment_panel.hpp"
+#include "shader_vertex_missile.hpp"
 #include "shader_vertex_panel.hpp"
 
 #include "gameworld.hpp"
+#include "object.hpp"
 #include "shader.hpp"
 
 #define SCREEN_WIDTH 700
@@ -98,9 +102,6 @@ int main(int, char **) {  // С пустым main() падает на андро
   const int panel_vertices_count =
       sizeof(panel_vertices) / sizeof(*panel_vertices);
   panel_shader.Use();
-  glUniform1iv(glGetUniformLocation(panel_shader.Program, "panels_permanent"),
-               GameWorld::kPanelsPermanentParamsCount,
-               game_world.panels_permanent_parameters());
   unsigned int panel_VBO;
   glGenBuffers(1, &panel_VBO);
   glBindBuffer(GL_ARRAY_BUFFER, panel_VBO);
@@ -110,13 +111,31 @@ int main(int, char **) {  // С пустым main() падает на андро
   glEnableVertexAttribArray(0);
   glBindVertexArray(0);
 
+  // Настраиваем снаряды.
+  Shader missile_shader(shader_vertex_missile, shader_fragment_missile);
+  const int missile_vertices_count =
+      sizeof(Missile::vertices) / sizeof(*Missile::vertices);
+  missile_shader.Use();
+  unsigned int missile_VBO;
+  glGenBuffers(1, &missile_VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, missile_VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(Missile::vertices), Missile::vertices,
+               GL_STATIC_DRAW);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
+  glEnableVertexAttribArray(0);
+  glBindVertexArray(0);
+
+  // Отладка.
+  //  std::list<Missile> missiles;
+  //  missiles.push_back(Missile(1, 1, 1, 1));
+  //  missiles.push_back(Missile(1, 2, 2, 2));
+  //  missiles.push_back(Missile(1, 3, 3, 3));
+
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
 
   done = 0;
-
-  int test = 0;
-
+  int test = 0;  // Временная переменная не нужна.
   while (!done) {
     unsigned int currentTicks = SDL_GetTicks();
     deltaTicks = currentTicks - lastTicks;
@@ -187,8 +206,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Отправляем в шейдер инстансированный массив панелей.
-    // glEnableVertexAttribArray(0);
+    // Рисуем стены.
     panel_shader.Use();
     glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "projection"),
                        1, GL_FALSE, &projection[0][0]);
@@ -196,11 +214,10 @@ int main(int, char **) {  // С пустым main() падает на андро
                        GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "model"), 1,
                        GL_FALSE, &model[0][0]);
-
     const int panels_count = game_world.panels_count();
     std::vector<float> &panels_data_array = game_world.panels_data_array();
     if (test < 100) {
-      ++test;
+      //++test;
       unsigned int panels_VBO;
       glGenBuffers(1, &panels_VBO);
       glBindBuffer(GL_ARRAY_BUFFER, panels_VBO);
@@ -209,10 +226,44 @@ int main(int, char **) {  // С пустым main() падает на андро
       glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
                             (void *)0);
       glVertexAttribDivisor(1, 1);
-      glEnableVertexAttribArray(1);
+      glEnableVertexAttribArray(0);
       glBindVertexArray(0);
     }
     glDrawArraysInstanced(GL_TRIANGLES, 0, panel_vertices_count, panels_count);
+
+    // Рисуем снаряды.
+    //
+    std::vector<float> missiles_data_array;
+    missiles_data_array.push_back(-1);
+    missiles_data_array.push_back(-1);
+    missiles_data_array.push_back(-1);
+    missiles_data_array.push_back(77);
+    missiles_data_array.push_back(-2);
+    missiles_data_array.push_back(0);
+    missiles_data_array.push_back(0);
+    missiles_data_array.push_back(88);
+    const int missiles_count = 2;
+    //
+    missile_shader.Use();
+    glUniformMatrix4fv(
+        glGetUniformLocation(missile_shader.Program, "projection"), 1, GL_FALSE,
+        &projection[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(missile_shader.Program, "view"), 1,
+                       GL_FALSE, &view[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(missile_shader.Program, "model"), 1,
+                       GL_FALSE, &model[0][0]);
+    unsigned int missiles_VBO;
+    glGenBuffers(1, &missiles_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, missiles_VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * missiles_data_array.size(),
+                 missiles_data_array.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+                          (void *)0);
+    glVertexAttribDivisor(1, 1);
+    glEnableVertexAttribArray(1);
+    glBindVertexArray(1);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, missile_vertices_count,
+                          missiles_count);
 
     SDL_GL_SwapWindow(window);
   }
