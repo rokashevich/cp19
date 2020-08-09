@@ -235,11 +235,11 @@ int main(int, char **) {  // С пустым main() падает на андро
     missiles_data_array.push_back(-1);
     missiles_data_array.push_back(0);
     missiles_data_array.push_back(0);
-    missiles_data_array.push_back(77);
+    missiles_data_array.push_back(2);
     missiles_data_array.push_back(0);
     missiles_data_array.push_back(-1);
     missiles_data_array.push_back(0);
-    missiles_data_array.push_back(88);
+    missiles_data_array.push_back(4);
     const int missiles_count = 2;
     //
     glUniformMatrix4fv(
