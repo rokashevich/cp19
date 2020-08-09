@@ -77,7 +77,6 @@ int main(int, char **) {  // С пустым main() падает на андро
   SDL_SetRelativeMouseMode(SDL_TRUE);
 
   // Настраиваем панели.
-  Shader panel_shader(shader_vertex_panel, shader_fragment_panel);
   const float d = 0.01;
   const float w = 0.45;
   const float panel_vertices[] = {
@@ -101,7 +100,6 @@ int main(int, char **) {  // С пустым main() падает на андро
   };
   const int panel_vertices_count =
       sizeof(panel_vertices) / sizeof(*panel_vertices);
-  panel_shader.Use();
   unsigned int panel_VBO;
   glGenBuffers(1, &panel_VBO);
   glBindBuffer(GL_ARRAY_BUFFER, panel_VBO);
@@ -110,20 +108,20 @@ int main(int, char **) {  // С пустым main() падает на андро
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glEnableVertexAttribArray(0);
   glBindVertexArray(0);
+  Shader panel_shader(shader_vertex_panel, shader_fragment_panel);
 
   // Настраиваем снаряды.
-  Shader missile_shader(shader_vertex_missile, shader_fragment_missile);
   const int missile_vertices_count =
       sizeof(Missile::vertices) / sizeof(*Missile::vertices);
-  missile_shader.Use();
   unsigned int missile_VBO;
   glGenBuffers(1, &missile_VBO);
   glBindBuffer(GL_ARRAY_BUFFER, missile_VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(Missile::vertices), Missile::vertices,
                GL_STATIC_DRAW);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
-  glEnableVertexAttribArray(0);
-  glBindVertexArray(0);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
+  glEnableVertexAttribArray(1);
+  glBindVertexArray(1);
+  Shader missile_shader(shader_vertex_missile, shader_fragment_missile);
 
   // Отладка.
   //  std::list<Missile> missiles;
@@ -207,7 +205,6 @@ int main(int, char **) {  // С пустым main() падает на андро
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Рисуем стены.
-    panel_shader.Use();
     glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "projection"),
                        1, GL_FALSE, &projection[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(panel_shader.Program, "view"), 1,
@@ -223,28 +220,28 @@ int main(int, char **) {  // С пустым main() падает на андро
       glBindBuffer(GL_ARRAY_BUFFER, panels_VBO);
       glBufferData(GL_ARRAY_BUFFER, sizeof(float) * panels_data_array.size(),
                    panels_data_array.data(), GL_STATIC_DRAW);
-      glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+      glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
                             (void *)0);
-      glVertexAttribDivisor(1, 1);
-      glEnableVertexAttribArray(0);
-      glBindVertexArray(0);
+      glVertexAttribDivisor(2, 1);
+      glEnableVertexAttribArray(2);
+      glBindVertexArray(2);
     }
+    panel_shader.Use();
     glDrawArraysInstanced(GL_TRIANGLES, 0, panel_vertices_count, panels_count);
 
     // Рисуем снаряды.
     //
     std::vector<float> missiles_data_array;
     missiles_data_array.push_back(-1);
-    missiles_data_array.push_back(-1);
-    missiles_data_array.push_back(-1);
-    missiles_data_array.push_back(77);
-    missiles_data_array.push_back(-2);
     missiles_data_array.push_back(0);
+    missiles_data_array.push_back(0);
+    missiles_data_array.push_back(77);
+    missiles_data_array.push_back(0);
+    missiles_data_array.push_back(-1);
     missiles_data_array.push_back(0);
     missiles_data_array.push_back(88);
     const int missiles_count = 2;
     //
-    missile_shader.Use();
     glUniformMatrix4fv(
         glGetUniformLocation(missile_shader.Program, "projection"), 1, GL_FALSE,
         &projection[0][0]);
@@ -259,9 +256,10 @@ int main(int, char **) {  // С пустым main() падает на андро
                  missiles_data_array.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
                           (void *)0);
-    glVertexAttribDivisor(1, 1);
-    glEnableVertexAttribArray(1);
-    glBindVertexArray(1);
+    glVertexAttribDivisor(3, 1);
+    glEnableVertexAttribArray(3);
+    glBindVertexArray(3);
+    missile_shader.Use();
     glDrawArraysInstanced(GL_TRIANGLES, 0, missile_vertices_count,
                           missiles_count);
 

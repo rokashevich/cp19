@@ -1,7 +1,7 @@
 #version 300 es
 
 layout (location = 0) in vec3 pos_in;
-layout (location = 1) in vec4 instanced_arg;
+layout (location = 2) in vec4 instanced_arg;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -49,6 +49,5 @@ void main() {
     pos = vec3(pos_in.y, pos_in.z, pos_in.x);
     vColor = vec3(1,1,1);
   }
-
   gl_Position = projection * view * model * vec4(pos + offset, 1.0);
 }
