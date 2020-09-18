@@ -1,3 +1,5 @@
+<img src="screenshots/Screenshot_20200918_192726.png">
+
 # Native/SDL starter kit
 
 [![Build Status](https://travis-ci.org/proppy/native-sdl-starter-kit.svg?branch=master)](https://travis-ci.org/proppy/native-sdl-starter-kit)
