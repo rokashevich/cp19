@@ -15,9 +15,9 @@ void Physics::AddN(Object *object) { Physics::ns_.push_back(object); }
 const Physics::RenderParameters Physics::RenderParametersO() {
   Physics::render_parameters_o.clear();
   for (const auto &o : Physics::os_) {
-    Physics::render_parameters_o.push_back(o->x_);
-    Physics::render_parameters_o.push_back(o->y_);
-    Physics::render_parameters_o.push_back(o->z_);
+    Physics::render_parameters_o.push_back(o->x());
+    Physics::render_parameters_o.push_back(o->y());
+    Physics::render_parameters_o.push_back(o->z());
     Physics::render_parameters_o.push_back(o->weight_);
   }
   return RenderParameters{Physics::render_parameters_o.data(),

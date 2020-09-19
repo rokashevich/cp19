@@ -27,6 +27,7 @@ add_executable(native-sdl-demo
   ${SRC}/main.cpp
   ${SRC}/gameworld.cpp
   ${SRC}/helpers/maze2d.cpp
+  ${SRC}/point.hpp
   ${SRC}/vec.hpp
   ${SRC}/shader.hpp
   ${SRC}/object.cpp

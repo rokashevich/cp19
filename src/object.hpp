@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "physics.hpp"
+#include "point.hpp"
 #include "vec.hpp"
 
 // Базовый класс физического объекта игрового мира.
@@ -11,14 +12,15 @@ class Object
 {
  public:
   friend class Physics;
-  Object(float x, float y, float z, int weight);
+  Object(P position, P direction, int weight);
   virtual ~Object() {}
   virtual void RenderParameters(std::vector<float> &p) = 0;
+  float x() { return v_.Position().x; }
+  float y() { return v_.Position().y; }
+  float z() { return v_.Position().z; }
 
  protected:
-  float x_;
-  float y_;
-  float z_;
+  Vec v_;
   int weight_;
 };
 
@@ -26,7 +28,7 @@ class Object
 // соответственно, убойной силой.
 class O : public Object {
  public:
-  O(float x, float y, float z, int diameter);
+  O(P position, P direction, int diameter);
   ~O();
   virtual void RenderParameters(std::vector<float> &p);
   inline constexpr static float vertices[] = {
@@ -67,8 +69,7 @@ class O : public Object {
 
 class N : public Object {
  public:
-  N(float x, float y, float z, int head, int body, int hands, int legs,
-    int guns);
+  N(P position, int head, int body, int hands, int legs, int guns);
   ~N();
   inline constexpr static float vertices[] = {
       -0.1, -0.1, -0.1, -0.1, -0.1, 0.1,  0.1,  -0.1, -0.1,  // Нижняя крышка.

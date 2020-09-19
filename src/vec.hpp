@@ -1,7 +1,13 @@
 #pragma once
 
+#include "point.hpp"
+
 class Vec {
-  float x_, y_, z_;
+  P position_;
+  P direction_;
 
  public:
+  // Конструктор покоящегося тела.
+  Vec(P position, P direction) : position_(position), direction_(direction) {}
+  const P& Position() { return position_; }
 };

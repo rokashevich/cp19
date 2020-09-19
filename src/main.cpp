@@ -6,6 +6,7 @@
 
 // Сторонние библиотеки идут вместе с проектом.
 #include "SDL.h"
+#include "gameworld.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -16,9 +17,10 @@
 #include "shader_vertex_missile.hpp"
 #include "shader_vertex_panel.hpp"
 
-#include "gameworld.hpp"
+// Заголовочные файлы проекта
 #include "object.hpp"
 #include "physics.hpp"
+#include "point.hpp"
 #include "shader.hpp"
 
 #define SCREEN_WIDTH 700
@@ -132,8 +134,8 @@ int main(int, char **) {  // С пустым main() падает на андро
   Shader player_shader(shader_vertex_missile, shader_fragment_missile);
 
   // Отладка.
-  Physics::AddO(new O(-1, 0, 0, 2));
-  Physics::AddO(new O(0, -1, 0, 2));
+  Physics::AddO(new O(P{-1, 0, 0}, P{-1, 0, 1}, 2));
+  Physics::AddO(new O(P{0, -1, 0}, P{0, -1, 1}, 2));
   // Physics::addO(new O(1, 3, 1, 1));
   // Physics::addO(new O(1, 4, 1, 1));
   // Physics::addO(new N(1, 1, 1, 1, 1, 1, 2, 1));
