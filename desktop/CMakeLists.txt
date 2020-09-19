@@ -27,8 +27,11 @@ add_executable(native-sdl-demo
   ${SRC}/main.cpp
   ${SRC}/gameworld.cpp
   ${SRC}/helpers/maze2d.cpp
+  ${SRC}/vec.hpp
   ${SRC}/shader.hpp
   ${SRC}/object.cpp
+  ${SRC}/physics.cpp
+  ${SRC}/timer.cpp
   ${Shaders})
 
 add_custom_target(shader_vertex_panel ALL COMMAND

@@ -18,6 +18,7 @@
 
 #include "gameworld.hpp"
 #include "object.hpp"
+#include "physics.hpp"
 #include "shader.hpp"
 
 #define SCREEN_WIDTH 700
@@ -34,10 +35,6 @@ static float yaw =
              // rotate a bit to the left.
 static float pitch = 0.0f;
 static float fov = 45.0f;
-
-// timing
-static unsigned int deltaTicks = 0;
-static unsigned int lastTicks = 0;
 
 void render() {
   glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -111,23 +108,36 @@ int main(int, char **) {  // С пустым main() падает на андро
   Shader panel_shader(shader_vertex_panel, shader_fragment_panel);
 
   // Настраиваем снаряды.
-  const int missile_vertices_count =
-      sizeof(Missile::vertices) / sizeof(*Missile::vertices);
+  const int missile_vertices_count = sizeof(O::vertices) / sizeof(*O::vertices);
   unsigned int missile_VBO;
   glGenBuffers(1, &missile_VBO);
   glBindBuffer(GL_ARRAY_BUFFER, missile_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Missile::vertices), Missile::vertices,
+  glBufferData(GL_ARRAY_BUFFER, sizeof(O::vertices), O::vertices,
                GL_STATIC_DRAW);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glEnableVertexAttribArray(1);
   glBindVertexArray(1);
   Shader missile_shader(shader_vertex_missile, shader_fragment_missile);
 
+  // Настраиваем игрока.
+  const int player_vertices_count = sizeof(N::vertices) / sizeof(*N::vertices);
+  unsigned int player_VBO;
+  glGenBuffers(1, &player_VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, player_VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(O::vertices), O::vertices,
+               GL_STATIC_DRAW);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
+  glEnableVertexAttribArray(1);
+  glBindVertexArray(1);
+  Shader player_shader(shader_vertex_missile, shader_fragment_missile);
+
   // Отладка.
-  //  std::list<Missile> missiles;
-  //  missiles.push_back(Missile(1, 1, 1, 1));
-  //  missiles.push_back(Missile(1, 2, 2, 2));
-  //  missiles.push_back(Missile(1, 3, 3, 3));
+  Physics::AddO(new O(-1, 0, 0, 2));
+  Physics::AddO(new O(0, -1, 0, 2));
+  // Physics::addO(new O(1, 3, 1, 1));
+  // Physics::addO(new O(1, 4, 1, 1));
+  // Physics::addO(new N(1, 1, 1, 1, 1, 1, 2, 1));
+  // Physics::addO(new N(1, 1, 1, 1, 1, 1, 3, 1));
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -135,18 +145,14 @@ int main(int, char **) {  // С пустым main() падает на андро
   done = 0;
   int test = 0;  // Временная переменная не нужна.
   while (!done) {
-    unsigned int currentTicks = SDL_GetTicks();
-    deltaTicks = currentTicks - lastTicks;
-    lastTicks = currentTicks;
-    if (deltaTicks == 0) deltaTicks = 1;
-
+    Physics::Step();
     while (SDL_PollEvent(&event)) {
       // std::cout << deltaTicks << std::endl;
       if (event.type == SDL_QUIT) {
         done = 1;
       } else if (event.type == SDL_KEYDOWN) {
         std::cout << "key down: " << event.key.keysym.sym << std::endl;
-        float cameraSpeed = 0.05f * deltaTicks;
+        float cameraSpeed = 0.05f * Physics::Delta();
         switch (event.key.keysym.sym) {
           case SDLK_w:
             std::cout << "w" << std::endl;
@@ -229,19 +235,9 @@ int main(int, char **) {  // С пустым main() падает на андро
     panel_shader.Use();
     glDrawArraysInstanced(GL_TRIANGLES, 0, panel_vertices_count, panels_count);
 
-    // Рисуем снаряды.
-    //
-    std::vector<float> missiles_data_array;
-    missiles_data_array.push_back(-1);
-    missiles_data_array.push_back(0);
-    missiles_data_array.push_back(0);
-    missiles_data_array.push_back(2);
-    missiles_data_array.push_back(0);
-    missiles_data_array.push_back(-1);
-    missiles_data_array.push_back(0);
-    missiles_data_array.push_back(4);
-    const int missiles_count = 2;
-    //
+    // Рендерим снаряды.
+    const Physics::RenderParameters rp = Physics::RenderParametersO();
+
     glUniformMatrix4fv(
         glGetUniformLocation(missile_shader.Program, "projection"), 1, GL_FALSE,
         &projection[0][0]);
@@ -252,8 +248,8 @@ int main(int, char **) {  // С пустым main() падает на андро
     unsigned int missiles_VBO;
     glGenBuffers(1, &missiles_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, missiles_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * missiles_data_array.size(),
-                 missiles_data_array.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * rp.shader_data_size,
+                 rp.shader_data, GL_STATIC_DRAW);
     glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
                           (void *)0);
     glVertexAttribDivisor(3, 1);
@@ -261,7 +257,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindVertexArray(3);
     missile_shader.Use();
     glDrawArraysInstanced(GL_TRIANGLES, 0, missile_vertices_count,
-                          missiles_count);
+                          rp.objects_count);
 
     SDL_GL_SwapWindow(window);
   }

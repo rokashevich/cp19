@@ -1,22 +1,24 @@
 #include "object.hpp"
 #include "helpers/misc.hpp"
 
-Object::Object(int weight, float x, float y, float z)
-    : weight_(weight), x_(x), y_(y), z_(z) {}
+Object::Object(float x, float y, float z, int weight)
+    : x_(x), y_(y), z_(z), weight_(weight) {}
 
-Missile::Missile(int diameter, float x, float y, float z)
-    : Object(constants::pi * diameter * diameter * diameter / 6, x, y, z),
+O::O(float x, float y, float z, int diameter)
+    : Object(x, y, z, constants::pi * diameter * diameter * diameter / 6),
       diameter_(diameter) {}
 
-Missile::~Missile() {}
+O::~O() {}
 
-Player::Player(int head, int body, int hands, int legs, int guns, float x,
-               float y, float z)
-    : Object(0, x, y, z),
+void O::RenderParameters(std::vector<float> &p) {}
+
+N::N(float x, float y, float z, int head, int body, int hands, int legs,
+     int guns)
+    : Object(x, y, z, 0),
       head_(head),
       body_(body),
       hands_(hands),
       legs_(legs),
       guns_(guns){};
 
-Player::~Player(){};
+N::~N(){};
