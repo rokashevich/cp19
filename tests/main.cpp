@@ -1,9 +1,10 @@
-#include <iostream>
+#include <gtest/gtest.h>
 
-using namespace std;
+// https://github.com/google/googletest/blob/master/googletest/docs/primer.md
 
-int main()
+
+int main(int argc, char** argv)
 {
-    cout << "Hello World!" << endl;
-    return 0;
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
