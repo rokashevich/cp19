@@ -147,9 +147,11 @@ int main(int, char **) {  // С пустым main() падает на андро
   done = 0;
   int test = 0;  // Временная переменная не нужна.
   while (!done) {
+    // В первую очередь мир обновляет положения всех объектов на карте.
     Physics::Step();
+
+    // Дальше делаем интерактив с объектами мира.
     while (SDL_PollEvent(&event)) {
-      // std::cout << deltaTicks << std::endl;
       if (event.type == SDL_QUIT) {
         done = 1;
       } else if (event.type == SDL_KEYDOWN) {

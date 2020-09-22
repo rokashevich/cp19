@@ -9,5 +9,5 @@ class Vec {
  public:
   // Конструктор покоящегося тела.
   Vec(P position, P direction) : position_(position), direction_(direction) {}
-  const P& Position() { return position_; }
+  P& Position() { return position_; }
 };

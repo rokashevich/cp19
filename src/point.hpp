@@ -14,7 +14,6 @@ class Point {
   float DistanceTo(Point point) {
 	return sqrt(DistanceToSquared(point));
   }
-  
 };
 
 using P = Point;

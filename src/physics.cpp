@@ -30,6 +30,9 @@ void Physics::Step() {
   Timer::Step();
 
   // Смещаем все объекты в соответствие с их векторами и таймером.
+  for (auto const &o : Physics::os_) {
+    o->x() -= 0.01;
+  }
 }
 
 int Physics::Delta() { return Timer::Delta(); }
