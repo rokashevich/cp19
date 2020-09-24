@@ -31,7 +31,13 @@ void Physics::Step() {
 
   // Смещаем все объекты в соответствие с их векторами и таймером.
   for (auto const &o : Physics::os_) {
-    o->x() -= 0.01;
+    static float start_y = o->y();
+    static float sign = 1;
+    if (o->y() > 1 && sign > 0)
+      sign = -1;
+    else if (o->y() < -1 && sign < 0)
+      sign = 1;
+    o->y() = o->y() + 0.01 * sign;
   }
 }
 
