@@ -27,7 +27,7 @@
 #define SCREEN_HEIGHT 700
 
 // camera
-static glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+static glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
 static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -134,7 +134,8 @@ int main(int, char **) {  // С пустым main() падает на андро
   Shader player_shader(shader_vertex_missile, shader_fragment_missile);
 
   // Отладка.
-  Physics::AddO(new O(P{-1, 0, 0}, P{-1, 0, 1}, 2));
+  O *o = new O(P{-1, 0, 0}, P{-1, 0, 1}, 2);
+  Physics::AddO(o);
   Physics::AddO(new O(P{0, -1, 0}, P{0, -1, 1}, 2));
   // Physics::addO(new O(1, 3, 1, 1));
   // Physics::addO(new O(1, 4, 1, 1));
@@ -146,6 +147,7 @@ int main(int, char **) {  // С пустым main() падает на андро
 
   done = 0;
   int test = 0;  // Временная переменная не нужна.
+  bool camera_toggle = false;
   while (!done) {
     // В первую очередь мир обновляет положения всех объектов на карте.
     Physics::Step();
@@ -176,6 +178,10 @@ int main(int, char **) {  // С пустым main() падает на андро
             cameraPos +=
                 glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
             break;
+          case SDLK_t:
+            std::cout << "toggle camera" << std::endl;
+            camera_toggle = !camera_toggle;
+            break;
           default:
             break;
         }
@@ -203,7 +209,13 @@ int main(int, char **) {  // С пустым main() падает на андро
         glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f,
         100.0f);
     // camera/view transformation
-    glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    glm::mat4 view;
+    if (camera_toggle)
+      view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    else {
+      glm::vec3 pos{o->x() - 2, o->y() - 2, o->z() - 2};
+      view = glm::lookAt(pos, -pos - cameraFront, cameraUp);
+    }
     // make sure to initialize matrix to identity matrix first
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
