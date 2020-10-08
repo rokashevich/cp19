@@ -15,9 +15,9 @@ class Object
   Object(P position, P direction, int weight);
   virtual ~Object() {}
   virtual void RenderParameters(std::vector<float> &p) = 0;
-  float& x() { return v_.Position().x; }
-  float& y() { return v_.Position().y; }
-  float& z() { return v_.Position().z; }
+  float& x() { return v_.Begin().x; }
+  float& y() { return v_.Begin().y; }
+  float& z() { return v_.Begin().z; }
 
  protected:
   Vec v_;

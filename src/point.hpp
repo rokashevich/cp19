@@ -10,9 +10,15 @@ class Point {
   float DistanceToSquared(Point point) {
 	return pow(x-point.x, 2) + pow(y-point.y, 2) + pow(z-point.z, 2);
   }
-  
-  float DistanceTo(Point point) {
-	return sqrt(DistanceToSquared(point));
+
+  float DistanceTo(Point point) { return sqrt(DistanceToSquared(point)); }
+
+  friend Point operator+(Point lhs, const Point& rhs) {
+    return Point{lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
+  }
+
+  friend Point operator-(Point lhs, const Point& rhs) {
+    return Point{lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
   }
 };
 

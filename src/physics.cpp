@@ -37,7 +37,7 @@ void Physics::Step() {
       sign = -1;
     else if (o->y() < -1 && sign < 0)
       sign = 1;
-    o->y() = o->y() + 0.01 * sign;
+    o->y() = o->y() + 0.0001 * sign;
   }
 }
 
