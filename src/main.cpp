@@ -147,7 +147,7 @@ int main(int, char **) {  // С пустым main() падает на андро
 
   done = 0;
   int test = 0;  // Временная переменная не нужна.
-  bool camera_toggle = false;
+  bool camera_toggle = true;
   while (!done) {
     // В первую очередь мир обновляет положения всех объектов на карте.
     Physics::Step();
@@ -157,8 +157,8 @@ int main(int, char **) {  // С пустым main() падает на андро
       if (event.type == SDL_QUIT) {
         done = 1;
       } else if (event.type == SDL_KEYDOWN) {
-        std::cout << "key down: " << event.key.keysym.sym << std::endl;
-        float cameraSpeed = 0.5f * Physics::Delta();
+        std::cout << "key down delta: " << Physics::Delta() << std::endl;
+        float cameraSpeed = 0.0005f * Physics::Delta();
         switch (event.key.keysym.sym) {
           case SDLK_w:
             std::cout << "w" << std::endl;
