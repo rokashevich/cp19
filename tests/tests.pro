@@ -16,4 +16,5 @@ SOURCES += \
         googletest/googletest/src/gtest-all.cc \
         googletest/googlemock/src/gmock-all.cc \
         main.cpp \
-        test_point.cpp
+        test_point.cpp \
+        test_vec.cpp
