@@ -1,6 +1,7 @@
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
 #include <time.h>
+
 #include <iostream>
 #include <list>
 
@@ -148,33 +149,34 @@ int main(int, char **) {  // С пустым main() падает на андро
   done = 0;
   int test = 0;  // Временная переменная не нужна.
   bool camera_toggle = true;
+
   while (!done) {
     // В первую очередь мир обновляет положения всех объектов на карте.
     Physics::Step();
 
     // Дальше делаем интерактив с объектами мира.
-    while (SDL_PollEvent(&event)) {
+    while (SDL_PollEvent(&event)) {      
       if (event.type == SDL_QUIT) {
         done = 1;
       } else if (event.type == SDL_KEYDOWN) {
-        std::cout << "key down delta: " << Physics::Delta() << std::endl;
-        float cameraSpeed = 0.0005f * Physics::Delta();
+        // std::cout << "key down delta: " << Physics::Delta() << std::endl;
+        const float cameraSpeed = 0.1f;
         switch (event.key.keysym.sym) {
           case SDLK_w:
-            std::cout << "w" << std::endl;
+            // std::cout << "w" << std::endl;
             cameraPos += cameraSpeed * cameraFront;
             break;
           case SDLK_s:
-            std::cout << "s" << std::endl;
+            // std::cout << "s" << std::endl;
             cameraPos -= cameraSpeed * cameraFront;
             break;
           case SDLK_a:
-            std::cout << "a" << std::endl;
+            // std::cout << "a" << std::endl;
             cameraPos -=
                 glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
             break;
           case SDLK_d:
-            std::cout << "d" << std::endl;
+            // std::cout << "d" << std::endl;
             cameraPos +=
                 glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
             break;

@@ -21,10 +21,10 @@ class Physics : protected Timer {
   static const Physics::RenderParameters RenderParametersO();
 
   static void Step();
-  static int Delta();
 
  private:
-  static int step_;
+  static int target_fps_;
+  static int step_ticks_;
 
   static std::list<Object*> is_;
   static std::list<Object*> os_;

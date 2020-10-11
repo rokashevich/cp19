@@ -1,5 +1,10 @@
 #include "physics.hpp"
 
+#include <iostream>
+
+int Physics::target_fps_{20};
+int Physics::step_ticks_{1000 / Physics::target_fps_};
+
 std::list<Object *> Physics::is_;
 std::list<Object *> Physics::os_;
 std::list<Object *> Physics::ns_;
@@ -27,7 +32,7 @@ const Physics::RenderParameters Physics::RenderParametersO() {
 
 void Physics::Step() {
   // Сдвигаем таймер на прошедшее с предыдущего шага время.
-  Timer::Step();
+  Timer::Step(Physics::step_ticks_);
 
   // Смещаем все объекты в соответствие с их векторами и таймером.
   for (auto const &o : Physics::os_) {
@@ -37,8 +42,6 @@ void Physics::Step() {
       sign = -1;
     else if (o->y() < -1 && sign < 0)
       sign = 1;
-    o->y() = o->y() + 0.0001 * sign;
+    o->y() = o->y() + 0.05 * sign;
   }
 }
-
-int Physics::Delta() { return Timer::Delta(); }

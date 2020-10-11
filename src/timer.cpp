@@ -1,20 +1,26 @@
 #include "timer.hpp"
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
-int Timer::delta_{0};
 timestamp Timer::previous_timestamp_ =
-    std::chrono::time_point_cast<std::chrono::microseconds>(
+    std::chrono::time_point_cast<std::chrono::milliseconds>(
         std::chrono::steady_clock::now());
 
-void Timer::Step() {
-  const auto current_timestamp =
-      std::chrono::time_point_cast<std::chrono::microseconds>(
-          std::chrono::steady_clock::now());
-  Timer::delta_ = std::chrono::duration_cast<std::chrono::microseconds>(
-                      current_timestamp - Timer::previous_timestamp_)
-                      .count();
-  Timer::previous_timestamp_ = current_timestamp;
-}
+void Timer::Step(int target_ticks) {
+  const auto delta_ticks =
+      std::chrono::duration(
+          std::chrono::time_point_cast<std::chrono::milliseconds>(
+              std::chrono::steady_clock::now()) -
+          previous_timestamp_)
+          .count();
 
-int Timer::Delta() { return Timer::delta_; }
+  const auto sleep_ticks = target_ticks - delta_ticks;
+  if (sleep_ticks > 0)
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ticks));
+
+  Timer::previous_timestamp_ =
+      std::chrono::time_point_cast<std::chrono::milliseconds>(
+          std::chrono::steady_clock::now());
+}
