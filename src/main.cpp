@@ -14,8 +14,10 @@
 
 // Сгенерированные из glsl файлов.
 #include "shader_fragment_missile.hpp"
+#include "shader_fragment_n.hpp"
 #include "shader_fragment_panel.hpp"
 #include "shader_vertex_missile.hpp"
+#include "shader_vertex_n.hpp"
 #include "shader_vertex_panel.hpp"
 
 // Заголовочные файлы проекта
@@ -116,10 +118,10 @@ int main(int, char **) {  // С пустым main() падает на андро
   glGenBuffers(1, &missile_VBO);
   glBindBuffer(GL_ARRAY_BUFFER, missile_VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(O::vertices), O::vertices,
-               GL_STATIC_DRAW);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
-  glEnableVertexAttribArray(1);
-  glBindVertexArray(1);
+               GL_DYNAMIC_DRAW);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
+  glEnableVertexAttribArray(2);
+  glBindVertexArray(2);
   Shader missile_shader(shader_vertex_missile, shader_fragment_missile);
 
   // Настраиваем игрока.
@@ -127,21 +129,20 @@ int main(int, char **) {  // С пустым main() падает на андро
   unsigned int player_VBO;
   glGenBuffers(1, &player_VBO);
   glBindBuffer(GL_ARRAY_BUFFER, player_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(O::vertices), O::vertices,
-               GL_STATIC_DRAW);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
-  glEnableVertexAttribArray(1);
-  glBindVertexArray(1);
-  Shader player_shader(shader_vertex_missile, shader_fragment_missile);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(N::vertices), N::vertices,
+               GL_DYNAMIC_DRAW);
+  glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
+  glEnableVertexAttribArray(4);
+  glBindVertexArray(4);
+  Shader player_shader(shader_vertex_n, shader_fragment_n);
 
   // Отладка.
-  O *o = new O(P{-1, 0, 0}, P{-1, 0, 1}, 2);
-  Physics::AddO(o);
+  Physics::AddO(new O(P{-1, 0, 0}, P{-1, 0, 1}, 2));
   Physics::AddO(new O(P{0, -1, 0}, P{0, -1, 1}, 2));
-  // Physics::addO(new O(1, 3, 1, 1));
-  // Physics::addO(new O(1, 4, 1, 1));
-  // Physics::addO(new N(1, 1, 1, 1, 1, 1, 2, 1));
-  // Physics::addO(new N(1, 1, 1, 1, 1, 1, 3, 1));
+  Physics::AddO(new O(P{0, -1, -1}, P{0, -1, -1}, 2));
+
+  Physics::AddN(new N(P{2, 1, 1}, P{0, 1, -1}, 2));
+  Physics::AddN(new N(P{3, 1, 1}, P{0, 1, 1}, 2));
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -212,12 +213,12 @@ int main(int, char **) {  // С пустым main() падает на андро
         100.0f);
     // camera/view transformation
     glm::mat4 view;
-    if (camera_toggle)
-      view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-    else {
-      glm::vec3 pos{o->x() - 2, o->y() - 2, o->z() - 2};
-      view = glm::lookAt(pos, -pos - cameraFront, cameraUp);
-    }
+    // if (camera_toggle)
+    view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    //    else {
+    //      glm::vec3 pos{o->x() - 2, o->y() - 2, o->z() - 2};
+    //      view = glm::lookAt(pos, -pos - cameraFront, cameraUp);
+    //    }
     // make sure to initialize matrix to identity matrix first
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
@@ -244,18 +245,17 @@ int main(int, char **) {  // С пустым main() падает на андро
       glBindBuffer(GL_ARRAY_BUFFER, panels_VBO);
       glBufferData(GL_ARRAY_BUFFER, sizeof(float) * panels_data_array.size(),
                    panels_data_array.data(), GL_STATIC_DRAW);
-      glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+      glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
                             (void *)0);
-      glVertexAttribDivisor(2, 1);
-      glEnableVertexAttribArray(2);
-      glBindVertexArray(2);
+      glVertexAttribDivisor(1, 1);
+      glEnableVertexAttribArray(1);
+      glBindVertexArray(1);
     }
     panel_shader.Use();
     glDrawArraysInstanced(GL_TRIANGLES, 0, panel_vertices_count, panels_count);
 
     // Рендерим снаряды.
-    const Physics::RenderParameters rp = Physics::RenderParametersO();
-
+    const Physics::RenderParameters rp_o = Physics::RenderParametersO();
     glUniformMatrix4fv(
         glGetUniformLocation(missile_shader.Program, "projection"), 1, GL_FALSE,
         &projection[0][0]);
@@ -266,8 +266,8 @@ int main(int, char **) {  // С пустым main() падает на андро
     unsigned int missiles_VBO;
     glGenBuffers(1, &missiles_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, missiles_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * rp.shader_data_size,
-                 rp.shader_data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * rp_o.shader_data_size,
+                 rp_o.shader_data, GL_DYNAMIC_DRAW);
     glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
                           (void *)0);
     glVertexAttribDivisor(3, 1);
@@ -275,7 +275,30 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindVertexArray(3);
     missile_shader.Use();
     glDrawArraysInstanced(GL_TRIANGLES, 0, missile_vertices_count,
-                          rp.objects_count);
+                          rp_o.objects_count);
+
+    // Рендерим игроков.
+    const Physics::RenderParameters rp_n = Physics::RenderParametersN();
+    glUniformMatrix4fv(
+        glGetUniformLocation(player_shader.Program, "projection"), 1, GL_FALSE,
+        &projection[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(player_shader.Program, "view"), 1,
+                       GL_FALSE, &view[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(player_shader.Program, "model"), 1,
+                       GL_FALSE, &model[0][0]);
+    unsigned int n_VBO;
+    glGenBuffers(1, &n_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, n_VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * rp_n.shader_data_size,
+                 rp_n.shader_data, GL_STATIC_DRAW);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+                          (void *)0);
+    glVertexAttribDivisor(5, 1);
+    glEnableVertexAttribArray(5);
+    glBindVertexArray(5);
+    player_shader.Use();
+    glDrawArraysInstanced(GL_TRIANGLES, 0, player_vertices_count,
+                          rp_n.objects_count);
 
     SDL_GL_SwapWindow(window);
   }

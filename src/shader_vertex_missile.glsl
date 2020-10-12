@@ -1,6 +1,6 @@
 #version 300 es
 
-layout (location = 1) in vec3 pos_in;
+layout (location = 2) in vec3 pos_in;
 layout (location = 3) in vec4 instanced_arg;
 
 uniform mat4 model;

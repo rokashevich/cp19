@@ -19,6 +19,7 @@ class Physics : protected Timer {
   static void AddN(Object*);
 
   static const Physics::RenderParameters RenderParametersO();
+  static const Physics::RenderParameters RenderParametersN();
 
   static void Step();
 
@@ -33,8 +34,4 @@ class Physics : protected Timer {
   static std::vector<float> render_parameters_i;
   static std::vector<float> render_parameters_o;
   static std::vector<float> render_parameters_n;
-
-  static Physics::RenderParameters render_parameters_i_;
-  static Physics::RenderParameters render_parameters_o_;
-  static Physics::RenderParameters render_parameters_n_;
 };

@@ -30,11 +30,25 @@ const Physics::RenderParameters Physics::RenderParametersO() {
                           static_cast<int>(os_.size())};
 }
 
+const Physics::RenderParameters Physics::RenderParametersN() {
+  Physics::render_parameters_n.clear();
+  for (const auto &n : Physics::ns_) {
+    Physics::render_parameters_n.push_back(n->x());
+    Physics::render_parameters_n.push_back(n->y());
+    Physics::render_parameters_n.push_back(n->z());
+    Physics::render_parameters_n.push_back(n->weight_);
+  }
+  return RenderParameters{Physics::render_parameters_n.data(),
+                          static_cast<int>(Physics::render_parameters_n.size()),
+                          static_cast<int>(ns_.size())};
+}
+
 void Physics::Step() {
   // Сдвигаем таймер на прошедшее с предыдущего шага время.
   Timer::Step(Physics::step_ticks_);
 
   // Смещаем все объекты в соответствие с их векторами и таймером.
+  return;
   for (auto const &o : Physics::os_) {
     static float start_y = o->y();
     static float sign = 1;

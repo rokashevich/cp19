@@ -21,7 +21,9 @@ set(Shaders
   ${SRC}/shader_fragment_panel.glsl
   ${SRC}/shader_vertex_panel.glsl
   ${SRC}/shader_fragment_missile.glsl
-  ${SRC}/shader_vertex_missile.glsl)
+  ${SRC}/shader_vertex_missile.glsl
+  ${SRC}/n_vertex.glsl
+  ${SRC}/n_fragment.glsl)
 
 add_executable(native-sdl-demo
   ${SRC}/main.cpp
@@ -59,9 +61,20 @@ add_custom_target(shader_fragment_missile ALL COMMAND
     ${SRC}/shader_fragment_missile.glsl
     ${GENERATED}/shader_fragment_missile.hpp)
 
+add_custom_target(shader_vertex_n ALL COMMAND
+  python3 ${TOOLS}/embedfile.py
+    shader_vertex_n
+    ${SRC}/n_vertex.glsl
+    ${GENERATED}/shader_vertex_n.hpp)
+
+add_custom_target(shader_fragment_n ALL COMMAND
+  python3 ${TOOLS}/embedfile.py
+    shader_fragment_n
+    ${SRC}/n_fragment.glsl
+    ${GENERATED}/shader_fragment_n.hpp)
+
 add_dependencies(native-sdl-demo
   shader_vertex_panel
   shader_fragment_panel
   shader_vertex_missile
   shader_fragment_missile)
-

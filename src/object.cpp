@@ -13,8 +13,8 @@ O::~O() {}
 
 void O::RenderParameters(std::vector<float> &p) {}
 
-N::N(P position, int head, int body, int hands, int legs, int guns)
-    : Object(position, position, 0),
+N::N(P position, P direction, int head, int body, int hands, int legs, int guns)
+    : Object(position, direction, constants::pi * head * head * head / 6),
       head_(head),
       body_(body),
       hands_(hands),
@@ -22,3 +22,5 @@ N::N(P position, int head, int body, int hands, int legs, int guns)
       guns_(guns){};
 
 N::~N(){};
+
+void N::RenderParameters(std::vector<float> &p) {}
