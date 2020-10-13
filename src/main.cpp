@@ -146,9 +146,13 @@ int main(int, char **) {  // С пустым main() падает на андро
   Shader n_shader(shader_vertex_n, shader_fragment_n);
 
   // Отладка.
-  Physics::AddO(new O(P{2, 1, 1}, P{-1, 0, 1}, 2));
-  Physics::AddO(new O(P{3, 1, 1}, P{0, -1, 1}, 2));
-  Physics::AddO(new O(P{4, 1, 1}, P{0, -1, -1}, 2));
+  for (float i = 0; i < 10; ++i) {
+    for (float j = 0; j < 10; ++j) {
+      for (float k = 0; k < 10; ++k) {
+        Physics::AddO(new O(P{i, k, -j}, P{-1, 0, 1}, 2));
+      }
+    }
+  }
 
   Physics::AddN(new N(P{1, 1, 1}, P{0, 1, -1}, 2));
   Physics::AddN(new N(P{-1, 1, 1}, P{0, 1, 1}, 2));
@@ -176,7 +180,7 @@ int main(int, char **) {  // С пустым main() падает на андро
         done = 1;
       } else if (event.type == SDL_KEYDOWN) {
         // std::cout << "key down delta: " << Physics::Delta() << std::endl;
-        const float cameraSpeed = 0.1f;
+        const float cameraSpeed = 0.2f;
         switch (event.key.keysym.sym) {
           case SDLK_w:
             // std::cout << "w" << std::endl;
