@@ -143,7 +143,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
-  Shader player_shader(shader_vertex_n, shader_fragment_n);
+  Shader n_shader(shader_vertex_n, shader_fragment_n);
 
   // Отладка.
   Physics::AddO(new O(P{2, 1, 1}, P{-1, 0, 1}, 2));
@@ -158,6 +158,20 @@ int main(int, char **) {  // С пустым main() падает на андро
 
   done = 0;
   bool camera_toggle = true;
+
+  std::cout << "i_shader.Program=" << i_shader.Program << std::endl;
+  std::cout << "o_shader.Program=" << o_shader.Program << std::endl;
+  std::cout << "n_shader.Program=" << n_shader.Program << std::endl;
+
+  std::cout << "i_shader.Program="
+            << glGetUniformLocation(i_shader.Program, "projection")
+            << std::endl;
+  std::cout << "o_shader.Program="
+            << glGetUniformLocation(o_shader.Program, "projection")
+            << std::endl;
+  std::cout << "n_shader.Program="
+            << glGetUniformLocation(n_shader.Program, "projection")
+            << std::endl;
 
   while (!done) {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -238,14 +252,13 @@ int main(int, char **) {  // С пустым main() падает на андро
         glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
     // Рисуем стены.
-
+    i_shader.Use();
     glUniformMatrix4fv(glGetUniformLocation(i_shader.Program, "projection"), 1,
                        GL_FALSE, &projection[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(i_shader.Program, "view"), 1,
                        GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(i_shader.Program, "model"), 1,
                        GL_FALSE, &model[0][0]);
-    i_shader.Use();
     glBindVertexArray(model_i_VAO);
     unsigned int instance_i_VBO;
     glGenBuffers(1, &instance_i_VBO);
@@ -263,41 +276,14 @@ int main(int, char **) {  // С пустым main() падает на андро
                           game_world.panels_count());
     glBindVertexArray(0);
 
-    // Рендерим игроков.
-    glUniformMatrix4fv(
-        glGetUniformLocation(player_shader.Program, "projection"), 1, GL_FALSE,
-        &projection[0][0]);
-    glUniformMatrix4fv(glGetUniformLocation(player_shader.Program, "view"), 1,
-                       GL_FALSE, &view[0][0]);
-    glUniformMatrix4fv(glGetUniformLocation(player_shader.Program, "model"), 1,
-                       GL_FALSE, &model[0][0]);
-
-    player_shader.Use();
-    glBindVertexArray(model_n_VAO);
-    const Physics::RenderParameters rp_n = Physics::RenderParametersN();
-    unsigned int instance_n_VBO;
-    glGenBuffers(1, &instance_n_VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, instance_n_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * rp_n.shader_data_size,
-                 rp_n.shader_data, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                          (void *)0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glVertexAttribDivisor(5, 1);
-
-    glDrawArraysInstanced(GL_TRIANGLES, 0, player_vertices_count,
-                          rp_n.objects_count);
-    glBindVertexArray(0);
-
     // Рендерим снаряды.
+    o_shader.Use();
     glUniformMatrix4fv(glGetUniformLocation(o_shader.Program, "projection"), 1,
                        GL_FALSE, &projection[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(o_shader.Program, "view"), 1,
                        GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(o_shader.Program, "model"), 1,
                        GL_FALSE, &model[0][0]);
-    o_shader.Use();
     glBindVertexArray(model_o_VAO);
     const Physics::RenderParameters rp_o = Physics::RenderParametersO();
     unsigned int instance_o_VBO;
@@ -313,6 +299,31 @@ int main(int, char **) {  // С пустым main() падает на андро
 
     glDrawArraysInstanced(GL_TRIANGLES, 0, missile_vertices_count,
                           rp_o.objects_count);
+    glBindVertexArray(0);
+
+    // Рендерим игроков.
+    n_shader.Use();
+    glUniformMatrix4fv(glGetUniformLocation(n_shader.Program, "projection"), 1,
+                       GL_FALSE, &projection[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(n_shader.Program, "view"), 1,
+                       GL_FALSE, &view[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(n_shader.Program, "model"), 1,
+                       GL_FALSE, &model[0][0]);
+    glBindVertexArray(model_n_VAO);
+    const Physics::RenderParameters rp_n = Physics::RenderParametersN();
+    unsigned int instance_n_VBO;
+    glGenBuffers(1, &instance_n_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instance_n_VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * rp_n.shader_data_size,
+                 rp_n.shader_data, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+                          (void *)0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glVertexAttribDivisor(5, 1);
+
+    glDrawArraysInstanced(GL_TRIANGLES, 0, player_vertices_count,
+                          rp_n.objects_count);
     glBindVertexArray(0);
 
     SDL_GL_SwapWindow(window);
