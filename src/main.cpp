@@ -163,16 +163,6 @@ int main(int, char **) {  // С пустым main() падает на андро
   std::cout << "o_shader.Program=" << o_shader.Program << std::endl;
   std::cout << "n_shader.Program=" << n_shader.Program << std::endl;
 
-  std::cout << "i_shader.Program="
-            << glGetUniformLocation(i_shader.Program, "projection")
-            << std::endl;
-  std::cout << "o_shader.Program="
-            << glGetUniformLocation(o_shader.Program, "projection")
-            << std::endl;
-  std::cout << "n_shader.Program="
-            << glGetUniformLocation(n_shader.Program, "projection")
-            << std::endl;
-
   while (!done) {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
