@@ -19,7 +19,7 @@ vec3 color(int health){
   else if (health == 3) return vec3(0,0.5,0);
   else if (health == 2) return vec3(0,0,0.5);
   else if (health == 1) return vec3(0.5,0.5,0.5);
-  else return vec3(1,1,1);
+  else return vec3(0,1,1);
 }
 
 void main() {
