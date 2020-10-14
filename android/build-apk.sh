@@ -15,7 +15,6 @@ PROJECT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd
 rm -rf $PROJECT_ROOT/SDL/build/github.rokashevich.cp19
 
 cd $PROJECT_ROOT/SDL/build-scripts
-read -p "android build"
 COPYSOURCE=0 ./androidbuild.sh github.rokashevich.cp19 $PROJECT_ROOT/src/main.cpp $PROJECT_ROOT/src/gameworld.cpp
 
 cd $PROJECT_ROOT/SDL/build/github.rokashevich.cp19/app/jni/src
@@ -24,9 +23,7 @@ ln -s $PROJECT_ROOT/src/* .
 ln -s $PROJECT_ROOT/generated/* .
 cd $PROJECT_ROOT/SDL/build/github.rokashevich.cp19/app/jni
 ln -s $PROJECT_ROOT/glm .
-read -p "dbg"
 cp -rv $PROJECT_ROOT/android/SDL/* $PROJECT_ROOT/SDL
 cd $PROJECT_ROOT/SDL/build/github.rokashevich.cp19
-read -p "gradlew"
 ./gradlew assembleDebug
 
