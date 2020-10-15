@@ -284,6 +284,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glUniformMatrix4fv(glGetUniformLocation(n_shader.Program, "model"), 1,
                        GL_FALSE, &model[0][0]);
     glBindVertexArray(model_n_VAO);
+
     const Physics::RenderParameters rp_n = Physics::RenderParametersN();
     unsigned int instance_n_VBO;
     glGenBuffers(1, &instance_n_VBO);
@@ -295,6 +296,31 @@ int main(int, char **) {  // С пустым main() падает на андро
                           (void *)0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribDivisor(5, 1);
+
+    std::vector<float> bar;
+    for (int i = 0; i < rp_n.objects_count * (2 * 2 * 6); ++i) {
+      bar.push_back(1);
+      bar.push_back(0);
+      bar.push_back(0);
+
+      bar.push_back(0);
+      bar.push_back(1);
+      bar.push_back(0);
+
+      bar.push_back(0);
+      bar.push_back(0);
+      bar.push_back(1);
+    }
+    unsigned int instance_bar_VBO;
+    glGenBuffers(1, &instance_bar_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instance_bar_VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * bar.size(), bar.data(),
+                 GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                          (void *)0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glVertexAttribDivisor(6, 0);
 
     glDrawArraysInstanced(GL_TRIANGLES, 0, N::ShapeVerticesCount(),
                           rp_n.objects_count);
