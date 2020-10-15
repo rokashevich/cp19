@@ -5,7 +5,7 @@
 
 #include "helpers/maze2d.hpp"
 
-GameWorld::GameWorld(const int resolution) {
+GameWorld::GameWorld(const int resolution) : panel_size_{3} {
   const int surfaces_count = resolution + 1;
   const int floor_panels_count = resolution * resolution;
   const int storey_coherent_walls_count = resolution * surfaces_count;
@@ -124,19 +124,19 @@ GameWorld::GameWorld(const int resolution) {
 
           switch (i) {
             case kSurfaceXY:
-              panels_data_.push_back(x);
-              panels_data_.push_back(y);
-              panels_data_.push_back(s);
+              panels_data_.push_back(panel_size_ * x);
+              panels_data_.push_back(panel_size_ * y);
+              panels_data_.push_back(panel_size_ * s);
               break;
             case kSurfaceYZ:
-              panels_data_.push_back(s - 0.5);
-              panels_data_.push_back(y);
-              panels_data_.push_back(x + 0.5);
+              panels_data_.push_back(panel_size_ * s - panel_size_ * 0.5);
+              panels_data_.push_back(panel_size_ * y);
+              panels_data_.push_back(panel_size_ * x + panel_size_ * 0.5);
               break;
             case kSurfaceXZ:
-              panels_data_.push_back(x);
-              panels_data_.push_back(s - 0.5);
-              panels_data_.push_back(y + 0.5);
+              panels_data_.push_back(panel_size_ * x);
+              panels_data_.push_back(panel_size_ * s - panel_size_ * 0.5);
+              panels_data_.push_back(panel_size_ * y + panel_size_ * 0.5);
               break;
           }
           panels_data_.push_back(param);

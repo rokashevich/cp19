@@ -26,9 +26,10 @@ set(Shaders
   ${SRC}/n_fragment.glsl)
 
 add_executable(native-sdl-demo
+  ${SRC}/helpers/maze2d.cpp
+  ${SRC}/helpers/shapegenerator.cpp
   ${SRC}/main.cpp
   ${SRC}/gameworld.cpp
-  ${SRC}/helpers/maze2d.cpp
   ${SRC}/point.hpp
   ${SRC}/vec.hpp
   ${SRC}/shader.hpp

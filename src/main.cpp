@@ -21,6 +21,7 @@
 #include "shader_vertex_panel.hpp"
 
 // Заголовочные файлы проекта
+#include "helpers/shapegenerator.hpp"
 #include "object.hpp"
 #include "physics.hpp"
 #include "point.hpp"
@@ -80,49 +81,29 @@ int main(int, char **) {  // С пустым main() падает на андро
 
   // Настраиваем панели.
   Shader i_shader(shader_vertex_panel, shader_fragment_panel);
-  const float d = 0.01;
-  const float w = 0.45;
-  const float panel_vertices[] = {
-      -w, -w, -d, -w, -w, d,  w,  -w, -d,  // Нижняя крышка.
-      w,  -w, d,  -w, -w, d,  w,  -w, -d,
+  const std::vector<float> panel_shape_vertices =
+      ShapeGenerator::Cuboid(2.9, 2.9, 0.1);
 
-      -w, w,  -d, -w, w,  d,  w,  w,  -d,  // Верхняя крышка.
-      w,  w,  d,  -w, w,  d,  w,  w,  -d,
-
-      -w, -w, d,  -w, w,  d,  w,  -w, d,  // Стенка xy.
-      w,  w,  d,  -w, w,  d,  w,  -w, d,
-
-      d,  -w, -d, d,  w,  -d, d,  -w, d,  // Стенка zy.
-      d,  w,  d,  d,  w,  -d, d,  -w, d,
-
-      -w, -w, -d, -w, w,  -d, w,  -w, -d,  // Стенка -xy.
-      w,  w,  -d, -w, w,  -d, w,  -w, -d,
-
-      -d, -w, -d, -d, w,  -d, -d, -w, d,  // Стенка -zy.
-      -d, w,  d,  -d, w,  -d, -d, -w, d,
-  };
-  const int panel_vertices_count =
-      sizeof(panel_vertices) / sizeof(*panel_vertices);
   unsigned int model_i_VAO, model_i_VBO;
   glGenVertexArrays(1, &model_i_VAO);
   glGenBuffers(1, &model_i_VBO);
   glBindVertexArray(model_i_VAO);
   glBindBuffer(GL_ARRAY_BUFFER, model_i_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(panel_vertices), panel_vertices,
-               GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER,
+               panel_shape_vertices.size() * sizeof(panel_shape_vertices.at(0)),
+               panel_shape_vertices.data(), GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 
   // Настраиваем снаряды.
-  const int missile_vertices_count = sizeof(O::vertices) / sizeof(*O::vertices);
   unsigned int model_o_VAO, model_o_VBO;
   glGenVertexArrays(1, &model_o_VAO);
   glGenBuffers(1, &model_o_VBO);
   glBindVertexArray(model_o_VAO);
   glBindBuffer(GL_ARRAY_BUFFER, model_o_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(O::vertices), O::vertices,
+  glBufferData(GL_ARRAY_BUFFER, O::ShapeBytesCount(), O::ShapeData(),
                GL_DYNAMIC_DRAW);
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
@@ -131,13 +112,12 @@ int main(int, char **) {  // С пустым main() падает на андро
   Shader o_shader(shader_vertex_missile, shader_fragment_missile);
 
   // Настраиваем игрока.
-  const int player_vertices_count = sizeof(N::vertices) / sizeof(*N::vertices);
   unsigned int model_n_VAO, model_n_VBO;
   glGenVertexArrays(1, &model_n_VAO);
   glGenBuffers(1, &model_n_VBO);
   glBindVertexArray(model_n_VAO);
   glBindBuffer(GL_ARRAY_BUFFER, model_n_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(N::vertices), N::vertices,
+  glBufferData(GL_ARRAY_BUFFER, N::ShapeBytesCount(), N::ShapeData(),
                GL_DYNAMIC_DRAW);
   glEnableVertexAttribArray(4);
   glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
@@ -266,7 +246,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribDivisor(1, 1);
 
-    glDrawArraysInstanced(GL_TRIANGLES, 0, panel_vertices_count,
+    glDrawArraysInstanced(GL_TRIANGLES, 0, panel_shape_vertices.size(),
                           game_world.panels_count());
     glBindVertexArray(0);
 
@@ -291,7 +271,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribDivisor(3, 1);
 
-    glDrawArraysInstanced(GL_TRIANGLES, 0, missile_vertices_count,
+    glDrawArraysInstanced(GL_TRIANGLES, 0, O::ShapeVerticesCount(),
                           rp_o.objects_count);
     glBindVertexArray(0);
 
@@ -316,7 +296,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribDivisor(5, 1);
 
-    glDrawArraysInstanced(GL_TRIANGLES, 0, player_vertices_count,
+    glDrawArraysInstanced(GL_TRIANGLES, 0, N::ShapeVerticesCount(),
                           rp_n.objects_count);
     glBindVertexArray(0);
 

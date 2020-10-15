@@ -34,6 +34,7 @@ class GameWorld {
   int panels_count() { return panels_count_; }
 
  private:
+  const float panel_size_;
   std::array<int, kPanelsPermanentParamsCount> panels_permanent_parameters_;
 
   // Стены описываются трёмя массивами плоскостей: стены в плоскостях xy, yz и
