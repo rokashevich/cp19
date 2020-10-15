@@ -133,9 +133,6 @@ std::pair<axis, axis> GenerateMaze(const int dimension) {
     }
   } while (unvisitedCount(maze));
 
-  // Отрисовка каркаса ascii символами.
-  PrintMaze(grid);
-
   return grid;
 }
 }  // namespace Helpers
