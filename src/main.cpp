@@ -82,7 +82,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   // Настраиваем панели.
   Shader i_shader(shader_vertex_panel, shader_fragment_panel);
   const std::vector<float> panel_shape_vertices =
-      ShapeGenerator::Cuboid(2.9, 2.9, 0.1);
+      ShapeGenerator::Cuboid(2.9f, 2.9f, 0.1f);
 
   unsigned int model_i_VAO, model_i_VBO;
   glGenVertexArrays(1, &model_i_VAO);
@@ -134,8 +134,8 @@ int main(int, char **) {  // С пустым main() падает на андро
     }
   }
 
-  Physics::AddN(new N(P{1, 1, 1}, P{0, 1, -1}, 2));
-  Physics::AddN(new N(P{-1, 1, 1}, P{0, 1, 1}, 2));
+  Physics::AddN(new N(P{-5, 1, 1}, P{0, 1, -1}, 2));
+  Physics::AddN(new N(P{0, 1, 1}, P{0, 1, 1}, 2));
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);

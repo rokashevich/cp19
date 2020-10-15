@@ -77,40 +77,6 @@ GameWorld::GameWorld(const int resolution) : panel_size_{3} {
         .at(rand() % resolution) = -1;
   }
 
-  //  for (int i = 0; i < kSurfacesCount; ++i) {
-  //    panels_.at(i).resize(surfaces_count);
-  //    for (int s = 0; s < surfaces_count; ++s) {
-  //      panels_.at(i).at(s).resize(resolution);
-  //      for (int x = 0; x < resolution; ++x) {
-  //        for (int y = 0; y < resolution; ++y) {
-  //          // Удаляем наружные стены и самый верзний потолок!
-  //          if (((i == kSurfaceXY || i == kSurfaceYZ) &&
-  //               (s == 0 || s == resolution)) ||
-  //              (i == kSurfaceXZ && s == resolution))
-  //            panels_.at(i).at(s).at(x).push_back(-1);
-  //          else {
-  //            switch (i) {
-  //              case kSurfaceXY:
-  //                if (maze.first.at(s).at(y))
-  //                  panels_.at(i).at(s).at(y).push_back(10);
-  //                else
-  //                  panels_.at(i).at(s).at(y).push_back(-1);
-  //                break;
-  //              case kSurfaceYZ:
-  //                if (maze.second.at(s).at(y))
-  //                  panels_.at(i).at(s).at(y).push_back(8);
-  //                else
-  //                  panels_.at(i).at(s).at(y).push_back(-1);
-  //                break;
-  //              case kSurfaceXZ:
-  //                panels_.at(i).at(s).at(y).push_back(1);
-  //            }
-  //          }
-  //        }
-  //      }
-  //    }
-  //  }
-
   // Из рабочей структуры получаем инстансированный массив.
   panels_data_.clear();
   panels_count_ = 0;

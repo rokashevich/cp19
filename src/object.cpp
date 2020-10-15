@@ -26,8 +26,7 @@ O::~O() {}
 
 void O::RenderParameters(std::vector<float> &p) {}
 
-const std::vector<float> N::shape_vertices_ = ShapeGenerator::Cuboid(
-    0.05 / constants::golden_ratio, 0.05, 0.05 / constants::golden_ratio);
+const std::vector<float> N::shape_vertices_ = ShapeGenerator::Icosphere(1);
 int N::ShapeVerticesCount() { return N::shape_vertices_.size(); }
 int N::ShapeBytesCount() {
   assert(N::shape_vertices_.size() > 0);
@@ -36,7 +35,7 @@ int N::ShapeBytesCount() {
 const float *N::ShapeData() { return N::shape_vertices_.data(); }
 
 N::N(P position, P direction, int head, int body, int hands, int legs, int guns)
-    : Object(position, direction, constants::pi * head * head * head / 6),
+    : Object(position, direction, head),
       head_(head),
       body_(body),
       hands_(hands),

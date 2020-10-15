@@ -10,8 +10,8 @@ out vec3 vColor;
 
 void main() {
   vec3 offset = vec3(instanced_arg.x,instanced_arg.y,instanced_arg.z);
-  float size = instanced_arg.w;
-  vec3 pos = vec3(pos_in.x*size, pos_in.y*size, pos_in.z*size);
+  float scale = instanced_arg.w;
+  vec3 pos = vec3(pos_in.x*scale, pos_in.y*scale, pos_in.z*scale);
 
   vColor = vec3(1,1,0);
   gl_Position = projection * view * model * vec4(pos + offset, 1.0);
