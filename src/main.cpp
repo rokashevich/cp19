@@ -246,6 +246,31 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribDivisor(1, 1);
 
+    std::vector<float> bar1;
+    for (int i = 0; i < game_world.panels_count() * 2 * 6; ++i) {
+      bar1.push_back(1);
+      bar1.push_back(0);
+      bar1.push_back(0);
+
+      bar1.push_back(0);
+      bar1.push_back(1);
+      bar1.push_back(0);
+
+      bar1.push_back(1);
+      bar1.push_back(1);
+      bar1.push_back(1);
+    }
+    unsigned int instance_bar1_VBO;
+    glGenBuffers(1, &instance_bar1_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instance_bar1_VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * bar1.size(), bar1.data(),
+                 GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                          (void *)0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glVertexAttribDivisor(7, 0);
+
     glDrawArraysInstanced(GL_TRIANGLES, 0, panel_shape_vertices.size(),
                           game_world.panels_count());
     glBindVertexArray(0);
