@@ -13,4 +13,7 @@ class Timer
  private:
   // Вспомогательная переменная для хранения отметки времени с предыдущего шага.
   static timestamp previous_timestamp_;
+
+  static long accumulated_ticks_;
+  static int accumulated_count_;
 };
