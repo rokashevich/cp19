@@ -323,7 +323,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glVertexAttribDivisor(5, 1);
 
     std::vector<float> bar;
-    for (int i = 0; i < rp_n.objects_count * (2 * 2 * 6); ++i) {
+    for (int i = 0; i < N::ShapeVerticesCount(); ++i) {
       bar.push_back(1);
       bar.push_back(0);
       bar.push_back(0);
