@@ -26,7 +26,7 @@ O::~O() {}
 
 void O::RenderParameters(std::vector<float> &p) {}
 
-const std::vector<float> N::shape_vertices_ = ShapeGenerator::Icosphere(1);
+const std::vector<float> N::shape_vertices_ = ShapeGenerator::Icosphere();
 int N::ShapeVerticesCount() { return N::shape_vertices_.size(); }
 int N::ShapeBytesCount() {
   assert(N::shape_vertices_.size() > 0);

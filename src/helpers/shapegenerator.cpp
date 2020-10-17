@@ -35,11 +35,9 @@ std::vector<float> ShapeGenerator::Cuboid(float width, float height,
       -w, -h, -d, -w, h, -d, -w, -h, d, -w, h, d, -w, h, -d, -w, -h, d};
 }
 
-std::vector<float> ShapeGenerator::Icosphere(float diameter) {
+std::vector<float> ShapeGenerator::Icosphere() {
   // Алгоритм построения сферы из треугольников:
   // http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
-  float r = diameter / 2;
-  const float t = r * constants::golden_ratio;
 
   struct TriangleIndices {
     int v1, v2, v3;
@@ -63,7 +61,7 @@ std::vector<float> ShapeGenerator::Icosphere(float diameter) {
       indices.clear();
       index = 0;
 
-      auto t = (1.0 + sqrt(5.0)) / 2.0;
+      const auto t = constants::golden_ratio;
 
       AddVertex(glm::vec3(-1, t, 0));
       AddVertex(glm::vec3(1, t, 0));
@@ -188,5 +186,5 @@ std::vector<float> ShapeGenerator::Icosphere(float diameter) {
     std::map<int64_t, int> middlePointIndexCache;
   };
   IcoSphere i = IcoSphere();
-  return i.Create(1);
+  return i.Create(2);
 }
