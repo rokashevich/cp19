@@ -11,5 +11,4 @@ void main()
   else{
       FragColor = vec4(vColor, 1.0);
   }
-  FragColor = vec4(vColor, 1.0);
 }
