@@ -129,7 +129,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   for (float i = 0; i < 10; ++i) {
     for (float j = 0; j < 10; ++j) {
       for (float k = 0; k < 10; ++k) {
-        Physics::AddO(new O(P{i, k, -j}, P{-1, 0, 1}, 2));
+        Physics::AddO(new O(P{i, k, -j}, P{-1, 0, 1}, 0.5, 1));
       }
     }
   }

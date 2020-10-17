@@ -23,7 +23,7 @@ const Physics::RenderParameters Physics::RenderParametersO() {
     Physics::render_parameters_o.push_back(o->x());
     Physics::render_parameters_o.push_back(o->y());
     Physics::render_parameters_o.push_back(o->z());
-    Physics::render_parameters_o.push_back(o->weight_);
+    Physics::render_parameters_o.push_back(0.1);  // scale!
   }
   return RenderParameters{Physics::render_parameters_o.data(),
                           static_cast<int>(Physics::render_parameters_o.size()),
@@ -36,7 +36,7 @@ const Physics::RenderParameters Physics::RenderParametersN() {
     Physics::render_parameters_n.push_back(n->x());
     Physics::render_parameters_n.push_back(n->y());
     Physics::render_parameters_n.push_back(n->z());
-    Physics::render_parameters_n.push_back(n->weight_);
+    Physics::render_parameters_n.push_back(1);  // scale!
   }
   return RenderParameters{Physics::render_parameters_n.data(),
                           static_cast<int>(Physics::render_parameters_n.size()),
