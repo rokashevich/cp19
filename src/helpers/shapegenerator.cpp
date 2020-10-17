@@ -32,25 +32,55 @@ std::vector<float> ShapeGenerator::Cuboid(float width, float height,
 }
 
 std::vector<float> ShapeGenerator::Icosphere(float diameter) {
-  // Отсюда:
+  // Алгоритм построения сферы из треугольников:
   // http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
   float r = diameter / 2;
   const float t = r * constants::golden_ratio;
-  const std::vector<std::vector<float>> unique_vertices{
-      {-r, t, 0}, {r, t, 0}, {-r, -t, 0}, {r, -t, 0},
-      {0, -r, t}, {0, r, t}, {0, -r, -t}, {0, r, -t},
-      {t, 0, -r}, {t, 0, r}, {-t, 0, -r}, {-t, 0, r}};
 
-  const std::vector<int> order{
-      0, 11, 5,  0, 5,  1, 0, 1, 7, 0, 7,  10, 0, 10, 11, 1, 5, 9, 5, 11,
-      4, 11, 10, 2, 10, 7, 6, 7, 1, 8, 3,  9,  4, 3,  4,  2, 3, 2, 6, 3,
-      6, 8,  3,  8, 9,  4, 9, 5, 2, 4, 11, 6,  2, 10, 8,  6, 7, 9, 8, 1};
-  std::vector<float> vertices;
-  for (auto i : order) {
-    for (int j = 0; j < 3; ++j) {
-      vertices.push_back(unique_vertices.at(i).at(j));
-    }
+  struct Point {
+    float x, y, z;
+  };
+
+  struct Triangle {
+    Point a, b, c;
+  };
+
+  const std::vector<Point> vertices{
+      Point{-r, t, 0}, Point{r, t, 0}, Point{-r, -t, 0}, Point{r, -t, 0},
+      Point{0, -r, t}, Point{0, r, t}, Point{0, -r, -t}, Point{0, r, -t},
+      Point{t, 0, -r}, Point{t, 0, r}, Point{-t, 0, -r}, Point{-t, 0, r}};
+  const std::vector<Triangle> faces{
+      Triangle{vertices.at(0), vertices.at(11), vertices.at(5)},
+      Triangle{vertices.at(0), vertices.at(5), vertices.at(1)},
+      Triangle{vertices.at(0), vertices.at(1), vertices.at(7)},
+      Triangle{vertices.at(0), vertices.at(7), vertices.at(10)},
+      Triangle{vertices.at(0), vertices.at(10), vertices.at(11)},
+      Triangle{vertices.at(1), vertices.at(5), vertices.at(9)},
+      Triangle{vertices.at(5), vertices.at(11), vertices.at(4)},
+      Triangle{vertices.at(11), vertices.at(10), vertices.at(2)},
+      Triangle{vertices.at(10), vertices.at(7), vertices.at(6)},
+      Triangle{vertices.at(7), vertices.at(1), vertices.at(8)},
+      Triangle{vertices.at(3), vertices.at(9), vertices.at(4)},
+      Triangle{vertices.at(3), vertices.at(4), vertices.at(2)},
+      Triangle{vertices.at(3), vertices.at(2), vertices.at(6)},
+      Triangle{vertices.at(3), vertices.at(6), vertices.at(8)},
+      Triangle{vertices.at(3), vertices.at(8), vertices.at(9)},
+      Triangle{vertices.at(4), vertices.at(9), vertices.at(5)},
+      Triangle{vertices.at(2), vertices.at(4), vertices.at(11)},
+      Triangle{vertices.at(6), vertices.at(2), vertices.at(10)},
+      Triangle{vertices.at(8), vertices.at(6), vertices.at(7)},
+      Triangle{vertices.at(9), vertices.at(8), vertices.at(1)}};
+  std::vector<float> buf;
+  for (const auto& face : faces) {
+    buf.push_back(face.a.x);
+    buf.push_back(face.a.y);
+    buf.push_back(face.a.z);
+    buf.push_back(face.b.x);
+    buf.push_back(face.b.y);
+    buf.push_back(face.b.z);
+    buf.push_back(face.c.x);
+    buf.push_back(face.c.y);
+    buf.push_back(face.c.z);
   }
-
-  return vertices;
+  return buf;
 }
