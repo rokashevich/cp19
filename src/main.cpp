@@ -23,6 +23,8 @@
 // Заголовочные файлы проекта
 #include "helpers/shapegenerator.hpp"
 #include "object.hpp"
+#include "objectmissile.hpp"
+#include "objectplayer.hpp"
 #include "physics.hpp"
 #include "point.hpp"
 #include "shader.hpp"
@@ -103,8 +105,8 @@ int main(int, char **) {  // С пустым main() падает на андро
   glGenBuffers(1, &model_o_VBO);
   glBindVertexArray(model_o_VAO);
   glBindBuffer(GL_ARRAY_BUFFER, model_o_VBO);
-  glBufferData(GL_ARRAY_BUFFER, O::ShapeBytesCount(), O::ShapeData(),
-               GL_DYNAMIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, ObjectMissile::ShapeBytesCount(),
+               ObjectMissile::ShapeData(), GL_DYNAMIC_DRAW);
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -117,8 +119,8 @@ int main(int, char **) {  // С пустым main() падает на андро
   glGenBuffers(1, &model_n_VBO);
   glBindVertexArray(model_n_VAO);
   glBindBuffer(GL_ARRAY_BUFFER, model_n_VBO);
-  glBufferData(GL_ARRAY_BUFFER, N::ShapeBytesCount(), N::ShapeData(),
-               GL_DYNAMIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, ObjectPlayer::ShapeBytesCount(),
+               ObjectPlayer::ShapeData(), GL_DYNAMIC_DRAW);
   glEnableVertexAttribArray(4);
   glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -129,13 +131,13 @@ int main(int, char **) {  // С пустым main() падает на андро
   for (float i = 0; i < 10; ++i) {
     for (float j = 0; j < 10; ++j) {
       for (float k = 0; k < 10; ++k) {
-        Physics::AddO(new O(P{i, k, -j}, P{-1, 0, 1}, 0.5, 1));
+        Physics::AddO(new ObjectMissile(P{i, k, -j}, P{-1, 0, 1}, 0.5, 1));
       }
     }
   }
 
-  Physics::AddN(new N(P{-5, 1, 1}, P{0, 1, -1}, 2));
-  Physics::AddN(new N(P{0, 1, 1}, P{0, 1, 1}, 2));
+  Physics::AddN(new ObjectPlayer(P{-5, 1, 1}, P{0, 1, -1}, 2));
+  Physics::AddN(new ObjectPlayer(P{0, 1, 1}, P{0, 1, 1}, 2));
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -296,7 +298,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribDivisor(3, 1);
 
-    glDrawArraysInstanced(GL_TRIANGLES, 0, O::ShapeVerticesCount(),
+    glDrawArraysInstanced(GL_TRIANGLES, 0, ObjectMissile::ShapeVerticesCount(),
                           rp_o.objects_count);
     glBindVertexArray(0);
 
@@ -323,7 +325,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glVertexAttribDivisor(5, 1);
 
     std::vector<float> bar;
-    for (int i = 0; i < N::ShapeVerticesCount(); ++i) {
+    for (int i = 0; i < ObjectPlayer::ShapeVerticesCount(); ++i) {
       bar.push_back(1);
       bar.push_back(0);
       bar.push_back(0);
@@ -347,7 +349,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribDivisor(6, 0);
 
-    glDrawArraysInstanced(GL_TRIANGLES, 0, N::ShapeVerticesCount(),
+    glDrawArraysInstanced(GL_TRIANGLES, 0, ObjectPlayer::ShapeVerticesCount(),
                           rp_n.objects_count);
     glBindVertexArray(0);
 

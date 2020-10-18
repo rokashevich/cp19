@@ -26,16 +26,18 @@ set(Shaders
   ${SRC}/n_fragment.glsl)
 
 add_executable(native-sdl-demo
-  ${SRC}/helpers/maze2d.cpp
-  ${SRC}/helpers/shapegenerator.cpp
   ${SRC}/main.cpp
   ${SRC}/gameworld.cpp
+  ${SRC}/object.cpp
+  ${SRC}/objectmissile.cpp
+  ${SRC}/objectplayer.cpp
   ${SRC}/point.hpp
   ${SRC}/vec.hpp
   ${SRC}/shader.hpp
-  ${SRC}/object.cpp
   ${SRC}/physics.cpp
   ${SRC}/timer.cpp
+  ${SRC}/helpers/maze2d.cpp
+  ${SRC}/helpers/shapegenerator.cpp
   ${Shaders})
 
 add_custom_target(shader_vertex_panel ALL COMMAND

@@ -5,8 +5,6 @@
 #include "object.hpp"
 #include "timer.hpp"
 
-class Object;
-
 class Physics : protected Timer {
  public:
   struct RenderParameters {
