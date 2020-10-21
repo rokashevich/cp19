@@ -1,8 +1,8 @@
 #version 300 es
 
-layout (location = 4) in vec3 pos_in;
-layout (location = 5) in vec4 instanced_arg;
-layout (location = 6) in vec3 bar;
+layout (location = 0) in vec3 pos_in;
+layout (location = 1) in vec4 instanced_arg;
+layout (location = 2) in vec3 bar;
 
 uniform mat4 model;
 uniform mat4 view;

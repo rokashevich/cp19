@@ -108,8 +108,8 @@ int main(int, char **) {  // С пустым main() падает на андро
   glBindBuffer(GL_ARRAY_BUFFER, model_o_VBO);
   glBufferData(GL_ARRAY_BUFFER, Shape<ObjectMissile>::NumBytes(),
                Shape<ObjectMissile>::Data(), GL_DYNAMIC_DRAW);
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
   Shader o_shader(vertex_missile, pixel_missile);
@@ -122,8 +122,8 @@ int main(int, char **) {  // С пустым main() падает на андро
   glBindBuffer(GL_ARRAY_BUFFER, model_n_VBO);
   glBufferData(GL_ARRAY_BUFFER, Shape<ObjectPlayer>::NumBytes(),
                Shape<ObjectPlayer>::Data(), GL_DYNAMIC_DRAW);
-  glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
   Shader n_shader(vertex_player, pixel_player);
@@ -268,11 +268,11 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, instance_bar1_VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * bar1.size(), bar1.data(),
                  GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(7);
-    glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
                           (void *)0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glVertexAttribDivisor(7, 0);
+    glVertexAttribDivisor(2, 0);
 
     glDrawArraysInstanced(GL_TRIANGLES, 0, Shape<ObjectWall>::NumVertices(),
                           game_world.panels_count());
@@ -293,11 +293,11 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, instance_o_VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * rp_o.shader_data_size,
                  rp_o.shader_data, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
                           (void *)0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(1, 1);
 
     glDrawArraysInstanced(GL_TRIANGLES, 0, Shape<ObjectMissile>::NumVertices(),
                           rp_o.objects_count);
@@ -319,11 +319,11 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, instance_n_VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * rp_n.shader_data_size,
                  rp_n.shader_data, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
                           (void *)0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(1, 1);
 
     std::vector<float> bar;
     for (int i = 0; i < Shape<ObjectPlayer>::NumVertices(); ++i) {
@@ -344,11 +344,11 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, instance_bar_VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * bar.size(), bar.data(),
                  GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(6);
-    glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
                           (void *)0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glVertexAttribDivisor(6, 0);
+    glVertexAttribDivisor(2, 0);
 
     glDrawArraysInstanced(GL_TRIANGLES, 0, Shape<ObjectPlayer>::NumVertices(),
                           rp_n.objects_count);
