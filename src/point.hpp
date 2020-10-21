@@ -6,7 +6,9 @@ class Point {
   float x;
   float y;
   float z;
-  
+
+  Point(float x, float y, float z) : x(x), y(y), z(z) {}
+
   float DistanceToSquared(Point point) {
 	return pow(x-point.x, 2) + pow(y-point.y, 2) + pow(z-point.z, 2);
   }

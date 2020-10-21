@@ -21,6 +21,7 @@
 #include "vertex_wall.hpp"
 
 // Заголовочные файлы проекта
+#include "generator_shape.hpp"
 #include "object.hpp"
 #include "object_missile.hpp"
 #include "object_player.hpp"
@@ -29,7 +30,6 @@
 #include "point.hpp"
 #include "shader.hpp"
 #include "shape.hpp"
-#include "shapegenerator.hpp"
 
 #define SCREEN_WIDTH 700
 #define SCREEN_HEIGHT 700

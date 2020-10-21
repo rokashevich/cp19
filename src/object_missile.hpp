@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
 
+#include "generator_shape.hpp"
 #include "object.hpp"
 #include "shape.hpp"
-#include "shapegenerator.hpp"
 
 // Снаряд.
 // Все снаряды одинаковые, отличаются скоростью, размером и плотностью

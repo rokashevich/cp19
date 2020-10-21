@@ -3,7 +3,7 @@
 #include <array>
 #include <iostream>
 
-#include "maze2d.hpp"
+#include "generator_maze2d.hpp"
 
 GameWorld::GameWorld(const int resolution) : panel_size_{3} {
   const int surfaces_count = resolution + 1;

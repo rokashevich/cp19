@@ -37,9 +37,9 @@ add_executable(cp19
   ${SRC}/shader.hpp
   ${SRC}/physics.cpp
   ${SRC}/timer.cpp
-  ${SRC}/maze2d.cpp
+  ${SRC}/generator_shape.cpp
+  ${SRC}/generator_maze2d.cpp
   ${SRC}/shape.cpp
-  ${SRC}/shapegenerator.cpp
   ${Shaders})
 
 add_custom_target(vertex_wall ALL COMMAND

@@ -1,12 +1,12 @@
-#include "shapegenerator.hpp"
+#include "generator_shape.hpp"
 
 #include <cmath>
 #include <iostream>
 #include <map>
 #include <memory>
 
-#include "glm/glm.hpp"
 #include "constants.hpp"
+#include "point.hpp"
 
 std::vector<float> ShapeGenerator::Cuboid(float width, float height,
                                           float depth) {
@@ -63,20 +63,20 @@ std::vector<float> ShapeGenerator::Icosphere() {
 
       const auto t = constants::golden_ratio;
 
-      AddVertex(glm::vec3(-1, t, 0));
-      AddVertex(glm::vec3(1, t, 0));
-      AddVertex(glm::vec3(-1, -t, 0));
-      AddVertex(glm::vec3(1, -t, 0));
+      AddVertex(Point(-1, t, 0));
+      AddVertex(Point(1, t, 0));
+      AddVertex(Point(-1, -t, 0));
+      AddVertex(Point(1, -t, 0));
 
-      AddVertex(glm::vec3(0, -1, t));
-      AddVertex(glm::vec3(0, 1, t));
-      AddVertex(glm::vec3(0, -1, -t));
-      AddVertex(glm::vec3(0, 1, -t));
+      AddVertex(Point(0, -1, t));
+      AddVertex(Point(0, 1, t));
+      AddVertex(Point(0, -1, -t));
+      AddVertex(Point(0, 1, -t));
 
-      AddVertex(glm::vec3(t, 0, -1));
-      AddVertex(glm::vec3(t, 0, 1));
-      AddVertex(glm::vec3(-t, 0, -1));
-      AddVertex(glm::vec3(-t, 0, 1));
+      AddVertex(Point(t, 0, -1));
+      AddVertex(Point(t, 0, 1));
+      AddVertex(Point(-t, 0, -1));
+      AddVertex(Point(-t, 0, 1));
 
       auto faces = std::vector<std::shared_ptr<TriangleIndices>>();
       faces.push_back(std::make_shared<TriangleIndices>(0, 11, 5));
@@ -145,11 +145,11 @@ std::vector<float> ShapeGenerator::Icosphere() {
     }
 
    private:
-    int AddVertex(glm::vec3 position) {
+    int AddVertex(Point position) {
       double length = sqrt(position.x * position.x + position.y * position.y +
                            position.z * position.z);
-      vertices.push_back(glm::vec3(position.x / length, position.y / length,
-                                   position.z / length));
+      vertices.push_back(
+          Point(position.x / length, position.y / length, position.z / length));
 
       return index++;
     }
@@ -165,11 +165,11 @@ std::vector<float> ShapeGenerator::Icosphere() {
         return foundValueIterator->second;
       }
 
-      glm::vec3 point1 = vertices[p1];
-      glm::vec3 point2 = vertices[p2];
-      glm::vec3 middle =
-          glm::vec3((point1.x + point2.x) / 2.0, (point1.y + point2.y) / 2.0,
-                    (point1.z + point2.z) / 2.0);
+      Point point1 = vertices[p1];
+      Point point2 = vertices[p2];
+      Point middle =
+          Point((point1.x + point2.x) / 2.0, (point1.y + point2.y) / 2.0,
+                (point1.z + point2.z) / 2.0);
 
       int i = this->AddVertex(middle);
 
@@ -178,7 +178,7 @@ std::vector<float> ShapeGenerator::Icosphere() {
     }
 
    public:
-    std::vector<glm::vec3> vertices;
+    std::vector<Point> vertices;
     std::vector<unsigned int> indices;
 
    private:

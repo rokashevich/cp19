@@ -1,11 +1,11 @@
+#include "generator_maze2d.hpp"
+
 #include <array>
 #include <chrono>
 #include <random>
 #include <stack>
 #include <thread>
 #include <utility>
-
-#include "maze2d.hpp"
 
 typedef std::vector<std::vector<bool>> axis;
 

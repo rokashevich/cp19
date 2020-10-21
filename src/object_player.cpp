@@ -3,7 +3,7 @@
 #include <cassert>
 
 #include "constants.hpp"
-#include "shapegenerator.hpp"
+#include "generator_shape.hpp"
 template <>
 const std::vector<Shape<ObjectPlayer>::t> Shape<ObjectPlayer>::data_{
     ShapeGenerator::Cuboid(1, constants::golden_ratio, 1)};
