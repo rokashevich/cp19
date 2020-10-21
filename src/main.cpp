@@ -25,9 +25,11 @@
 #include "object.hpp"
 #include "objectmissile.hpp"
 #include "objectplayer.hpp"
+#include "objectwall.hpp"
 #include "physics.hpp"
 #include "point.hpp"
 #include "shader.hpp"
+#include "shape.hpp"
 
 #define SCREEN_WIDTH 700
 #define SCREEN_HEIGHT 700
@@ -91,9 +93,8 @@ int main(int, char **) {  // С пустым main() падает на андро
   glGenBuffers(1, &model_i_VBO);
   glBindVertexArray(model_i_VAO);
   glBindBuffer(GL_ARRAY_BUFFER, model_i_VBO);
-  glBufferData(GL_ARRAY_BUFFER,
-               panel_shape_vertices.size() * sizeof(panel_shape_vertices.at(0)),
-               panel_shape_vertices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, Shape<ObjectWall>::NumBytes(),
+               Shape<ObjectWall>::Data(), GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -105,8 +106,8 @@ int main(int, char **) {  // С пустым main() падает на андро
   glGenBuffers(1, &model_o_VBO);
   glBindVertexArray(model_o_VAO);
   glBindBuffer(GL_ARRAY_BUFFER, model_o_VBO);
-  glBufferData(GL_ARRAY_BUFFER, ObjectMissile::ShapeBytesCount(),
-               ObjectMissile::ShapeData(), GL_DYNAMIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, Shape<ObjectMissile>::NumBytes(),
+               Shape<ObjectMissile>::Data(), GL_DYNAMIC_DRAW);
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -119,8 +120,8 @@ int main(int, char **) {  // С пустым main() падает на андро
   glGenBuffers(1, &model_n_VBO);
   glBindVertexArray(model_n_VAO);
   glBindBuffer(GL_ARRAY_BUFFER, model_n_VBO);
-  glBufferData(GL_ARRAY_BUFFER, ObjectPlayer::ShapeBytesCount(),
-               ObjectPlayer::ShapeData(), GL_DYNAMIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, Shape<ObjectPlayer>::NumBytes(),
+               Shape<ObjectPlayer>::Data(), GL_DYNAMIC_DRAW);
   glEnableVertexAttribArray(4);
   glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -273,7 +274,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribDivisor(7, 0);
 
-    glDrawArraysInstanced(GL_TRIANGLES, 0, panel_shape_vertices.size(),
+    glDrawArraysInstanced(GL_TRIANGLES, 0, Shape<ObjectWall>::NumVertices(),
                           game_world.panels_count());
     glBindVertexArray(0);
 
@@ -298,7 +299,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribDivisor(3, 1);
 
-    glDrawArraysInstanced(GL_TRIANGLES, 0, ObjectMissile::ShapeVerticesCount(),
+    glDrawArraysInstanced(GL_TRIANGLES, 0, Shape<ObjectMissile>::NumVertices(),
                           rp_o.objects_count);
     glBindVertexArray(0);
 
@@ -325,7 +326,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glVertexAttribDivisor(5, 1);
 
     std::vector<float> bar;
-    for (int i = 0; i < ObjectPlayer::ShapeVerticesCount(); ++i) {
+    for (int i = 0; i < Shape<ObjectPlayer>::NumVertices(); ++i) {
       bar.push_back(1);
       bar.push_back(0);
       bar.push_back(0);
@@ -349,7 +350,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribDivisor(6, 0);
 
-    glDrawArraysInstanced(GL_TRIANGLES, 0, ObjectPlayer::ShapeVerticesCount(),
+    glDrawArraysInstanced(GL_TRIANGLES, 0, Shape<ObjectPlayer>::NumVertices(),
                           rp_n.objects_count);
     glBindVertexArray(0);
 

@@ -31,12 +31,14 @@ add_executable(native-sdl-demo
   ${SRC}/object.cpp
   ${SRC}/objectmissile.cpp
   ${SRC}/objectplayer.cpp
+  ${SRC}/objectwall.cpp
   ${SRC}/point.hpp
   ${SRC}/vec.hpp
   ${SRC}/shader.hpp
   ${SRC}/physics.cpp
   ${SRC}/timer.cpp
   ${SRC}/helpers/maze2d.cpp
+  ${SRC}/shape.cpp
   ${SRC}/helpers/shapegenerator.cpp
   ${Shaders})
 

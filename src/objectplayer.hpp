@@ -3,11 +3,10 @@
 
 #include "object.hpp"
 #include "point.hpp"
+#include "shape.hpp"
 #include "vec.hpp"
-
 // Солдат.
-class ObjectPlayer : public Object {
-  static const std::vector<float> shape_vertices_;
+class ObjectPlayer : public Object, Shape<ObjectPlayer> {
   int legs_;
   int body_;
   int head_;
@@ -15,10 +14,6 @@ class ObjectPlayer : public Object {
   int gun_;
 
  public:
-  static int ShapeVerticesCount();
-  static int ShapeBytesCount();
-  static const float* ShapeData();
-
   ObjectPlayer(P position, P direction, int legs = 9, int body = 9,
                int head = 9, int arms = 9, int gun = 9);
   ~ObjectPlayer();
