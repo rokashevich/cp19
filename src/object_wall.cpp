@@ -1,6 +1,6 @@
-#include "objectwall.hpp"
+#include "object_wall.hpp"
 
-#include "helpers/misc.hpp"
+#include "constants.hpp"
 
 template <>
 const std::vector<Shape<ObjectWall>::t> Shape<ObjectWall>::data_{

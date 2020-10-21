@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(native-sdl-demo)
+project(cp19)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 set (CMAKE_CXX_STANDARD 17)
@@ -18,68 +18,70 @@ link_libraries(GL)
 link_libraries(dl)
 
 set(Shaders
-  ${SRC}/shader_fragment_panel.glsl
-  ${SRC}/shader_vertex_panel.glsl
-  ${SRC}/shader_fragment_missile.glsl
-  ${SRC}/shader_vertex_missile.glsl
-  ${SRC}/n_vertex.glsl
-  ${SRC}/n_fragment.glsl)
+  ${SRC}/pixel_missile.glsl
+  ${SRC}/pixel_player.glsl
+  ${SRC}/pixel_wall.glsl
+  ${SRC}/vertex_missile.glsl
+  ${SRC}/vertex_player.glsl
+  ${SRC}/vertex_wall.glsl)
 
-add_executable(native-sdl-demo
+add_executable(cp19
   ${SRC}/main.cpp
   ${SRC}/gameworld.cpp
   ${SRC}/object.cpp
-  ${SRC}/objectmissile.cpp
-  ${SRC}/objectplayer.cpp
-  ${SRC}/objectwall.cpp
+  ${SRC}/object_missile.cpp
+  ${SRC}/object_player.cpp
+  ${SRC}/object_wall.cpp
   ${SRC}/point.hpp
   ${SRC}/vec.hpp
   ${SRC}/shader.hpp
   ${SRC}/physics.cpp
   ${SRC}/timer.cpp
-  ${SRC}/helpers/maze2d.cpp
+  ${SRC}/maze2d.cpp
   ${SRC}/shape.cpp
-  ${SRC}/helpers/shapegenerator.cpp
+  ${SRC}/shapegenerator.cpp
   ${Shaders})
 
-add_custom_target(shader_vertex_panel ALL COMMAND
+add_custom_target(vertex_wall ALL COMMAND
   python3 ${TOOLS}/embedfile.py
-    shader_vertex_panel
-    ${SRC}/shader_vertex_panel.glsl
-    ${GENERATED}/shader_vertex_panel.hpp)
+    vertex_wall
+    ${SRC}/vertex_wall.glsl
+    ${GENERATED}/vertex_wall.hpp)
 
-add_custom_target(shader_fragment_panel ALL COMMAND
+add_custom_target(pixel_wall ALL COMMAND
   python3 ${TOOLS}/embedfile.py
-    shader_fragment_panel
-    ${SRC}/shader_fragment_panel.glsl
-    ${GENERATED}/shader_fragment_panel.hpp)
+    pixel_wall
+    ${SRC}/pixel_wall.glsl
+    ${GENERATED}/pixel_wall.hpp)
 
-add_custom_target(shader_vertex_missile ALL COMMAND
+add_custom_target(vertex_missile ALL COMMAND
   python3 ${TOOLS}/embedfile.py
-    shader_vertex_missile
-    ${SRC}/shader_vertex_missile.glsl
-    ${GENERATED}/shader_vertex_missile.hpp)
+    vertex_missile
+    ${SRC}/vertex_missile.glsl
+    ${GENERATED}/vertex_missile.hpp)
 
-add_custom_target(shader_fragment_missile ALL COMMAND
+add_custom_target(pixel_missile ALL COMMAND
   python3 ${TOOLS}/embedfile.py
-    shader_fragment_missile
-    ${SRC}/shader_fragment_missile.glsl
-    ${GENERATED}/shader_fragment_missile.hpp)
+    pixel_missile
+    ${SRC}/pixel_missile.glsl
+    ${GENERATED}/pixel_missile.hpp)
 
-add_custom_target(shader_vertex_n ALL COMMAND
+add_custom_target(vertex_player ALL COMMAND
   python3 ${TOOLS}/embedfile.py
-    shader_vertex_n
-    ${SRC}/n_vertex.glsl
-    ${GENERATED}/shader_vertex_n.hpp)
+    vertex_player
+    ${SRC}/vertex_player.glsl
+    ${GENERATED}/vertex_player.hpp)
 
-add_custom_target(shader_fragment_n ALL COMMAND
+add_custom_target(pixel_player ALL COMMAND
   python3 ${TOOLS}/embedfile.py
-    shader_fragment_n
-    ${SRC}/n_fragment.glsl
-    ${GENERATED}/shader_fragment_n.hpp)
+    pixel_player
+    ${SRC}/pixel_player.glsl
+    ${GENERATED}/pixel_player.hpp)
 
-add_dependencies(native-sdl-demo
-  shader_vertex_panel
-  shader_fragment_panel
-  shader_vertex_missile
-  shader_fragment_missile)
+add_dependencies(cp19
+  pixel_missile
+  pixel_player
+  pixel_wall
+  vertex_missile
+  vertex_player
+  vertex_wall)

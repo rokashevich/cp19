@@ -13,23 +13,23 @@
 #include "glm/gtc/type_ptr.hpp"
 
 // Сгенерированные из glsl файлов.
-#include "shader_fragment_missile.hpp"
-#include "shader_fragment_n.hpp"
-#include "shader_fragment_panel.hpp"
-#include "shader_vertex_missile.hpp"
-#include "shader_vertex_n.hpp"
-#include "shader_vertex_panel.hpp"
+#include "pixel_missile.hpp"
+#include "pixel_player.hpp"
+#include "pixel_wall.hpp"
+#include "vertex_missile.hpp"
+#include "vertex_player.hpp"
+#include "vertex_wall.hpp"
 
 // Заголовочные файлы проекта
-#include "helpers/shapegenerator.hpp"
 #include "object.hpp"
-#include "objectmissile.hpp"
-#include "objectplayer.hpp"
-#include "objectwall.hpp"
+#include "object_missile.hpp"
+#include "object_player.hpp"
+#include "object_wall.hpp"
 #include "physics.hpp"
 #include "point.hpp"
 #include "shader.hpp"
 #include "shape.hpp"
+#include "shapegenerator.hpp"
 
 #define SCREEN_WIDTH 700
 #define SCREEN_HEIGHT 700
@@ -84,7 +84,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   SDL_SetRelativeMouseMode(SDL_TRUE);
 
   // Настраиваем панели.
-  Shader i_shader(shader_vertex_panel, shader_fragment_panel);
+  Shader i_shader(vertex_wall, pixel_wall);
   const std::vector<float> panel_shape_vertices =
       ShapeGenerator::Cuboid(2.9f, 2.9f, 0.1f);
 
@@ -112,7 +112,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
-  Shader o_shader(shader_vertex_missile, shader_fragment_missile);
+  Shader o_shader(vertex_missile, pixel_missile);
 
   // Настраиваем игрока.
   unsigned int model_n_VAO, model_n_VBO;
@@ -126,7 +126,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
-  Shader n_shader(shader_vertex_n, shader_fragment_n);
+  Shader n_shader(vertex_player, pixel_player);
 
   // Отладка.
   for (float i = 0; i < 10; ++i) {

@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
 
-#include "helpers/shapegenerator.hpp"
 #include "object.hpp"
 #include "shape.hpp"
+#include "shapegenerator.hpp"
 
 // Стена.
 class ObjectWall : public Object, Shape<ObjectWall> {

@@ -1,7 +1,9 @@
-#include "objectplayer.hpp"
+#include "object_player.hpp"
+
 #include <cassert>
-#include "helpers/misc.hpp"
-#include "helpers/shapegenerator.hpp"
+
+#include "constants.hpp"
+#include "shapegenerator.hpp"
 template <>
 const std::vector<Shape<ObjectPlayer>::t> Shape<ObjectPlayer>::data_{
     ShapeGenerator::Cuboid(1, constants::golden_ratio, 1)};

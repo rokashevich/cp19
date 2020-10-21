@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "glm/glm.hpp"
-#include "misc.hpp"
+#include "constants.hpp"
 
 std::vector<float> ShapeGenerator::Cuboid(float width, float height,
                                           float depth) {
