@@ -6,6 +6,7 @@
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
+#include <vector>
 
 #include "SDL.h"
 #include "shader.hpp"
@@ -66,9 +67,6 @@ class RendererSdl {
   void RenderFrame() {
     for (auto& a : renderables_) {
       Renderable* renderable = a.second;
-      //      std::cout << ":" << renderable->instanced_num_bytes_ << ":"
-      //                << renderable->num_vertices_ << ":"
-      //                << renderable->num_instances_ << std::endl;
       renderable->shader->Use();
       glUniformMatrix4fv(
           glGetUniformLocation(renderable->shader->Program, "projection"), 1,
@@ -91,6 +89,31 @@ class RendererSdl {
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glVertexAttribDivisor(1, 1);
 
+      // Барицентрические координаты - что с  ними сделать?
+      std::vector<float> bar;
+      for (auto i = 0; i < renderable->num_vertices_; ++i) {
+        bar.push_back(1);
+        bar.push_back(0);
+        bar.push_back(0);
+
+        bar.push_back(0);
+        bar.push_back(1);
+        bar.push_back(0);
+
+        bar.push_back(0);
+        bar.push_back(0);
+        bar.push_back(1);
+      }
+      unsigned int instance_bar_VBO;
+      glGenBuffers(1, &instance_bar_VBO);
+      glBindBuffer(GL_ARRAY_BUFFER, instance_bar_VBO);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(float) * bar.size(), bar.data(),
+                   GL_DYNAMIC_DRAW);
+      glEnableVertexAttribArray(2);
+      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                            (void*)0);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glVertexAttribDivisor(2, 0);
       glDrawArraysInstanced(GL_TRIANGLES, 0, renderable->num_vertices_,
                             renderable->num_instances_);
       glBindVertexArray(0);
