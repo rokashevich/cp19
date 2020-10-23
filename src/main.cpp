@@ -4,13 +4,13 @@
 
 #include <iostream>
 #include <list>
-
+#include <typeinfo>
 // Сторонние библиотеки идут вместе с проектом.
 #include "SDL.h"
-#include "gameworld.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "world.hpp"
 
 // Сгенерированные из glsl файлов.
 #include "pixel_missile.hpp"
@@ -21,6 +21,7 @@
 #include "vertex_wall.hpp"
 
 // Заголовочные файлы проекта
+#include "constants.hpp"
 #include "generator_shape.hpp"
 #include "object.hpp"
 #include "object_missile.hpp"
@@ -28,11 +29,9 @@
 #include "object_wall.hpp"
 #include "physics.hpp"
 #include "point.hpp"
+#include "renderer_sdl.hpp"
 #include "shader.hpp"
 #include "shape.hpp"
-
-#define SCREEN_WIDTH 700
-#define SCREEN_HEIGHT 700
 
 // camera
 static glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -46,12 +45,6 @@ static float yaw =
 static float pitch = 0.0f;
 static float fov = 45.0f;
 
-void render() {
-  glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-  glClearColor(1.f, 0.f, 1.f, 0.f);
-  glClear(GL_COLOR_BUFFER_BIT);
-}
-
 struct Square {
   float x;
   float y;
@@ -61,27 +54,11 @@ struct Square {
 };
 
 int main(int, char **) {  // С пустым main() падает на андроиде!
-
-  GameWorld game_world = GameWorld(5);  // TODO размер мира вынести в конфиг.
-
-  std::cout << game_world;
-
-  SDL_Window *window;
-  int done;
-  SDL_Event event;
-
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    printf("Could not initialize SDL\n");
-    return 1;
-  }
-  window = SDL_CreateWindow(nullptr, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT,
-                            SDL_WINDOW_OPENGL);
-  if (!window) {
-    printf("Could not initialize Window\n");
-    return 1;
-  }
-  SDL_GL_CreateContext(window);
-  SDL_SetRelativeMouseMode(SDL_TRUE);
+  World game_world = World(constants::maze_dimension);
+  RendererSdl renderer;
+  renderer.SetupStatic(typeid(ObjectMissile), Shape<ObjectMissile>::NumBytes(),
+                       Shape<ObjectMissile>::Data(), vertex_missile,
+                       pixel_missile, Shape<ObjectMissile>::NumVertices());
 
   // Настраиваем панели.
   Shader i_shader(vertex_wall, pixel_wall);
@@ -101,18 +78,17 @@ int main(int, char **) {  // С пустым main() падает на андро
   glBindVertexArray(0);
 
   // Настраиваем снаряды.
-  unsigned int model_o_VAO, model_o_VBO;
-  glGenVertexArrays(1, &model_o_VAO);
-  glGenBuffers(1, &model_o_VBO);
-  glBindVertexArray(model_o_VAO);
-  glBindBuffer(GL_ARRAY_BUFFER, model_o_VBO);
-  glBufferData(GL_ARRAY_BUFFER, Shape<ObjectMissile>::NumBytes(),
-               Shape<ObjectMissile>::Data(), GL_DYNAMIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
-  Shader o_shader(vertex_missile, pixel_missile);
+  //  unsigned int model_o_VAO, model_o_VBO;
+  //  glGenVertexArrays(1, &model_o_VAO);
+  //  glGenBuffers(1, &model_o_VBO);
+  //  glBindVertexArray(model_o_VAO);
+  //  glBindBuffer(GL_ARRAY_BUFFER, model_o_VBO);
+  //  glBufferData(GL_ARRAY_BUFFER, Shape<ObjectMissile>::NumBytes(),
+  //               Shape<ObjectMissile>::Data(), GL_STATIC_DRAW);
+  //  glEnableVertexAttribArray(0);
+  //  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float),
+  //  nullptr); glBindBuffer(GL_ARRAY_BUFFER, 0); glBindVertexArray(0); Shader
+  //  o_shader(vertex_missile, pixel_missile);
 
   // Настраиваем игрока.
   unsigned int model_n_VAO, model_n_VBO;
@@ -121,7 +97,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   glBindVertexArray(model_n_VAO);
   glBindBuffer(GL_ARRAY_BUFFER, model_n_VBO);
   glBufferData(GL_ARRAY_BUFFER, Shape<ObjectPlayer>::NumBytes(),
-               Shape<ObjectPlayer>::Data(), GL_DYNAMIC_DRAW);
+               Shape<ObjectPlayer>::Data(), GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float), nullptr);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -143,12 +119,12 @@ int main(int, char **) {  // С пустым main() падает на андро
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
 
-  done = 0;
+  int done = 0;
   bool camera_toggle = true;
 
-  std::cout << "i_shader.Program=" << i_shader.Program << std::endl;
-  std::cout << "o_shader.Program=" << o_shader.Program << std::endl;
-  std::cout << "n_shader.Program=" << n_shader.Program << std::endl;
+  //  std::cout << "i_shader.Program=" << i_shader.Program << std::endl;
+  //  std::cout << "o_shader.Program=" << o_shader.Program << std::endl;
+  //  std::cout << "n_shader.Program=" << n_shader.Program << std::endl;
 
   while (!done) {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -158,13 +134,13 @@ int main(int, char **) {  // С пустым main() падает на андро
     Physics::Step();
 
     // Дальше делаем интерактив с объектами мира.
-    while (SDL_PollEvent(&event)) {      
-      if (event.type == SDL_QUIT) {
+    while (SDL_PollEvent(&renderer.event)) {
+      if (renderer.event.type == SDL_QUIT) {
         done = 1;
-      } else if (event.type == SDL_KEYDOWN) {
+      } else if (renderer.event.type == SDL_KEYDOWN) {
         // std::cout << "key down delta: " << Physics::Delta() << std::endl;
         const float cameraSpeed = 0.2f;
-        switch (event.key.keysym.sym) {
+        switch (renderer.event.key.keysym.sym) {
           case SDLK_w:
             // std::cout << "w" << std::endl;
             cameraPos += cameraSpeed * cameraFront;
@@ -190,10 +166,10 @@ int main(int, char **) {  // С пустым main() падает на андро
           default:
             break;
         }
-      } else if (event.type == SDL_MOUSEMOTION) {
+      } else if (renderer.event.type == SDL_MOUSEMOTION) {
         static float sensitivity = 0.1f;  // change this value to your liking
-        yaw += event.motion.xrel * sensitivity;
-        pitch -= event.motion.yrel * sensitivity;
+        yaw += renderer.event.motion.xrel * sensitivity;
+        pitch -= renderer.event.motion.yrel * sensitivity;
 
         // make sure that when pitch is out of bounds, screen doesn't get
         // flipped
@@ -210,9 +186,11 @@ int main(int, char **) {  // С пустым main() падает на андро
 
     // pass projection matrix to shader (note that in this case it could change
     // every frame)
-    glm::mat4 projection = glm::perspective(
-        glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f,
-        100.0f);
+    glm::mat4 projection =
+        glm::perspective(glm::radians(fov),
+                         static_cast<float>(constants::screen_width) /
+                             static_cast<float>(constants::screen_height),
+                         0.1f, 100.0f);
     // camera/view transformation
     glm::mat4 view;
     // if (camera_toggle)
@@ -228,6 +206,12 @@ int main(int, char **) {  // С пустым main() падает на андро
     model =
         glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
+    renderer.SetupDynamicCommon(&projection[0][0], &view[0][0], &model[0][0]);
+    // Рендерим снаряды.
+    const Physics::RenderParameters rp_o = Physics::RenderParametersO();
+    renderer.SetupDynamic(typeid(ObjectMissile),
+                          sizeof(float) * rp_o.shader_data_size,
+                          rp_o.shader_data, rp_o.objects_count);
     // Рисуем стены.
     i_shader.Use();
     glUniformMatrix4fv(glGetUniformLocation(i_shader.Program, "projection"), 1,
@@ -276,31 +260,6 @@ int main(int, char **) {  // С пустым main() падает на андро
 
     glDrawArraysInstanced(GL_TRIANGLES, 0, Shape<ObjectWall>::NumVertices(),
                           game_world.panels_count());
-    glBindVertexArray(0);
-
-    // Рендерим снаряды.
-    o_shader.Use();
-    glUniformMatrix4fv(glGetUniformLocation(o_shader.Program, "projection"), 1,
-                       GL_FALSE, &projection[0][0]);
-    glUniformMatrix4fv(glGetUniformLocation(o_shader.Program, "view"), 1,
-                       GL_FALSE, &view[0][0]);
-    glUniformMatrix4fv(glGetUniformLocation(o_shader.Program, "model"), 1,
-                       GL_FALSE, &model[0][0]);
-    glBindVertexArray(model_o_VAO);
-    const Physics::RenderParameters rp_o = Physics::RenderParametersO();
-    unsigned int instance_o_VBO;
-    glGenBuffers(1, &instance_o_VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, instance_o_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * rp_o.shader_data_size,
-                 rp_o.shader_data, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                          (void *)0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glVertexAttribDivisor(1, 1);
-
-    glDrawArraysInstanced(GL_TRIANGLES, 0, Shape<ObjectMissile>::NumVertices(),
-                          rp_o.objects_count);
     glBindVertexArray(0);
 
     // Рендерим игроков.
@@ -354,7 +313,7 @@ int main(int, char **) {  // С пустым main() падает на андро
                           rp_n.objects_count);
     glBindVertexArray(0);
 
-    SDL_GL_SwapWindow(window);
+    renderer.RenderFrame();
   }
 
   SDL_Quit();

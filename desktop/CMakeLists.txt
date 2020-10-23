@@ -27,7 +27,7 @@ set(Shaders
 
 add_executable(cp19
   ${SRC}/main.cpp
-  ${SRC}/gameworld.cpp
+  ${SRC}/world.cpp
   ${SRC}/object.cpp
   ${SRC}/object_missile.cpp
   ${SRC}/object_player.cpp
@@ -40,6 +40,8 @@ add_executable(cp19
   ${SRC}/generator_shape.cpp
   ${SRC}/generator_maze2d.cpp
   ${SRC}/shape.cpp
+  ${SRC}/renderer_sdl.cpp
+  ${SRC}/constants.hpp
   ${Shaders})
 
 add_custom_target(vertex_wall ALL COMMAND

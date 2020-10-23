@@ -3,7 +3,7 @@
 #include "constants.hpp"
 
 template <>
-const std::vector<Shape<ObjectMissile>::t> Shape<ObjectMissile>::data_{
+const std::vector<Shape<ObjectMissile>::t> Shape<ObjectMissile>::data{
     ShapeGenerator::Icosphere()};
 
 ObjectMissile::ObjectMissile(P position, P direction, float diameter,

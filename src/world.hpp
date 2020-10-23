@@ -11,10 +11,10 @@ struct Panel {
   int health;
   int material;
 };
-class GameWorld {
+class World {
  public:
-  GameWorld(int resolution);
-  ~GameWorld();
+  World(int resolution);
+  ~World();
   enum {
     kSurfaceXY = 0,
     kSurfaceYZ = 1,
@@ -46,7 +46,7 @@ class GameWorld {
   std::array<std::vector<std::vector<std::vector<float>>>, kSurfacesCount>
       panels_;
 
-  friend std::ostream& operator<<(std::ostream& os, const GameWorld& gw);
+  friend std::ostream& operator<<(std::ostream& os, const World& gw);
 };
 
 #endif  // GAMEWORLD_HPP

@@ -1,11 +1,11 @@
-#include "gameworld.hpp"
+#include "world.hpp"
 
 #include <array>
 #include <iostream>
 
 #include "generator_maze2d.hpp"
 
-GameWorld::GameWorld(const int resolution) : panel_size_{3} {
+World::World(const int resolution) : panel_size_{3} {
   const int surfaces_count = resolution + 1;
   const int floor_panels_count = resolution * resolution;
   const int storey_coherent_walls_count = resolution * surfaces_count;
@@ -113,9 +113,9 @@ GameWorld::GameWorld(const int resolution) : panel_size_{3} {
   }
 }
 
-GameWorld::~GameWorld() {}
+World::~World() {}
 
-std::ostream& operator<<(std::ostream& os, const GameWorld& gw) {
+std::ostream& operator<<(std::ostream& os, const World& gw) {
   os << "resolution = " << gw.panels_permanent_parameters_[0] << std::endl;
   os << "surfaces_count = " << gw.panels_permanent_parameters_[1] << std::endl;
   os << "slab_panels_count = " << gw.panels_permanent_parameters_[2]

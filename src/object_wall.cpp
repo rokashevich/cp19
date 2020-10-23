@@ -3,7 +3,7 @@
 #include "constants.hpp"
 
 template <>
-const std::vector<Shape<ObjectWall>::t> Shape<ObjectWall>::data_{
+const std::vector<Shape<ObjectWall>::t> Shape<ObjectWall>::data{
     ShapeGenerator::Cuboid(constants::wall_width, constants::wall_height,
                            constants::wall_thickness)};
 

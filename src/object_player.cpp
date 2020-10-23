@@ -5,7 +5,7 @@
 #include "constants.hpp"
 #include "generator_shape.hpp"
 template <>
-const std::vector<Shape<ObjectPlayer>::t> Shape<ObjectPlayer>::data_{
+const std::vector<Shape<ObjectPlayer>::t> Shape<ObjectPlayer>::data{
     ShapeGenerator::Cuboid(1, constants::golden_ratio, 1)};
 ObjectPlayer::ObjectPlayer(P position, P direction, int legs, int body,
                            int head, int arms, int gun)
