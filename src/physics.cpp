@@ -11,6 +11,12 @@ void Physics::Step() {
 
   for (auto const &a : group_) {
     ObjectGroupContainer *group = a.second;
+    if (!group->is_dynamic) {
+      if (group->is_state_changed == yes)
+        group->is_state_changed = yesnextno;
+      else if (group->is_state_changed == yesnextno)
+        group->is_state_changed = no;
+    }
     int i = -1;
     for (auto &object : group->objects) {
       group->coords_params_buffer_.at(++i) = object->x();

@@ -12,7 +12,7 @@ class ObjectWall : public Object {
   int health_;
 
  public:
-  ObjectWall(int helath);
+  ObjectWall(P position, int orientation_helath);
   ~ObjectWall();
   float w() final { return health_; }
   const float* VerticesBuffer() final;

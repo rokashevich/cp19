@@ -7,8 +7,8 @@ const std::vector<float> ObjectWall::vertices_buffer_ =
 
 const int ObjectWall::num_vertices_ = ObjectWall::vertices_buffer_.size() / 3;
 
-ObjectWall::ObjectWall(int helath)
-    : Object(P{0, 0, 0}, P{0, 0, 0}, 0), health_(helath) {}
+ObjectWall::ObjectWall(P position, int orientation_helath)
+    : Object(position, position, 0), health_(orientation_helath) {}
 
 ObjectWall::~ObjectWall() {}
 
