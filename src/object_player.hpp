@@ -3,10 +3,12 @@
 
 #include "object.hpp"
 #include "point.hpp"
-#include "shape.hpp"
 #include "vec.hpp"
 // Солдат.
-class ObjectPlayer : public Object, Shape<ObjectPlayer> {
+class ObjectPlayer : public Object {
+  static const std::vector<float> vertices_buffer_;
+  static const int num_vertices_;
+
   int legs_;
   int body_;
   int head_;
@@ -17,5 +19,8 @@ class ObjectPlayer : public Object, Shape<ObjectPlayer> {
   ObjectPlayer(P position, P direction, int legs = 9, int body = 9,
                int head = 9, int arms = 9, int gun = 9);
   ~ObjectPlayer();
-  virtual void RenderParameters(std::vector<float>& p) override;
+  float w() final { return 1; }
+  const float* VerticesBuffer() final;
+  std::size_t SizeofVerticesBuffer() final;
+  int NumVertices() final;
 };

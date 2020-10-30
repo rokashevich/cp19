@@ -31,7 +31,6 @@
 #include "point.hpp"
 #include "renderer_sdl.hpp"
 #include "shader.hpp"
-#include "shape.hpp"
 
 // camera
 static glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -45,54 +44,53 @@ static float yaw =
 static float pitch = 0.0f;
 static float fov = 45.0f;
 
-struct Square {
-  float x;
-  float y;
-  float z;
-  float a;
-  float t;
-};
-
-int main(int, char **) {  // С пустым main() падает на андроиде!
+int main(int, char**) {  // С пустым main() падает на андроиде!
   World game_world = World(constants::maze_dimension);
   RendererSdl renderer;
+
+  Object* reference_wall = new ObjectWall(0);
+  Object* reference_missile = new ObjectMissile(P{0, 0, 0}, P{0, 0, 0}, 0);
+  Object* reference_player = new ObjectPlayer(P{0, 0, 0}, P{0, 0, 0}, 0);
+
+  Physics physics;
+  physics.SetupObject(typeid(ObjectWall), reference_wall, false);
+  physics.SetupObject(typeid(ObjectMissile), reference_missile, true);
+  physics.SetupObject(typeid(ObjectPlayer), reference_player, true);
+
+  // Настраиваем стены.
+  renderer.SetupStatic(typeid(ObjectWall),
+                       reference_wall->SizeofVerticesBuffer(),
+                       reference_wall->VerticesBuffer(), vertex_wall,
+                       pixel_wall, reference_wall->NumVertices());
   // Настраиваем снаряды.
-  renderer.SetupStatic(typeid(ObjectMissile), Shape<ObjectMissile>::NumBytes(),
-                       Shape<ObjectMissile>::Data(), vertex_missile,
-                       pixel_missile, Shape<ObjectMissile>::NumVertices());
+  renderer.SetupStatic(typeid(ObjectMissile),
+                       reference_missile->SizeofVerticesBuffer(),
+                       reference_missile->VerticesBuffer(), vertex_missile,
+                       pixel_missile, reference_missile->NumVertices());
   // Настраиваем игрока.
-  renderer.SetupStatic(typeid(ObjectPlayer), Shape<ObjectPlayer>::NumBytes(),
-                       Shape<ObjectPlayer>::Data(), vertex_player, pixel_player,
-                       Shape<ObjectPlayer>::NumVertices());
-  // Настраиваем панели.
-  renderer.SetupStatic(typeid(ObjectWall), Shape<ObjectWall>::NumBytes(),
-                       Shape<ObjectWall>::Data(), vertex_wall, pixel_wall,
-                       Shape<ObjectWall>::NumVertices());
+  renderer.SetupStatic(typeid(ObjectPlayer),
+                       reference_player->SizeofVerticesBuffer(),
+                       reference_player->VerticesBuffer(), vertex_player,
+                       pixel_player, reference_player->NumVertices());
   // Отладка.
   for (float i = 0; i < 10; ++i) {
     for (float j = 0; j < 10; ++j) {
       for (float k = 0; k < 10; ++k) {
-        Physics::AddO(new ObjectMissile(P{i, k, -j}, P{-1, 0, 1}, 0.5, 1));
+        Object* o = new ObjectMissile(P{i, k, -j}, P{-1, 0, 1}, 0.1);
+        physics.AddObject(typeid(ObjectMissile), o);
       }
     }
   }
 
-  Physics::AddN(new ObjectPlayer(P{-5, 1, 1}, P{0, 1, -1}, 2));
-  Physics::AddN(new ObjectPlayer(P{0, 1, 1}, P{0, 1, 1}, 2));
-
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS);
+  Object* player1 = new ObjectPlayer(P{-5, 1, 1}, P{0, 1, -1});
+  Object* player2 = new ObjectPlayer(P{0, 1, 1}, P{0, 1, 1});
+  physics.AddObject(typeid(ObjectPlayer), player1);
+  physics.AddObject(typeid(ObjectPlayer), player2);
 
   int done = 0;
   bool camera_toggle = true;
 
   while (!done) {
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // В первую очередь мир обновляет положения всех объектов на карте.
-    Physics::Step();
-
     // Дальше делаем интерактив с объектами мира.
     while (SDL_PollEvent(&renderer.event)) {
       if (renderer.event.type == SDL_QUIT) {
@@ -166,22 +164,27 @@ int main(int, char **) {  // С пустым main() падает на андро
     model =
         glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
-    renderer.SetupDynamicCommon(&projection[0][0], &view[0][0], &model[0][0]);
-    // Рендерим снаряды.
-    const Physics::RenderParameters rp_o = Physics::RenderParametersO();
-    renderer.SetupDynamic(typeid(ObjectMissile),
-                          sizeof(float) * rp_o.shader_data_size,
-                          rp_o.shader_data, rp_o.objects_count);
+    // В первую очередь мир обновляет положения всех объектов на карте.
+    physics.Step();
+
+    renderer.UpdateCommon(&projection[0][0], &view[0][0], &model[0][0]);
     // Рисуем стены.
-    renderer.SetupDynamic(
+    renderer.UpdateDynamic(
         typeid(ObjectWall),
         sizeof(float) * sizeof(float) * game_world.panels_data_array().size(),
         game_world.panels_data_array().data(), game_world.panels_count());
+    // Рендерим снаряды.
+    renderer.UpdateDynamic(
+        typeid(ObjectMissile),
+        physics.SizeofCoordsParamsBuffer(typeid(ObjectMissile)),
+        physics.CoordsParamsBuffer(typeid(ObjectMissile)),
+        physics.ObjectsCount(typeid(ObjectMissile)));
     // Рендерим игроков.
-    const Physics::RenderParameters rp_n = Physics::RenderParametersN();
-    renderer.SetupDynamic(typeid(ObjectPlayer),
-                          sizeof(float) * rp_n.shader_data_size,
-                          rp_n.shader_data, rp_n.objects_count);
+    renderer.UpdateDynamic(
+        typeid(ObjectPlayer),
+        physics.SizeofCoordsParamsBuffer(typeid(ObjectPlayer)),
+        physics.CoordsParamsBuffer(typeid(ObjectPlayer)),
+        physics.ObjectsCount(typeid(ObjectPlayer)));
 
     renderer.RenderFrame();
   }

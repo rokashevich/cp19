@@ -17,4 +17,6 @@ RendererSdl::RendererSdl() {
   }
   SDL_GL_CreateContext(window_);
   SDL_SetRelativeMouseMode(SDL_TRUE);
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
 }

@@ -39,7 +39,6 @@ add_executable(cp19
   ${SRC}/timer.cpp
   ${SRC}/generator_shape.cpp
   ${SRC}/generator_maze2d.cpp
-  ${SRC}/shape.cpp
   ${SRC}/renderer_sdl.cpp
   ${SRC}/constants.hpp
   ${Shaders})

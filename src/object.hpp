@@ -1,9 +1,9 @@
 #pragma once
 
+#include <cstddef>
 #include <vector>
 
 #include "point.hpp"
-#include "shape.hpp"
 #include "vec.hpp"
 
 // Базовый класс физического объекта игрового мира.
@@ -18,5 +18,8 @@ class Object {
   float& x() { return v_.Begin().x; }
   float& y() { return v_.Begin().y; }
   float& z() { return v_.Begin().z; }
-  virtual void RenderParameters(std::vector<float>& p) = 0;  // Удалить!
+  virtual float w() = 0;
+  virtual const float* VerticesBuffer() = 0;
+  virtual std::size_t SizeofVerticesBuffer() = 0;
+  virtual int NumVertices() = 0;
 };

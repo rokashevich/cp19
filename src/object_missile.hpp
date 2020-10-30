@@ -1,19 +1,24 @@
 #pragma once
+#include <cstddef>
 #include <vector>
 
 #include "generator_shape.hpp"
 #include "object.hpp"
-#include "shape.hpp"
 
 // Снаряд.
 // Все снаряды одинаковые, отличаются скоростью, размером и плотностью
 // - из этих переменных расчитывается убойная сила конкретного снаряда.
-class ObjectMissile : public Object, Shape<ObjectMissile> {
+class ObjectMissile : public Object {
+  static const std::vector<float> vertices_buffer_;
+  static const int num_vertices_;
+
   const float diameter_;
-  const float density_;
 
  public:
-  ObjectMissile(P position, P direction, float diameter, float density);
+  ObjectMissile(P position, P direction, float diameter);
   ~ObjectMissile();
-  void RenderParameters(std::vector<float>& p) override;
+  float w() final { return diameter_; }
+  const float* VerticesBuffer() final;
+  std::size_t SizeofVerticesBuffer() final;
+  int NumVertices() final;
 };

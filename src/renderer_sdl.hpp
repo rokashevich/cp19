@@ -49,13 +49,15 @@ class RendererSdl {
     renderables_[id] = renderable;
   }
 
-  void SetupDynamicCommon(float* projection, float* view, float* model) {
+  void UpdateCommon(float* projection, float* view, float* model) {
     projection_ = projection;
     view_ = view;
     model_ = model;
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
 
-  void SetupDynamic(std::type_index id, size_t num_bytes, float* const data,
+  void UpdateDynamic(std::type_index id, size_t num_bytes, float* const data,
                     int num_instances) {
     Renderable* renderable = renderables_.find(id)->second;
     assert(renderable != nullptr);

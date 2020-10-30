@@ -1,18 +1,28 @@
 #include "object_missile.hpp"
 
+#include <cassert>
+
 #include "constants.hpp"
 
-template <>
-const std::vector<Shape<ObjectMissile>::t> Shape<ObjectMissile>::data{
-    ShapeGenerator::Icosphere()};
+const std::vector<float> ObjectMissile::vertices_buffer_ =
+    ShapeGenerator::Icosphere();
 
-ObjectMissile::ObjectMissile(P position, P direction, float diameter,
-                             float density)
+const int ObjectMissile::num_vertices_ =
+    ObjectMissile::vertices_buffer_.size() / 3;
+
+ObjectMissile::ObjectMissile(P position, P direction, float diameter)
     : Object(position, direction,
-             density * constants::pi * diameter * diameter * diameter / 6),
-      diameter_(diameter),
-      density_(density) {}
+             constants::pi * diameter * diameter * diameter / 6),
+      diameter_(diameter) {}
 
 ObjectMissile::~ObjectMissile() {}
 
-void ObjectMissile::RenderParameters(std::vector<float> &p) {}
+const float* ObjectMissile::VerticesBuffer() {
+  return ObjectMissile::vertices_buffer_.data();
+}
+
+std::size_t ObjectMissile::SizeofVerticesBuffer() {
+  return sizeof(float) * ObjectMissile::vertices_buffer_.size();
+}
+
+int ObjectMissile::NumVertices() { return ObjectMissile::num_vertices_; }

@@ -3,14 +3,19 @@
 
 #include "generator_shape.hpp"
 #include "object.hpp"
-#include "shape.hpp"
 
 // Стена.
-class ObjectWall : public Object, Shape<ObjectWall> {
+class ObjectWall : public Object {
+  static const std::vector<float> vertices_buffer_;
+  static const int num_vertices_;
+
   int health_;
 
  public:
   ObjectWall(int helath);
   ~ObjectWall();
-  void RenderParameters(std::vector<float>& p) override;
+  float w() final { return health_; }
+  const float* VerticesBuffer() final;
+  std::size_t SizeofVerticesBuffer() final;
+  int NumVertices() final;
 };
