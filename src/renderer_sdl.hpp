@@ -23,14 +23,14 @@ class RendererSdl {
     int num_vertices_;
     int num_instances_;
   };
-  std::unordered_map<std::type_index, Renderable*> renderables_;
+  std::unordered_map<int, Renderable*> renderables_;
 
  public:
   SDL_Event event;
   SDL_Window* window_;
 
   RendererSdl();
-  void SetupStatic(std::type_index id, size_t num_bytes, const float* data,
+  void SetupStatic(int id, size_t num_bytes, const float* data,
                    const char* vertex_shader, const char* pixel_shader,
                    int num_vertices) {
     Renderable* renderable = new Renderable;
@@ -57,8 +57,8 @@ class RendererSdl {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
 
-  void UpdateDynamic(std::type_index id, size_t num_bytes, float* const data,
-                    int num_instances) {
+  void UpdateDynamic(int id, size_t num_bytes, float* const data,
+                     int num_instances) {
     Renderable* renderable = renderables_.find(id)->second;
     assert(renderable != nullptr);
     renderable->instanced_num_bytes_ = num_bytes;

@@ -2,6 +2,7 @@
 #include <GLES3/gl32.h>
 #include <time.h>
 
+#include <array>
 #include <iostream>
 #include <list>
 #include <typeinfo>
@@ -21,6 +22,7 @@
 #include "vertex_wall.hpp"
 
 // Заголовочные файлы проекта
+
 #include "constants.hpp"
 #include "generator_shape.hpp"
 #include "object.hpp"
@@ -31,7 +33,6 @@
 #include "point.hpp"
 #include "renderer_sdl.hpp"
 #include "shader.hpp"
-
 // camera
 static glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
 static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -45,6 +46,8 @@ static float pitch = 0.0f;
 static float fov = 45.0f;
 
 int main(int, char**) {  // С пустым main() падает на андроиде!
+  enum { kWall, kMissile, kPlayer };
+
   World game_world = World(constants::maze_dimension);
   RendererSdl renderer;
 
@@ -53,23 +56,20 @@ int main(int, char**) {  // С пустым main() падает на андро�
   Object* reference_player = new ObjectPlayer(P{0, 0, 0}, P{0, 0, 0}, 0);
 
   Physics physics;
-  physics.SetupObject(typeid(ObjectWall), reference_wall, false);
-  physics.SetupObject(typeid(ObjectMissile), reference_missile, true);
-  physics.SetupObject(typeid(ObjectPlayer), reference_player, true);
+  physics.SetupObject(kWall, reference_wall, false);
+  physics.SetupObject(kMissile, reference_missile, true);
+  physics.SetupObject(kPlayer, reference_player, true);
 
   // Настраиваем стены.
-  renderer.SetupStatic(typeid(ObjectWall),
-                       reference_wall->SizeofVerticesBuffer(),
+  renderer.SetupStatic(kWall, reference_wall->SizeofVerticesBuffer(),
                        reference_wall->VerticesBuffer(), vertex_wall,
                        pixel_wall, reference_wall->NumVertices());
   // Настраиваем снаряды.
-  renderer.SetupStatic(typeid(ObjectMissile),
-                       reference_missile->SizeofVerticesBuffer(),
+  renderer.SetupStatic(kMissile, reference_missile->SizeofVerticesBuffer(),
                        reference_missile->VerticesBuffer(), vertex_missile,
                        pixel_missile, reference_missile->NumVertices());
   // Настраиваем игрока.
-  renderer.SetupStatic(typeid(ObjectPlayer),
-                       reference_player->SizeofVerticesBuffer(),
+  renderer.SetupStatic(kPlayer, reference_player->SizeofVerticesBuffer(),
                        reference_player->VerticesBuffer(), vertex_player,
                        pixel_player, reference_player->NumVertices());
   // Отладка.
@@ -77,15 +77,15 @@ int main(int, char**) {  // С пустым main() падает на андро�
     for (float j = 0; j < 10; ++j) {
       for (float k = 0; k < 10; ++k) {
         Object* o = new ObjectMissile(P{i, k, -j}, P{-1, 0, 1}, 0.1);
-        physics.AddObject(typeid(ObjectMissile), o);
+        physics.AddObject(kMissile, o);
       }
     }
   }
 
   Object* player1 = new ObjectPlayer(P{-5, 1, 1}, P{0, 1, -1});
   Object* player2 = new ObjectPlayer(P{0, 1, 1}, P{0, 1, 1});
-  physics.AddObject(typeid(ObjectPlayer), player1);
-  physics.AddObject(typeid(ObjectPlayer), player2);
+  physics.AddObject(kPlayer, player1);
+  physics.AddObject(kPlayer, player2);
 
   int done = 0;
   bool camera_toggle = true;
@@ -170,21 +170,17 @@ int main(int, char**) {  // С пустым main() падает на андро�
     renderer.UpdateCommon(&projection[0][0], &view[0][0], &model[0][0]);
     // Рисуем стены.
     renderer.UpdateDynamic(
-        typeid(ObjectWall),
+        kWall,
         sizeof(float) * sizeof(float) * game_world.panels_data_array().size(),
         game_world.panels_data_array().data(), game_world.panels_count());
     // Рендерим снаряды.
-    renderer.UpdateDynamic(
-        typeid(ObjectMissile),
-        physics.SizeofCoordsParamsBuffer(typeid(ObjectMissile)),
-        physics.CoordsParamsBuffer(typeid(ObjectMissile)),
-        physics.ObjectsCount(typeid(ObjectMissile)));
+    renderer.UpdateDynamic(kMissile, physics.SizeofCoordsParamsBuffer(kMissile),
+                           physics.CoordsParamsBuffer(kMissile),
+                           physics.ObjectsCount(kMissile));
     // Рендерим игроков.
-    renderer.UpdateDynamic(
-        typeid(ObjectPlayer),
-        physics.SizeofCoordsParamsBuffer(typeid(ObjectPlayer)),
-        physics.CoordsParamsBuffer(typeid(ObjectPlayer)),
-        physics.ObjectsCount(typeid(ObjectPlayer)));
+    renderer.UpdateDynamic(kPlayer, physics.SizeofCoordsParamsBuffer(kPlayer),
+                           physics.CoordsParamsBuffer(kPlayer),
+                           physics.ObjectsCount(kPlayer));
 
     renderer.RenderFrame();
   }
