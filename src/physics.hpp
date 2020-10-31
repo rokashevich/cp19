@@ -11,14 +11,13 @@
 #include "timer.hpp"
 
 class Physics : protected Timer {
-  enum { no = 0, yes, yesnextno };
   // Структура ставится в соответствие каждому типу объекта, и хранит сами
   // объекты, а так же некоторые нужные "физические" величины эти объектов.
   struct ObjectGroupContainer {
     bool is_dynamic;
-    int is_state_changed;
     Object* reference_object_;
     std::vector<Object*> objects;
+    int num_shapes;
     std::vector<float> coords_params_buffer_;
     std::size_t sizeof_coords_params_buffer_;
   };
@@ -28,7 +27,6 @@ class Physics : protected Timer {
   void SetupObject(int key, Object* reference_object, bool is_dynamic) {
     assert(group_.find(key) == group_.end());
     auto container = new ObjectGroupContainer;
-    container->is_state_changed = yes;
     container->is_dynamic = is_dynamic;
     container->reference_object_ = reference_object;
     group_[key] = container;
@@ -39,6 +37,7 @@ class Physics : protected Timer {
     assert(it != group_.end());
     ObjectGroupContainer* contaier = group_.find(key)->second;
     contaier->objects.push_back(object);
+
     contaier->coords_params_buffer_.push_back(object->x());
     contaier->coords_params_buffer_.push_back(object->y());
     contaier->coords_params_buffer_.push_back(object->z());
@@ -70,12 +69,7 @@ class Physics : protected Timer {
 
   const float* ShapeVerticesBuffer(int key) {
     ObjectGroupContainer* container = FindGroupContainer(key);
-    return container->reference_object_->VerticesBuffer();
-  }
-
-  bool IsStateChanged(int key) {
-    ObjectGroupContainer* container = FindGroupContainer(key);
-    return container->is_state_changed;
+    return container->reference_object_->ShapeVerticesBuffer();
   }
 
   void Step();

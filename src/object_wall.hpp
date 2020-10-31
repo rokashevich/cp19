@@ -7,7 +7,6 @@
 // Стена.
 class ObjectWall : public Object {
   static const std::vector<float> vertices_buffer_;
-  static const int num_vertices_;
 
   int health_;
 
@@ -15,7 +14,6 @@ class ObjectWall : public Object {
   ObjectWall(P position, int orientation_helath);
   ~ObjectWall();
   float w() final { return health_; }
-  const float* VerticesBuffer() final;
-  std::size_t SizeofVerticesBuffer() final;
-  int NumVertices() final;
+  const float* ShapeVerticesBuffer() final;
+  std::size_t SizeofShapeVerticesBuffer() final;
 };

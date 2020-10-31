@@ -31,11 +31,10 @@ class RendererSdl {
 
   RendererSdl();
   void SetupStatic(int id, size_t num_bytes, const float* data,
-                   const char* vertex_shader, const char* pixel_shader,
-                   int num_vertices) {
+                   const char* vertex_shader, const char* pixel_shader) {
     Renderable* renderable = new Renderable;
     renderable->shader = new Shader(vertex_shader, pixel_shader);
-    renderable->num_vertices_ = num_vertices;
+    renderable->num_vertices_ = num_bytes / sizeof(float) / 3;
     glGenVertexArrays(1, &renderable->vao);
     unsigned int vbo;
     glGenBuffers(1, &vbo);
@@ -80,6 +79,7 @@ class RendererSdl {
           glGetUniformLocation(renderable->shader->Program, "model"), 1,
           GL_FALSE, model_);
       glBindVertexArray(renderable->vao);
+
       unsigned int vbo;
       glGenBuffers(1, &vbo);
       glBindBuffer(GL_ARRAY_BUFFER, vbo);

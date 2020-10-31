@@ -70,9 +70,9 @@ int main(int, char**) {  // С пустым main() падает на андро�
   Physics physics;
   for (auto const& [key, cfg] : cfgs) {
     physics.SetupObject(key, cfg.reference, cfg.is_dynamic);
-    renderer.SetupStatic(key, cfg.reference->SizeofVerticesBuffer(),
-                         cfg.reference->VerticesBuffer(), cfg.vertex_shader,
-                         cfg.pixel_shader, cfg.reference->NumVertices());
+    renderer.SetupStatic(key, cfg.reference->SizeofShapeVerticesBuffer(),
+                         cfg.reference->ShapeVerticesBuffer(),
+                         cfg.vertex_shader, cfg.pixel_shader);
   }
 
   // Отладка.
@@ -175,13 +175,11 @@ int main(int, char**) {  // С пустым main() падает на андро�
 
     physics.Step();
     renderer.UpdateCommon(&projection[0][0], &view[0][0], &model[0][0]);
-    for (auto const& [key, cfg] : cfgs) {
-      if (physics.IsStateChanged(key)) {
-        renderer.UpdateDynamic(key, physics.SizeofCoordsParamsBuffer(key),
-                               physics.CoordsParamsBuffer(key),
-                               physics.ObjectsCount(key));
-      }
-    }
+    for (auto const& [key, cfg] : cfgs)
+      renderer.UpdateDynamic(key, physics.SizeofCoordsParamsBuffer(key),
+                             physics.CoordsParamsBuffer(key),
+                             physics.ObjectsCount(key));
+
     renderer.RenderFrame();
   }
 

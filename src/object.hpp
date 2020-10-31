@@ -19,7 +19,9 @@ class Object {
   float& y() { return v_.Begin().y; }
   float& z() { return v_.Begin().z; }
   virtual float w() = 0;
-  virtual const float* VerticesBuffer() = 0;
-  virtual std::size_t SizeofVerticesBuffer() = 0;
-  virtual int NumVertices() = 0;
+  virtual const float* ShapeVerticesBuffer() = 0;
+  virtual std::size_t SizeofShapeVerticesBuffer() = 0;
+
+  // virtual float* CoordsParamsBuffer() = 0;
+  // virtual std::size_t SizeofCoordsParamsBuffer() = 0;
 };

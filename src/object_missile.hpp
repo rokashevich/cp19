@@ -10,7 +10,6 @@
 // - из этих переменных расчитывается убойная сила конкретного снаряда.
 class ObjectMissile : public Object {
   static const std::vector<float> vertices_buffer_;
-  static const int num_vertices_;
 
   const float diameter_;
 
@@ -18,7 +17,6 @@ class ObjectMissile : public Object {
   ObjectMissile(P position, P direction, float diameter);
   ~ObjectMissile();
   float w() final { return diameter_; }
-  const float* VerticesBuffer() final;
-  std::size_t SizeofVerticesBuffer() final;
-  int NumVertices() final;
+  const float* ShapeVerticesBuffer() final;
+  std::size_t SizeofShapeVerticesBuffer() final;
 };
