@@ -17,6 +17,5 @@ class ObjectMissile : public Object {
   ObjectMissile(P position, P direction, float diameter);
   ~ObjectMissile();
   float w() final { return diameter_; }
-  const float* ShapeVerticesBuffer() final;
-  std::size_t SizeofShapeVerticesBuffer() final;
+  const std::vector<float>* ShapeVerticesBuffer() final;
 };

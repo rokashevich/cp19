@@ -19,6 +19,5 @@ class ObjectPlayer : public Object {
                int head = 9, int arms = 9, int gun = 9);
   ~ObjectPlayer();
   float w() final { return 1; }
-  const float* ShapeVerticesBuffer() final;
-  std::size_t SizeofShapeVerticesBuffer() final;
+  const std::vector<float>* ShapeVerticesBuffer() final;
 };

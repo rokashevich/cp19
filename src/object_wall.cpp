@@ -10,10 +10,6 @@ ObjectWall::ObjectWall(P position, int orientation_helath)
 
 ObjectWall::~ObjectWall() {}
 
-const float* ObjectWall::ShapeVerticesBuffer() {
-  return ObjectWall::vertices_buffer_.data();
-}
-
-std::size_t ObjectWall::SizeofShapeVerticesBuffer() {
-  return sizeof(float) * ObjectWall::vertices_buffer_.size();
+const std::vector<float>* ObjectWall::ShapeVerticesBuffer() {
+  return &ObjectWall::vertices_buffer_;
 }

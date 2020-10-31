@@ -14,6 +14,5 @@ class ObjectWall : public Object {
   ObjectWall(P position, int orientation_helath);
   ~ObjectWall();
   float w() final { return health_; }
-  const float* ShapeVerticesBuffer() final;
-  std::size_t SizeofShapeVerticesBuffer() final;
+  const std::vector<float>* ShapeVerticesBuffer() final;
 };

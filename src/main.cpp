@@ -70,8 +70,7 @@ int main(int, char**) {  // С пустым main() падает на андро�
   Physics physics;
   for (auto const& [key, cfg] : cfgs) {
     physics.SetupObject(key, cfg.reference, cfg.is_dynamic);
-    renderer.SetupStatic(key, cfg.reference->SizeofShapeVerticesBuffer(),
-                         cfg.reference->ShapeVerticesBuffer(),
+    renderer.SetupStatic(key, cfg.reference->ShapeVerticesBuffer(),
                          cfg.vertex_shader, cfg.pixel_shader);
   }
 

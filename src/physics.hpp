@@ -69,7 +69,7 @@ class Physics : protected Timer {
 
   const float* ShapeVerticesBuffer(int key) {
     ObjectGroupContainer* container = FindGroupContainer(key);
-    return container->reference_object_->ShapeVerticesBuffer();
+    return container->reference_object_->ShapeVerticesBuffer()->data();
   }
 
   void Step();

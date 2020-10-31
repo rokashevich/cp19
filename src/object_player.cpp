@@ -18,10 +18,6 @@ ObjectPlayer::ObjectPlayer(P position, P direction, int legs, int body,
       gun_(gun){};
 ObjectPlayer::~ObjectPlayer(){};
 
-const float* ObjectPlayer::ShapeVerticesBuffer() {
-  return ObjectPlayer::vertices_buffer_.data();
-}
-
-std::size_t ObjectPlayer::SizeofShapeVerticesBuffer() {
-  return sizeof(float) * ObjectPlayer::vertices_buffer_.size();
+const std::vector<float>* ObjectPlayer::ShapeVerticesBuffer() {
+  return &ObjectPlayer::vertices_buffer_;
 }
