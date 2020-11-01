@@ -20,6 +20,7 @@ class Object {
   // представляет собой тругольник. Эта информация нужна будет только рендеру.
   virtual const std::vector<float>* ShapeVerticesBuffer() = 0;
 
+  // del
   float& x() { return v_.Begin().x; }
   float& y() { return v_.Begin().y; }
   float& z() { return v_.Begin().z; }

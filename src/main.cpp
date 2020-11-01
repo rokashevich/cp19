@@ -86,13 +86,13 @@ int main(int, char**) {  // С пустым main() падает на андро�
   for (float i = 0; i < 10; ++i) {
     for (float j = 0; j < 10; ++j) {
       for (float k = 0; k < 10; ++k) {
-        Object* o = new ObjectMissile(P{i, k, -j}, P{-1, 0, 1}, 0.1);
+        Object* o = new ObjectMissile(P{i * 3, k * 3, -j * 3}, P{-1, 0, 1}, 1);
         physics.AddObject(missile, o);
       }
     }
   }
   Object* player1 = new ObjectPlayer(P{-5, 1, 1}, P{0, 1, -1});
-  Object* player2 = new ObjectPlayer(P{0, 1, 1}, P{0, 1, 1});
+  Object* player2 = new ObjectPlayer(P{0, -0.45, 1}, P{0, 1, 1});
   physics.AddObject(player, player1);
   physics.AddObject(player, player2);
 

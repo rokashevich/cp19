@@ -61,22 +61,23 @@ std::vector<float> ShapeGenerator::Icosphere() {
       indices.clear();
       index = 0;
 
-      const auto t = constants::golden_ratio;
+      const auto r = 1;
+      const auto t = r * constants::golden_ratio;
 
-      AddVertex(Point(-1, t, 0));
-      AddVertex(Point(1, t, 0));
-      AddVertex(Point(-1, -t, 0));
-      AddVertex(Point(1, -t, 0));
+      AddVertex(Point(-r, t, 0));
+      AddVertex(Point(r, t, 0));
+      AddVertex(Point(-r, -t, 0));
+      AddVertex(Point(r, -t, 0));
 
-      AddVertex(Point(0, -1, t));
-      AddVertex(Point(0, 1, t));
-      AddVertex(Point(0, -1, -t));
-      AddVertex(Point(0, 1, -t));
+      AddVertex(Point(0, -r, t));
+      AddVertex(Point(0, r, t));
+      AddVertex(Point(0, -r, -t));
+      AddVertex(Point(0, r, -t));
 
-      AddVertex(Point(t, 0, -1));
-      AddVertex(Point(t, 0, 1));
-      AddVertex(Point(-t, 0, -1));
-      AddVertex(Point(-t, 0, 1));
+      AddVertex(Point(t, 0, -r));
+      AddVertex(Point(t, 0, r));
+      AddVertex(Point(-t, 0, -r));
+      AddVertex(Point(-t, 0, r));
 
       auto faces = std::vector<std::shared_ptr<TriangleIndices>>();
       faces.push_back(std::make_shared<TriangleIndices>(0, 11, 5));

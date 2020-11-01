@@ -6,7 +6,7 @@
 #include "generator_shape.hpp"
 
 const std::vector<float> ObjectPlayer::vertices_buffer_ =
-    ShapeGenerator::Cuboid(1, constants::golden_ratio, 1);
+    ShapeGenerator::Cuboid(1, 2, 1);
 
 ObjectPlayer::ObjectPlayer(P position, P direction, int legs, int body,
                            int head, int arms, int gun)
