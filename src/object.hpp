@@ -15,12 +15,13 @@ class Object {
   Object(P position, P direction, float weight);
   virtual ~Object() {}
 
+  // Возвращает координты вершин базовой формы: параллелепипеда, куба, шара, и
+  // т.д. в виде: x1,y1,z1,x2,y2,z2,..., где каждая тройка координат
+  // представляет собой тругольник. Эта информация нужна будет только рендеру.
+  virtual const std::vector<float>* ShapeVerticesBuffer() = 0;
+
   float& x() { return v_.Begin().x; }
   float& y() { return v_.Begin().y; }
   float& z() { return v_.Begin().z; }
   virtual float w() = 0;
-  virtual const std::vector<float>* ShapeVerticesBuffer() = 0;
-
-  // virtual float* CoordsParamsBuffer() = 0;
-  // virtual std::size_t SizeofCoordsParamsBuffer() = 0;
 };
