@@ -16,6 +16,8 @@ class ObjectMissile : public Object {
  public:
   ObjectMissile(P position, P direction, float diameter);
   ~ObjectMissile();
+  // Т.к. шар генерируется единичного радиуса, т.е. диаметром 2, то коэффициент
+  // масштабирования делим на два, чтобы как будто диаметр шара = 1.
   float w() final { return diameter_ / 2; }
   const std::vector<float>* ShapeVerticesBuffer() final;
 };
