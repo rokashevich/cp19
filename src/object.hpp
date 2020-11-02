@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstddef>
 #include <vector>
 
@@ -8,21 +9,25 @@
 
 // Базовый класс физического объекта игрового мира.
 class Object {
-  Vec v_;
   float weight_;
 
+ protected:
+  std::vector<std::array<float, 4>> coords_params_;
+
  public:
-  Object(P position, P direction, float weight);
+  Object(float weight);
   virtual ~Object() {}
 
   // Возвращает координты вершин базовой формы: параллелепипеда, куба, шара, и
   // т.д. в виде: x1,y1,z1,x2,y2,z2,..., где каждая тройка координат
-  // представляет собой тругольник. Эта информация нужна будет только рендеру.
+  // представляет собой тругольник. Передаётся в рендер.
   virtual const std::vector<float>* ShapeVerticesBuffer() = 0;
 
-  // del
-  float& x() { return v_.Begin().x; }
-  float& y() { return v_.Begin().y; }
-  float& z() { return v_.Begin().z; }
-  virtual float w() = 0;
+  // Для обновления параметров для шейдера.
+  virtual void Step() {}
+
+  // Массив координат базовых объектов для инстансированного рендеринга.
+  virtual const std::vector<std::array<float, 4>>* CoordsParams() {
+    return &coords_params_;
+  }
 };

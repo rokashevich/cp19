@@ -56,13 +56,9 @@ struct Cfg {
 int main(int, char**) {  // С пустым main() падает на андроиде!
   enum { wall, missile, player };  // Каждому типу объектов - уникальный key.
   std::unordered_map<int, Cfg> cfgs{
-      {wall, {new ObjectWall(P{0, 0, 0}, 0), false, vertex_wall, pixel_wall}},
-      {missile,
-       {new ObjectMissile(P{0, 0, 0}, P{0, 0, 0}, 0), true, vertex_missile,
-        pixel_missile}},
-      {player,
-       {new ObjectPlayer(P{0, 0, 0}, P{0, 0, 0}, 0), true, vertex_player,
-        pixel_player}},
+      {wall, {new ObjectWall(), false, vertex_wall, pixel_wall}},
+      {missile, {new ObjectMissile(), true, vertex_missile, pixel_missile}},
+      {player, {new ObjectPlayer(), true, vertex_player, pixel_player}},
   };
 
   World game_world = World(constants::maze_dimension);
@@ -80,21 +76,21 @@ int main(int, char**) {  // С пустым main() падает на андро�
     float y = game_world.panels_data_array().at(i++);
     float z = game_world.panels_data_array().at(i++);
     float w = game_world.panels_data_array().at(i++);
-    Object* o = new ObjectWall(P{x, y, z}, w);
-    physics.AddObject(wall, o);
+    Object* o = new ObjectWall(w);
+    physics.AddObject(wall, o, Vec(x, y, z));
   }
   for (float i = 0; i < 10; ++i) {
     for (float j = 0; j < 10; ++j) {
       for (float k = 0; k < 10; ++k) {
-        Object* o = new ObjectMissile(P{i * 3, k * 3, -j * 3}, P{-1, 0, 1}, 1);
-        physics.AddObject(missile, o);
+        Object* o = new ObjectMissile(0.5);
+        physics.AddObject(missile, o, Vec(i * 3, k * 3, -j * 3, -1, 0, 1));
       }
     }
   }
-  Object* player1 = new ObjectPlayer(P{-5, 1, 1}, P{0, 1, -1});
-  Object* player2 = new ObjectPlayer(P{0, -0.45, 1}, P{0, 1, 1});
-  physics.AddObject(player, player1);
-  physics.AddObject(player, player2);
+  Object* player2 = new ObjectPlayer();
+  Object* player1 = new ObjectPlayer();
+  physics.AddObject(player, player2, Vec(-5, 1, 1, 0, 1, -1));
+  physics.AddObject(player, player1, Vec(0, -0.45, 1, 0, 1, 1));
 
   int done = 0;
   bool camera_toggle = true;
@@ -177,7 +173,7 @@ int main(int, char**) {  // С пустым main() падает на андро�
     for (auto const& [key, cfg] : cfgs)
       renderer.UpdateDynamic(key, physics.SizeofCoordsParamsBuffer(key),
                              physics.CoordsParamsBuffer(key),
-                             physics.ObjectsCount(key));
+                             physics.NumShapes(key));
 
     renderer.RenderFrame();
   }

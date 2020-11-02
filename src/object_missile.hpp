@@ -10,14 +10,11 @@
 // - из этих переменных расчитывается убойная сила конкретного снаряда.
 class ObjectMissile : public Object {
   static const std::vector<float> vertices_buffer_;
-
   const float diameter_;
 
  public:
-  ObjectMissile(P position, P direction, float diameter);
+  ObjectMissile(float diameter = 1);
   ~ObjectMissile();
-  // Т.к. шар генерируется единичного радиуса, т.е. диаметром 2, то коэффициент
-  // масштабирования делим на два, чтобы как будто диаметр шара = 1.
-  float w() final { return diameter_ / 2; }
+  void Step() final { Object::coords_params_.at(0).at(3) = diameter_ / 2; }
   const std::vector<float>* ShapeVerticesBuffer() final;
 };

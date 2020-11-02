@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cassert>
 #include <iostream>
 #include <list>
@@ -11,60 +12,60 @@
 #include "timer.hpp"
 
 class Physics : protected Timer {
-  // Структура ставится в соответствие каждому типу объекта, и хранит сами
-  // объекты, а так же некоторые нужные "физические" величины эти объектов.
+  struct ObjectContainer {
+    Object* object;
+    Vec v;
+  };
   struct ObjectGroupContainer {
     bool is_dynamic;
     Object* reference_object_;
-    std::vector<Object*> objects;
     int num_shapes;
+    std::vector<ObjectContainer> objects;
     std::vector<float> coords_params_buffer_;
     std::size_t sizeof_coords_params_buffer_;
   };
-  std::unordered_map<int, ObjectGroupContainer*> group_;
+  std::unordered_map<int, ObjectGroupContainer*> object_groups_;
 
  public:
   void SetupObject(int key, Object* reference_object, bool is_dynamic) {
-    assert(group_.find(key) == group_.end());
+    assert(object_groups_.find(key) == object_groups_.end());
     auto container = new ObjectGroupContainer;
     container->is_dynamic = is_dynamic;
     container->reference_object_ = reference_object;
-    group_[key] = container;
+    container->num_shapes = 0;
+    object_groups_[key] = container;
   }
 
-  void AddObject(int key, Object* object) {
-    auto it = group_.find(key);
-    assert(it != group_.end());
-    ObjectGroupContainer* contaier = group_.find(key)->second;
-    contaier->objects.push_back(object);
-
-    contaier->coords_params_buffer_.push_back(object->x());
-    contaier->coords_params_buffer_.push_back(object->y());
-    contaier->coords_params_buffer_.push_back(object->z());
-    contaier->coords_params_buffer_.push_back(object->w());
-    contaier->sizeof_coords_params_buffer_ =
-        sizeof(float) * contaier->coords_params_buffer_.size();
+  void AddObject(int key, Object* object, Vec v) {
+    ObjectGroupContainer* group = FindGroupContainer(key);
+    group->objects.push_back(ObjectContainer{object, v});
+    const int current_size = group->coords_params_buffer_.size();
+    const int shapes_in_object =
+        group->reference_object_->CoordsParams()->size();
+    const int add_size = 4 * shapes_in_object;
+    group->coords_params_buffer_.resize(current_size + add_size);
+    group->sizeof_coords_params_buffer_ =
+        group->coords_params_buffer_.size() * sizeof(float);
+    group->num_shapes += shapes_in_object;
   }
 
   float* CoordsParamsBuffer(int key) {
-    auto it = group_.find(key);
-    assert(it != group_.end());
-    ObjectGroupContainer* contaier = group_.find(key)->second;
+    auto it = object_groups_.find(key);
+    assert(it != object_groups_.end());
+    ObjectGroupContainer* contaier = object_groups_.find(key)->second;
     return contaier->coords_params_buffer_.data();
   }
 
   std::size_t SizeofCoordsParamsBuffer(int key) {
-    auto it = group_.find(key);
-    assert(it != group_.end());
-    const ObjectGroupContainer* contaier = group_.find(key)->second;
+    auto it = object_groups_.find(key);
+    assert(it != object_groups_.end());
+    const ObjectGroupContainer* contaier = object_groups_.find(key)->second;
     return contaier->sizeof_coords_params_buffer_;
   }
 
-  int ObjectsCount(int key) {
-    auto it = group_.find(key);
-    assert(it != group_.end());
-    const ObjectGroupContainer* contaier = group_.find(key)->second;
-    return contaier->objects.size();
+  int NumShapes(int key) {
+    ObjectGroupContainer* group = FindGroupContainer(key);
+    return group->num_shapes;
   }
 
   const float* ShapeVerticesBuffer(int key) {
@@ -72,13 +73,37 @@ class Physics : protected Timer {
     return container->reference_object_->ShapeVerticesBuffer()->data();
   }
 
-  void Step();
+  void Step() {
+    // Сдвигаем таймер на прошедшее с предыдущего шага время.
+    Timer::Step(Physics::step_ticks_);
+
+    for (auto const& key_group_pair : object_groups_) {
+      ObjectGroupContainer* group_container = key_group_pair.second;
+      int i = -1;
+      for (auto& object_container : group_container->objects) {
+        Object* object = object_container.object;
+        object->Step();
+        Point coord = object_container.v.Begin();
+        for (auto const& shape_coords_params :
+             *object_container.object->CoordsParams()) {
+          group_container->coords_params_buffer_.at(++i) =
+              coord.x + shape_coords_params.at(0);
+          group_container->coords_params_buffer_.at(++i) =
+              coord.y + shape_coords_params.at(1);
+          group_container->coords_params_buffer_.at(++i) =
+              coord.z + shape_coords_params.at(2);
+          group_container->coords_params_buffer_.at(++i) =
+              shape_coords_params.at(3);
+        }
+      }
+    }
+  }
 
  private:
   ObjectGroupContainer* FindGroupContainer(int key) {
-    auto it = group_.find(key);
-    assert(it != group_.end());
-    return group_.find(key)->second;
+    auto it = object_groups_.find(key);
+    assert(it != object_groups_.end());
+    return object_groups_.find(key)->second;
   }
   static int target_fps_;
   static int step_ticks_;

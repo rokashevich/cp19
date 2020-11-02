@@ -8,14 +8,14 @@
 const std::vector<float> ObjectPlayer::vertices_buffer_ =
     ShapeGenerator::Cuboid(1, 2, 1);
 
-ObjectPlayer::ObjectPlayer(P position, P direction, int legs, int body,
-                           int head, int arms, int gun)
-    : Object(position, direction, legs + body + head + arms),
+ObjectPlayer::ObjectPlayer(int legs, int body, int head, int arms)
+    : Object(legs + body + head + arms),
       legs_(legs),
       body_(body),
       head_(head),
-      arms_(arms),
-      gun_(gun){};
+      arms_(arms) {
+  Object::coords_params_.resize(2);
+}
 ObjectPlayer::~ObjectPlayer(){};
 
 const std::vector<float>* ObjectPlayer::ShapeVerticesBuffer() {

@@ -7,12 +7,11 @@
 // Стена.
 class ObjectWall : public Object {
   static const std::vector<float> vertices_buffer_;
-
   int health_;
 
  public:
-  ObjectWall(P position, int orientation_helath);
+  ObjectWall(int orientation_helath = 100);
   ~ObjectWall();
-  float w() final { return health_; }
+  void Step() final { Object::coords_params_.at(0).at(3) = health_; }
   const std::vector<float>* ShapeVerticesBuffer() final;
 };

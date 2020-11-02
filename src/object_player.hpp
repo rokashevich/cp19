@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <vector>
 
 #include "object.hpp"
@@ -7,7 +8,6 @@
 // Солдат.
 class ObjectPlayer : public Object {
   static const std::vector<float> vertices_buffer_;
-
   int legs_;
   int body_;
   int head_;
@@ -15,9 +15,13 @@ class ObjectPlayer : public Object {
   int gun_;
 
  public:
-  ObjectPlayer(P position, P direction, int legs = 9, int body = 9,
-               int head = 9, int arms = 9, int gun = 9);
+  ObjectPlayer(int legs = 9, int body = 9, int head = 9, int arms = 9);
   ~ObjectPlayer();
-  float w() final { return 1; }
+  void Step() final {
+    Object::coords_params_.at(0).at(0) = -0.6;
+    Object::coords_params_.at(0).at(3) = 1;
+    Object::coords_params_.at(1).at(0) = 0.5;
+    Object::coords_params_.at(1).at(3) = 1;
+  }
   const std::vector<float>* ShapeVerticesBuffer() final;
 };
