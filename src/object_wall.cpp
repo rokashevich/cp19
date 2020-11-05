@@ -5,8 +5,8 @@
 const std::vector<float> ObjectWall::vertices_buffer_ =
     ShapeGenerator::Cuboid(2.8, 2.8, 0.1);
 
-ObjectWall::ObjectWall(int orientation_helath)
-    : Object(0), health_(orientation_helath) {}
+ObjectWall::ObjectWall(Vec v, int orientation_helath)
+    : Object(v, 0), health_(orientation_helath) {}
 
 ObjectWall::~ObjectWall() {}
 

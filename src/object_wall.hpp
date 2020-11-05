@@ -10,7 +10,7 @@ class ObjectWall : public Object {
   int health_;
 
  public:
-  ObjectWall(int orientation_helath = 100);
+  ObjectWall(Vec v = Vec(), int orientation_helath = 100);
   ~ObjectWall();
   void Step() final { Object::coords_params_.at(0).at(3) = health_; }
   const std::vector<float>* ShapeVerticesBuffer() final;

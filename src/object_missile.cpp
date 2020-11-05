@@ -7,8 +7,8 @@
 const std::vector<float> ObjectMissile::vertices_buffer_ =
     ShapeGenerator::Icosphere();
 
-ObjectMissile::ObjectMissile(float diameter)
-    : Object(constants::pi * diameter * diameter * diameter / 6),
+ObjectMissile::ObjectMissile(Vec v, float diameter)
+    : Object(v, constants::pi * diameter * diameter * diameter / 6),
       diameter_(diameter) {}
 
 ObjectMissile::~ObjectMissile() {}

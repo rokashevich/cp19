@@ -15,9 +15,11 @@
 #include "world.hpp"
 
 // Сгенерированные из glsl файлов.
+#include "pixel_gun.hpp"
 #include "pixel_missile.hpp"
 #include "pixel_player.hpp"
 #include "pixel_wall.hpp"
+#include "vertex_gun.hpp"
 #include "vertex_missile.hpp"
 #include "vertex_player.hpp"
 #include "vertex_wall.hpp"
@@ -27,6 +29,7 @@
 #include "constants.hpp"
 #include "generator_shape.hpp"
 #include "object.hpp"
+#include "object_gun.hpp"
 #include "object_missile.hpp"
 #include "object_player.hpp"
 #include "object_wall.hpp"
@@ -54,12 +57,14 @@ struct Cfg {
 };
 
 int main(int, char**) {  // С пустым main() падает на андроиде!
-  enum { wall, missile, player };  // Каждому типу объектов - уникальный key.
+  // Каждому типу объектов - уникальный key.
+  enum { wall, missile, player, gun };
   std::unordered_map<int, Cfg> cfgs{
       {wall, {new ObjectWall(), false, vertex_wall, pixel_wall}},
       {missile, {new ObjectMissile(), true, vertex_missile, pixel_missile}},
       {player, {new ObjectPlayer(), true, vertex_player, pixel_player}},
-  };
+      {gun, {new ObjectGun(), true, vertex_gun, pixel_gun}}};
+  //                          ^^^ static или dynaimic
 
   World game_world = World(constants::maze_dimension);
   RendererSdl renderer; 
@@ -76,21 +81,25 @@ int main(int, char**) {  // С пустым main() падает на андро�
     float y = game_world.panels_data_array().at(i++);
     float z = game_world.panels_data_array().at(i++);
     float w = game_world.panels_data_array().at(i++);
-    Object* o = new ObjectWall(w);
-    physics.AddObject(wall, o, Vec(x, y, z));
+    Object* o = new ObjectWall(Vec(x, y, z), w);
+    physics.AddObject(wall, o);
   }
   for (float i = 0; i < 10; ++i) {
     for (float j = 0; j < 10; ++j) {
       for (float k = 0; k < 10; ++k) {
-        Object* o = new ObjectMissile(0.5);
-        physics.AddObject(missile, o, Vec(i * 3, k * 3, -j * 3, -1, 0, 1));
+        Object* o = new ObjectMissile(Vec(i * 3, k * 3, -j * 3, -1, 0, 1), 0.5);
+        physics.AddObject(missile, o);
       }
     }
   }
-  Object* player2 = new ObjectPlayer();
-  Object* player1 = new ObjectPlayer();
-  physics.AddObject(player, player2, Vec(-5, 1, 1, 0, 1, -1));
-  physics.AddObject(player, player1, Vec(0, -0.45, 1, 0, 1, 1));
+  Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
+  Object* player1 = new ObjectPlayer(Vec(0, -0.45, 1, 0, 1, 1));
+  physics.AddObject(player, player2);
+  physics.AddObject(player, player1);
+
+  Object* gun1 = new ObjectGun(Vec());
+  gun1->Owner(player1);
+  physics.AddObject(gun, gun1);
 
   int done = 0;
   bool camera_toggle = true;

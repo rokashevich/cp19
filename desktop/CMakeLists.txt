@@ -21,9 +21,11 @@ set(Shaders
   ${SRC}/pixel_missile.glsl
   ${SRC}/pixel_player.glsl
   ${SRC}/pixel_wall.glsl
+  ${SRC}/pixel_gun.glsl
   ${SRC}/vertex_missile.glsl
   ${SRC}/vertex_player.glsl
-  ${SRC}/vertex_wall.glsl)
+  ${SRC}/vertex_wall.glsl
+  ${SRC}/vertex_gun.glsl)
 
 add_executable(cp19
   ${SRC}/main.cpp
@@ -32,6 +34,7 @@ add_executable(cp19
   ${SRC}/object_missile.cpp
   ${SRC}/object_player.cpp
   ${SRC}/object_wall.cpp
+  ${SRC}/object_gun.cpp
   ${SRC}/point.hpp
   ${SRC}/vec.hpp
   ${SRC}/shader.hpp
@@ -79,10 +82,24 @@ add_custom_target(pixel_player ALL COMMAND
     ${SRC}/pixel_player.glsl
     ${GENERATED}/pixel_player.hpp)
 
+add_custom_target(vertex_gun ALL COMMAND
+  python3 ${TOOLS}/embedfile.py
+    vertex_gun
+    ${SRC}/vertex_gun.glsl
+    ${GENERATED}/vertex_gun.hpp)
+
+add_custom_target(pixel_gun ALL COMMAND
+  python3 ${TOOLS}/embedfile.py
+    pixel_gun
+    ${SRC}/pixel_gun.glsl
+    ${GENERATED}/pixel_gun.hpp)
+
 add_dependencies(cp19
   pixel_missile
   pixel_player
   pixel_wall
+  pixel_gun
   vertex_missile
   vertex_player
-  vertex_wall)
+  vertex_wall
+  vertex_gun)

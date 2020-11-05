@@ -8,8 +8,8 @@
 const std::vector<float> ObjectPlayer::vertices_buffer_ =
     ShapeGenerator::Cuboid(1, 2, 1);
 
-ObjectPlayer::ObjectPlayer(int legs, int body, int head, int arms)
-    : Object(legs + body + head + arms),
+ObjectPlayer::ObjectPlayer(Vec v, int legs, int body, int head, int arms)
+    : Object(v, legs + body + head + arms),
       legs_(legs),
       body_(body),
       head_(head),

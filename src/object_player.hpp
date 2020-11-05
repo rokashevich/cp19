@@ -15,7 +15,8 @@ class ObjectPlayer : public Object {
   int gun_;
 
  public:
-  ObjectPlayer(int legs = 9, int body = 9, int head = 9, int arms = 9);
+  ObjectPlayer(Vec v = Vec(), int legs = 9, int body = 9, int head = 9,
+               int arms = 9);
   ~ObjectPlayer();
   void Step() final {
     Object::coords_params_.at(0).at(0) = -0.6;

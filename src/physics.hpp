@@ -12,15 +12,11 @@
 #include "timer.hpp"
 
 class Physics : protected Timer {
-  struct ObjectContainer {
-    Object* object;
-    Vec v;
-  };
   struct ObjectGroupContainer {
     bool is_dynamic;
     Object* reference_object_;
     int num_shapes;
-    std::vector<ObjectContainer> objects;
+    std::vector<Object*> objects;
     std::vector<float> coords_params_buffer_;
     std::size_t sizeof_coords_params_buffer_;
   };
@@ -36,12 +32,13 @@ class Physics : protected Timer {
     object_groups_[key] = container;
   }
 
-  void AddObject(int key, Object* object, Vec v) {
+  void AddObject(int key, Object* object) {
     ObjectGroupContainer* group = FindGroupContainer(key);
-    group->objects.push_back(ObjectContainer{object, v});
+    group->objects.push_back(object);
     const int current_size = group->coords_params_buffer_.size();
     const int shapes_in_object =
-        group->reference_object_->CoordsParams()->size();
+        group->reference_object_->CoordsParams().size();
+    assert(shapes_in_object > 0);
     const int add_size = 4 * shapes_in_object;
     group->coords_params_buffer_.resize(current_size + add_size);
     group->sizeof_coords_params_buffer_ =
@@ -80,18 +77,21 @@ class Physics : protected Timer {
     for (auto const& key_group_pair : object_groups_) {
       ObjectGroupContainer* group_container = key_group_pair.second;
       int i = -1;
-      for (auto& object_container : group_container->objects) {
-        Object* object = object_container.object;
+      for (auto const& object : group_container->objects) {
+        // Object* owner = object->Owner();
         object->Step();
-        Point coord = object_container.v.Begin();
-        for (auto const& shape_coords_params :
-             *object_container.object->CoordsParams()) {
+        Point* coord;
+        //        if (owner)
+        //          coord = owner->AttachmentPoint();
+        //        else
+        coord = object->V()->Begin();
+        for (auto const& shape_coords_params : object->CoordsParams()) {
           group_container->coords_params_buffer_.at(++i) =
-              coord.x + shape_coords_params.at(0);
+              coord->x + shape_coords_params.at(0);
           group_container->coords_params_buffer_.at(++i) =
-              coord.y + shape_coords_params.at(1);
+              coord->y + shape_coords_params.at(1);
           group_container->coords_params_buffer_.at(++i) =
-              coord.z + shape_coords_params.at(2);
+              coord->z + shape_coords_params.at(2);
           group_container->coords_params_buffer_.at(++i) =
               shape_coords_params.at(3);
         }
