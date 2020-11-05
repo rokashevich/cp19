@@ -189,3 +189,68 @@ std::vector<float> ShapeGenerator::Icosphere() {
   IcoSphere i = IcoSphere();
   return i.Create(2);
 }
+#include <cmath>
+std::vector<float> ShapeGenerator::Tube() {
+  int n = 7;
+  std::vector<float> buffer;
+  float step = 2 * constants::pi / n;
+  // Одна крышка.
+  for (int i = 0; i < n; ++i) {
+    float deg = step * i;
+    buffer.push_back(std::cos(deg));
+    buffer.push_back(std::sin(deg));
+    buffer.push_back(-1);
+
+    buffer.push_back(std::cos(deg + step));
+    buffer.push_back(std::sin(deg + step));
+    buffer.push_back(-1);
+
+    buffer.push_back(0);
+    buffer.push_back(0);
+    buffer.push_back(-1);
+  }
+  // Вторая крышка.
+  for (int i = 0; i < n; ++i) {
+    float deg = step * i;
+    buffer.push_back(std::cos(deg));
+    buffer.push_back(std::sin(deg));
+    buffer.push_back(1);
+
+    buffer.push_back(std::cos(deg + step));
+    buffer.push_back(std::sin(deg + step));
+    buffer.push_back(1);
+
+    buffer.push_back(0);
+    buffer.push_back(0);
+    buffer.push_back(1);
+  }
+  // Боковины.
+  for (int i = 0; i < n; ++i) {
+    // Нечётные зубцы
+    buffer.push_back(buffer.at((i * 9) + 0));
+    buffer.push_back(buffer.at((i * 9) + 1));
+    buffer.push_back(buffer.at((i * 9) + 2));
+
+    buffer.push_back(buffer.at((i * 9) + (n * 9) + 0));
+    buffer.push_back(buffer.at((i * 9) + (n * 9) + 1));
+    buffer.push_back(buffer.at((i * 9) + (n * 9) + 2));
+
+    buffer.push_back(buffer.at((i * 9) + 3));
+    buffer.push_back(buffer.at((i * 9) + 4));
+    buffer.push_back(buffer.at((i * 9) + 5));
+
+    // Чётные зубцы
+    buffer.push_back(buffer.at((i * 9) + (n * 9) + 3));
+    buffer.push_back(buffer.at((i * 9) + (n * 9) + 4));
+    buffer.push_back(buffer.at((i * 9) + (n * 9) + 5));
+
+    buffer.push_back(buffer.at((i * 9) + 3));
+    buffer.push_back(buffer.at((i * 9) + 4));
+    buffer.push_back(buffer.at((i * 9) + 5));
+
+    buffer.push_back(buffer.at((i * 9) + (n * 9) + 0));
+    buffer.push_back(buffer.at((i * 9) + (n * 9) + 1));
+    buffer.push_back(buffer.at((i * 9) + (n * 9) + 2));
+  }
+  return buffer;
+}
