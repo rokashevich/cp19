@@ -5,7 +5,7 @@
 #include "constants.hpp"
 
 const std::vector<float> ObjectMissile::vertices_buffer_ =
-    ShapeGenerator::Icosphere();
+    ShapeGenerator::Tube();
 
 ObjectMissile::ObjectMissile(float diameter)
     : Object(constants::pi * diameter * diameter * diameter / 6),
