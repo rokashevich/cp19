@@ -78,20 +78,20 @@ class Physics : protected Timer {
       ObjectGroupContainer* group_container = key_group_pair.second;
       int i = -1;
       for (auto const& object : group_container->objects) {
-        // Object* owner = object->Owner();
         object->Step();
-        Point* coord;
-        //        if (owner)
-        //          coord = owner->AttachmentPoint();
-        //        else
-        coord = object->V()->Begin();
+        Object* owner = object->Owner();
+        Point coord;
+        if (owner)
+          coord = owner->V()->Begin() + owner->AttachmentPoint();
+        else
+          coord = object->V()->Begin();
         for (auto const& shape_coords_params : object->CoordsParams()) {
           group_container->coords_params_buffer_.at(++i) =
-              coord->x + shape_coords_params.at(0);
+              coord.x + shape_coords_params.at(0);
           group_container->coords_params_buffer_.at(++i) =
-              coord->y + shape_coords_params.at(1);
+              coord.y + shape_coords_params.at(1);
           group_container->coords_params_buffer_.at(++i) =
-              coord->z + shape_coords_params.at(2);
+              coord.z + shape_coords_params.at(2);
           group_container->coords_params_buffer_.at(++i) =
               shape_coords_params.at(3);
         }

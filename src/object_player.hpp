@@ -23,6 +23,7 @@ class ObjectPlayer : public Object {
     Object::coords_params_.at(0).at(3) = 1;
     Object::coords_params_.at(1).at(0) = 0.5;
     Object::coords_params_.at(1).at(3) = 1;
+    Object::attachment_point_ = Point(0, -1, 1);
   }
   const std::vector<float>* ShapeVerticesBuffer() final;
 };

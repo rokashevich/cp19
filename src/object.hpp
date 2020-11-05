@@ -13,9 +13,9 @@ class Object {
   Vec v_;
   float weight_;
   Object* owner_;
-  Point attachment_point_;
 
  protected:
+  Point attachment_point_;
   std::vector<std::array<float, 4>> coords_params_;
 
  public:
@@ -37,7 +37,7 @@ class Object {
     return coords_params_;
   }
 
-  void Owner(Object* owner = nullptr) { owner_ = owner; }
+  void Owner(Object* owner) { owner_ = owner; }
   Object* Owner() { return owner_; }
-  Point* AttachmentPoint() { return &attachment_point_; }
+  Point AttachmentPoint() { return attachment_point_; }
 };
