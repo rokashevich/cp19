@@ -8,6 +8,22 @@
 #include "point.hpp"
 #include "vec.hpp"
 
+struct ObjectsStaticInfo {
+  std::vector<float> vertices_buffer;
+  const char* vertex_shader;
+  const char* pixel_shader;
+};
+
+template <class T>
+class Shape {
+  static const ObjectsStaticInfo objects_static_info_;
+  static const std::vector<float> vertices_buffer_;
+
+ public:
+  static auto& ShapeVerticesBuffer2() { return Shape::vertices_buffer_; }
+  static auto& StaticInfo() { return objects_static_info_; }
+};
+
 // Базовый класс физического объекта игрового мира.
 class Object {
   Vec v_;

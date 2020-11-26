@@ -56,9 +56,17 @@ struct Cfg {
   const char* pixel_shader;
 };
 
+// auto& a = Shape<ObjectWall>::ShapeVerticesBuffer2();
+
 int main(int, char**) {  // С пустым main() падает на андроиде!
   // Каждому типу объектов - уникальный key.
   enum { wall, missile, player, gun };
+  std::unordered_map<int, ObjectsStaticInfo> cfgs2{
+      {wall, Shape<ObjectWall>::StaticInfo()},
+      {missile, Shape<ObjectMissile>::StaticInfo()},
+      {player, Shape<ObjectPlayer>::StaticInfo()},
+      {gun, Shape<ObjectGun>::StaticInfo()},
+  };
   std::unordered_map<int, Cfg> cfgs{
       {wall, {new ObjectWall(), false, vertex_wall, pixel_wall}},
       {missile, {new ObjectMissile(), true, vertex_missile, pixel_missile}},
@@ -70,9 +78,11 @@ int main(int, char**) {  // С пустым main() падает на андро�
   RendererSdl renderer; 
   Physics physics;
   for (auto const& [key, cfg] : cfgs) {
-    physics.SetupObject(key, cfg.reference, cfg.is_dynamic);
-    renderer.SetupStatic(key, cfg.reference->ShapeVerticesBuffer(),
-                         cfg.vertex_shader, cfg.pixel_shader);
+    physics.SetupObject(key, cfg.reference, cfgs2[key]);
+  }
+  for (auto const& [key, cfg] : cfgs2) {
+    renderer.SetupStatic(key, &cfg.vertices_buffer, cfg.vertex_shader,
+                         cfg.pixel_shader);
   }
 
   // Отладка.

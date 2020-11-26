@@ -3,6 +3,11 @@
 #include <cassert>
 
 #include "constants.hpp"
+#include "pixel_missile.hpp"
+#include "vertex_missile.hpp"
+template <>
+const ObjectsStaticInfo Shape<ObjectMissile>::objects_static_info_{
+    ShapeGenerator::Icosphere(), vertex_missile, pixel_missile};
 
 const std::vector<float> ObjectMissile::vertices_buffer_ =
     ShapeGenerator::Icosphere();

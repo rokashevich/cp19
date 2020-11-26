@@ -6,7 +6,7 @@
 #include "point.hpp"
 #include "vec.hpp"
 // Солдат.
-class ObjectPlayer : public Object {
+class ObjectPlayer : public Object, Shape<ObjectPlayer> {
   static const std::vector<float> vertices_buffer_;
   int legs_;
   int body_;

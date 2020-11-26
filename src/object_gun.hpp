@@ -8,7 +8,7 @@
 // Снаряд.
 // Все снаряды одинаковые, отличаются скоростью, размером и плотностью
 // - из этих переменных расчитывается убойная сила конкретного снаряда.
-class ObjectGun : public Object {
+class ObjectGun : public Object, Shape<ObjectGun> {
   static const std::vector<float> vertices_buffer_;
   const int num_barrels_;
   const float length_;

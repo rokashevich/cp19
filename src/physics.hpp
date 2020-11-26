@@ -23,10 +23,9 @@ class Physics : protected Timer {
   std::unordered_map<int, ObjectGroupContainer*> object_groups_;
 
  public:
-  void SetupObject(int key, Object* reference_object, bool is_dynamic) {
+  void SetupObject(int key, Object* reference_object, ObjectsStaticInfo& osi) {
     assert(object_groups_.find(key) == object_groups_.end());
     auto container = new ObjectGroupContainer;
-    container->is_dynamic = is_dynamic;
     container->reference_object_ = reference_object;
     container->num_shapes = 0;
     object_groups_[key] = container;

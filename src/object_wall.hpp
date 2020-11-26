@@ -5,7 +5,7 @@
 #include "object.hpp"
 
 // Стена.
-class ObjectWall : public Object {
+class ObjectWall : public Object, Shape<ObjectWall> {
   static const std::vector<float> vertices_buffer_;
   int health_;
 

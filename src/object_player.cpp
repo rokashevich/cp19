@@ -4,6 +4,11 @@
 
 #include "constants.hpp"
 #include "generator_shape.hpp"
+#include "pixel_player.hpp"
+#include "vertex_player.hpp"
+template <>
+const ObjectsStaticInfo Shape<ObjectPlayer>::objects_static_info_{
+    ShapeGenerator::Cuboid(1, 2, 1), vertex_player, pixel_player};
 
 const std::vector<float> ObjectPlayer::vertices_buffer_ =
     ShapeGenerator::Cuboid(1, 2, 1);
