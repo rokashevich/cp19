@@ -15,3 +15,5 @@ desktop/cmake_install.cmake
 desktop/Makefile
 desktop/build/
 desktop/native-sdl-demo
+build-*-*
+*CMakeLists.txt.user
