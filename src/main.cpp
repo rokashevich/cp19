@@ -113,32 +113,31 @@ int main(int, char**) {  // С пустым main() падает на андро�
 
   int done = 0;
   bool camera_toggle = true;
+  bool right_mouse_button_held = false;
   while (!done) {
     // Дальше делаем интерактив с объектами мира.
     while (SDL_PollEvent(&renderer.event)) {
       if (renderer.event.type == SDL_QUIT) {
         done = 1;
-      } else if (renderer.event.type == SDL_MOUSEBUTTONDOWN) {
-        switch (renderer.event.button.button) {
-          case (SDL_BUTTON_LEFT):
-            std::cout << "left" << std::endl;
-            break;
-          case (SDL_BUTTON_RIGHT):
-            std::cout << "right" << std::endl;
-            break;
-          default:
-            break;
+      } else if (renderer.event.type == SDL_MOUSEBUTTONDOWN ||
+                 renderer.event.type == SDL_MOUSEBUTTONUP) {
+        if (renderer.event.button.button == SDL_BUTTON_LEFT) {
+          std::cout << "LMB" << std::endl;
+        } else if (renderer.event.button.button == SDL_BUTTON_RIGHT) {
+          right_mouse_button_held =
+              renderer.event.button.state == SDL_PRESSED ? true : false;
         }
       } else if (renderer.event.type == SDL_KEYDOWN) {
-        // std::cout << "key down delta: " << Physics::Delta() << std::endl;
+        std::cout << "key down delta: " << renderer.event.key.keysym.sym
+                  << std::endl;
         const float cameraSpeed = 0.2f;
         switch (renderer.event.key.keysym.sym) {
           case SDLK_w:
-            // std::cout << "w" << std::endl;
+            //            std::cout << "w" << std::endl;
             cameraPos += cameraSpeed * cameraFront;
             break;
           case SDLK_s:
-            // std::cout << "s" << std::endl;
+            //            std::cout << "s" << std::endl;
             cameraPos -= cameraSpeed * cameraFront;
             break;
           case SDLK_a:
