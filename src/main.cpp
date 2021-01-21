@@ -114,6 +114,7 @@ int main(int, char**) {  // С пустым main() падает на андро�
   int done = 0;
   bool camera_toggle = true;
   bool right_mouse_button_held = false;
+  const float cameraSpeed = 0.2f;
   while (!done) {
     // Дальше делаем интерактив с объектами мира.
     while (SDL_PollEvent(&renderer.event)) {
@@ -130,7 +131,6 @@ int main(int, char**) {  // С пустым main() падает на андро�
       } else if (renderer.event.type == SDL_KEYDOWN) {
         std::cout << "key down delta: " << renderer.event.key.keysym.sym
                   << std::endl;
-        const float cameraSpeed = 0.2f;
         switch (renderer.event.key.keysym.sym) {
           case SDLK_w:
             //            std::cout << "w" << std::endl;
@@ -174,6 +174,7 @@ int main(int, char**) {  // С пустым main() падает на андро�
         cameraFront = glm::normalize(front);
       }
     }
+    if (right_mouse_button_held) cameraPos += cameraSpeed * cameraFront;
 
     // pass projection matrix to shader (note that in this case it could change
     // every frame)
