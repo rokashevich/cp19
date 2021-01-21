@@ -75,7 +75,7 @@ int main(int, char**) {  // С пустым main() падает на андро�
   //                          ^^^ static или dynaimic
 
   World game_world = World(constants::maze_dimension);
-  RendererSdl renderer; 
+  RendererSdl renderer;
   Physics physics;
   for (auto const& [key, cfg] : cfgs) {
     physics.SetupObject(key, cfg.reference, cfgs2[key]);
@@ -118,6 +118,17 @@ int main(int, char**) {  // С пустым main() падает на андро�
     while (SDL_PollEvent(&renderer.event)) {
       if (renderer.event.type == SDL_QUIT) {
         done = 1;
+      } else if (renderer.event.type == SDL_MOUSEBUTTONDOWN) {
+        switch (renderer.event.button.button) {
+          case (SDL_BUTTON_LEFT):
+            std::cout << "left" << std::endl;
+            break;
+          case (SDL_BUTTON_RIGHT):
+            std::cout << "right" << std::endl;
+            break;
+          default:
+            break;
+        }
       } else if (renderer.event.type == SDL_KEYDOWN) {
         // std::cout << "key down delta: " << Physics::Delta() << std::endl;
         const float cameraSpeed = 0.2f;
