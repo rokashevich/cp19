@@ -70,6 +70,7 @@ class Physics : protected Timer {
   }
 
   void Step() {
+//    std::cout << "step" << std::endl;
     // Сдвигаем таймер на прошедшее с предыдущего шага время.
     Timer::Step(Physics::step_ticks_);
 

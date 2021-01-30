@@ -1,7 +1,8 @@
 #pragma once
 
-#include "point.hpp"
+#include <cmath>
 
+#include "point.hpp"
 class Vec {
   P begin_;
   P end_;
@@ -18,6 +19,12 @@ class Vec {
   friend Vec operator+(Vec lhs, const Vec& rhs) {
     // Под действием rhs изменится только lhs.end_.
     lhs.end_ = rhs.end_ + (lhs.end_ - rhs.begin_);
+    return lhs;
+  }
+
+  friend Vec operator/(Vec lhs, const int factor) {
+    lhs.end_.x = lhs.begin_.x + std::fabs(lhs.end_.x - lhs.begin_.x) / factor;
+    lhs.end_.y = lhs.begin_.y + std::fabs(lhs.end_.y - lhs.begin_.y) / factor;
     return lhs;
   }
 };

@@ -38,6 +38,7 @@ void Timer::Step(int target_ticks) {
               << std::endl;
     Timer::accumulated_ticks_ = Timer::accumulated_count_ = 0;
   } else {
+    //    std::cout << "else" << std::endl;
     Timer::accumulated_ticks_ += delta_ticks;
     ++Timer::accumulated_count_;
   }

@@ -11,4 +11,7 @@ TEST(ClassVec, TestSummation) {
   Vec D{{0, 0, 0}, {-3, 0, 0}};
   Vec E = C + D;
   EXPECT_EQ(-1, E.End().x);
+
+  Vec F{{0, 0, 0}, {27, 0, 0}};
+  EXPECT_EQ(9, (F / 3).End().x);
 }
