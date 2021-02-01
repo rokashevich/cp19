@@ -70,7 +70,6 @@ class Physics : protected Timer {
   }
 
   void Step() {
-//    std::cout << "step" << std::endl;
     // Сдвигаем таймер на прошедшее с предыдущего шага время.
     Timer::Step(Physics::step_ticks_);
 
@@ -80,11 +79,18 @@ class Physics : protected Timer {
       for (auto const& object : group_container->objects) {
         object->Step();
         Object* owner = object->Owner();
+
         Point coord;
         if (owner)
-          coord = owner->V()->Begin() + owner->AttachmentPoint();
-        else
-          coord = object->V()->Begin();
+          coord = owner->V().Begin() + owner->AttachmentPoint();
+        else {
+          coord = object->V().Begin();
+
+          // Приращивание вектора скорости.
+          Vec g{0,10,0};
+          g = g / 0.05;
+          object->V() = object->V() + g;
+        }
         for (auto const& shape_coords_params : object->CoordsParams()) {
           group_container->coords_params_buffer_.at(++i) =
               coord.x + shape_coords_params.at(0);

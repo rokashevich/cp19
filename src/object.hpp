@@ -38,7 +38,7 @@ class Object {
   Object(Vec v = Vec(), float weight = 0);
   virtual ~Object() {}
 
-  Vec* V() { return &v_; }
+  Vec& V() { return v_; }
 
   // Возвращает координты вершин базовой формы: параллелепипеда, куба, шара, и
   // т.д. в виде: x1,y1,z1,x2,y2,z2,..., где каждая тройка координат
