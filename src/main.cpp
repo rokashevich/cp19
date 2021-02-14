@@ -95,17 +95,18 @@ int main(int, char**) {  // С пустым main() падает на андро�
     Object* o = new ObjectWall(Vec(x, y, z), w);
     physics.AddObject(wall, o);
   }
-  for (float i = 0; i < 10; ++i) {
-    for (float j = 0; j < 10; ++j) {
-      for (float k = 0; k < 10; ++k) {
-        Object* o = new ObjectMissile(Vec(i * 3, k * 3, -j * 3, -1, 0, 1), 0.5);
+  for (float i = 0; i < 2; ++i) {
+    for (float j = 0; j < 1; ++j) {
+      for (float k = 0; k < 1; ++k) {
+        Object* o =
+            new ObjectMissile(Vec(i * 3, k * 3, -j * 3, -1.1, 0, 1), 0.5);
         physics.AddObject(missile, o);
       }
     }
   }
-  Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
-  Object* player1 = new ObjectPlayer(Vec(0, -0.45, 1, 0, 1, 1));
-  physics.AddObject(player, player2);
+  // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
+  Object* player1 = new ObjectPlayer(Vec(-1, -0.45, 1, 0, 1, 1));
+  // physics.AddObject(player, player2);
   physics.AddObject(player, player1);
 
   Object* gun1 = new ObjectGun(Vec());

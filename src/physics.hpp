@@ -71,7 +71,7 @@ class Physics : protected Timer {
 
   void Step() {
     // Сдвигаем таймер на прошедшее с предыдущего шага время.
-    Timer::Step(Physics::step_ticks_);
+    Timer::Step(Physics::frame_ms_);
 
     for (auto const& key_group_pair : object_groups_) {
       ObjectGroupContainer* group_container = key_group_pair.second;
@@ -84,12 +84,16 @@ class Physics : protected Timer {
         if (owner)
           coord = owner->V().Begin() + owner->AttachmentPoint();
         else {
-          coord = object->V().Begin();
-
           // Приращивание вектора скорости.
-          Vec g{0,10,0};
+          Vec g{0, 10, 0};
           g = g / 0.05;
           object->V() = object->V() + g;
+          //          std::cout << "?" << object->V().Begin().x << "?"
+          //                    << object->V().End().x << std::endl;
+          object->V() >> 0.01;
+          // std::cout << "!" << object->V().Begin().x << std::endl;
+
+          coord = object->V().Begin();
         }
         for (auto const& shape_coords_params : object->CoordsParams()) {
           group_container->coords_params_buffer_.at(++i) =
@@ -112,5 +116,6 @@ class Physics : protected Timer {
     return object_groups_.find(key)->second;
   }
   static int target_fps_;
-  static int step_ticks_;
+  static int frame_ms_;
+  static float frame_fraction_sec_;
 };

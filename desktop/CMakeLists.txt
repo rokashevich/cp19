@@ -39,6 +39,7 @@ add_executable(cp19
   ${SRC}/vec.hpp
   ${SRC}/shader.hpp
   ${SRC}/physics.cpp
+  ${SRC}/physics.hpp
   ${SRC}/timer.cpp
   ${SRC}/generator_shape.cpp
   ${SRC}/generator_maze2d.cpp

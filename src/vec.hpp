@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <iostream>
 
 #include "point.hpp"
 
@@ -33,6 +34,8 @@ class Vec {
     const float dx = (lhs.End().x - lhs.Begin().x) * fraction;
     const float dy = (lhs.End().y - lhs.Begin().y) * fraction;
     const float dz = (lhs.End().z - lhs.Begin().z) * fraction;
+    //    std::cout << "!" << lhs.End().x << std::endl;
+
     lhs.Begin().x += dx;
     lhs.Begin().y += dy;
     lhs.Begin().z += dz;
