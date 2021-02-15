@@ -105,7 +105,7 @@ int main(int, char**) {  // С пустым main() падает на андро�
     }
   }
   // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
-  Object* player1 = new ObjectPlayer(Vec(-1, -0.45, 1, 0, 1, 1));
+  Object* player1 = new ObjectPlayer(Vec(-1.01, -0.45, 1, 0, 1, 1));
   // physics.AddObject(player, player2);
   physics.AddObject(player, player1);
 
