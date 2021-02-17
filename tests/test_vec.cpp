@@ -28,3 +28,8 @@ TEST(Vec, Plus) {
             Vec(1, 1, 1, 3, 3, 3));
   EXPECT_EQ(Vec(1, 1, 1, 3, 3, 3) + Vec(0, -1, 0), Vec(1, 1, 1, 3, 2, 3));
 }
+
+TEST(Vec, Shift) {
+  EXPECT_EQ(Vec(1, 1, 1, 3, 3, 3) >> 0.5, Vec(2, 2, 2, 4, 4, 4));
+  EXPECT_EQ(Vec(3, 3, 3, 1, 1, 1) >> 0.5, Vec(2, 2, 2, 0, 0, 0));
+}
