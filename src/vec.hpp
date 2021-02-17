@@ -24,7 +24,7 @@ class Vec {
 
   friend Vec operator+(Vec lhs, const Vec& rhs) {
     // Под действием rhs изменится только lhs.end_.
-    lhs.end_ = lhs.end_ + (lhs.end_ - rhs.begin_);
+    lhs.end_ = lhs.end_ + (rhs.end_ - rhs.begin_);
     return lhs;
   }
 
