@@ -85,17 +85,29 @@ class Physics : protected Timer {
           coord = owner->V().Begin() + owner->AttachmentPoint();
         else {
           // Приращивание вектора скорости.
-          Vec g{0, 0, 0, 0, 0.1, 0};
+          Vec g{0, 0, 0, 0, 0.01, 0};
           // g = g / 0.05;
-          //          object->V() = object->V() + g;
-          std::cout << "(" << object->V().Begin().x << " "
-                    << object->V().Begin().y << " " << object->V().Begin().z
-                    << "---" << object->V().End().x << " "
-                    << object->V().End().y << " " << object->V().End().z << ")"
-                    << std::endl;
-          //          object->V() >> 0.1;
-          // std::cout << "!" << object->V().Begin().x << std::endl;
+          if (object->V().Begin() == object->V().End()) {
+            // std::cout << "1" << std::endl;
+          } else {
+            //            std::cout << object->V().Begin().x << "," <<
+            //            object->V().Begin().y
+            //                      << "," << object->V().Begin().z << ","
+            //                      << object->V().End().x << "," <<
+            //                      object->V().End().y
+            //                      << "," << object->V().End().z << " - ";
 
+            object->V() = object->V() + g;
+            object->V() = object->V() >> 0.01;
+            // std::cout << "0" << std::endl;
+
+            //            std::cout << object->V().Begin().x << "," <<
+            //            object->V().Begin().y
+            //                      << "," << object->V().Begin().z << ","
+            //                      << object->V().End().x << "," <<
+            //                      object->V().End().y
+            //                      << "," << object->V().End().z << std::endl;
+          }
           coord = object->V().Begin();
         }
         for (auto const& shape_coords_params : object->CoordsParams()) {

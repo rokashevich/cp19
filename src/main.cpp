@@ -92,7 +92,7 @@ int main(int, char**) {  // С пустым main() падает на андро�
     float y = game_world.panels_data_array().at(i++);
     float z = game_world.panels_data_array().at(i++);
     float w = game_world.panels_data_array().at(i++);
-    Object* o = new ObjectWall(Vec(x, y, z), w);
+    Object* o = new ObjectWall(Vec(x, y, z, x, y, z), w);
     physics.AddObject(wall, o);
   }
   for (float i = 0; i < 2; ++i) {
