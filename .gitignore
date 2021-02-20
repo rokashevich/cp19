@@ -17,3 +17,6 @@ desktop/build/
 desktop/native-sdl-demo
 build-*-*
 *CMakeLists.txt.user
+build
+generated
+*.pro.user
