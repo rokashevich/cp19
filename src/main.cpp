@@ -38,8 +38,8 @@
 #include "renderer_sdl.hpp"
 #include "shader.hpp"
 // camera
-static glm::vec3 cameraPos =
-    glm::vec3(2.0f, 15.0f, 2.0f);  // отладка: позиция примерно сверху лабиринта
+static glm::vec3 cameraPos = glm::vec3(
+    0.0f, 20.0f, 50.0f);  // отладка: позиция примерно сверху лабиринта
 static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -95,17 +95,19 @@ int main(int, char**) {  // С пустым main() падает на андро�
     Object* o = new ObjectWall(Vec(x, y, z, x, y, z), w);
     physics.AddObject(wall, o);
   }
-  for (float i = 0; i < 2; ++i) {
-    for (float j = 0; j < 1; ++j) {
-      for (float k = 0; k < 1; ++k) {
-        Object* o =
-            new ObjectMissile(Vec(i * 3, k * 3, -j * 3, -1.1, 0, 1), 0.5);
+  for (float i = 0; i < 5; ++i) {
+    for (float j = 0; j < 5; ++j) {
+      for (float k = 0; k < 5; ++k) {
+        Object* o = new ObjectMissile(
+            Vec(0 + i, 20 + j, 5 + k, 0 + i, 19 + j, 5 + k), 0.5);
         physics.AddObject(missile, o);
       }
     }
   }
+  //  Object* o = new ObjectMissile(Vec(0, 20, 5, 0, 21, 5), 10);
+  //  physics.AddObject(missile, o);
   // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
-  Object* player1 = new ObjectPlayer(Vec(-1.01, -0.45, 1, 0, 1, 1));
+  Object* player1 = new ObjectPlayer(Vec(0, 15, 5, 0, 14, 5));
   // physics.AddObject(player, player2);
   physics.AddObject(player, player1);
 
