@@ -84,29 +84,10 @@ class Physics : protected Timer {
         if (owner)
           coord = owner->V().Begin() + owner->AttachmentPoint();
         else {
-          // Приращивание вектора скорости.
-          Vec g{0, 0, 0, 0, -0.02, 0};
-          // g = g / 0.05;
-          if (object->V().Begin() == object->V().End()) {
-            // std::cout << "1" << std::endl;
-          } else {
-            //            std::cout << object->V().Begin().x << "," <<
-            //            object->V().Begin().y
-            //                      << "," << object->V().Begin().z << ","
-            //                      << object->V().End().x << "," <<
-            //                      object->V().End().y
-            //                      << "," << object->V().End().z << " - ";
-
+          const Vec g{0, 0, 0, 0, -0.02, 0};  // ускор свобод падения
+          if (object->Weight() > 0) {  // динамический объект
             object->V() = object->V() + g;
-            object->V() = object->V() >> 0.05;
-            // std::cout << "0" << std::endl;
-
-            //            std::cout << object->V().Begin().x << "," <<
-            //            object->V().Begin().y
-            //                      << "," << object->V().Begin().z << ","
-            //                      << object->V().End().x << "," <<
-            //                      object->V().End().y
-            //                      << "," << object->V().End().z << std::endl;
+            object->V() = object->V() >> 0.1;
           }
           coord = object->V().Begin();
         }

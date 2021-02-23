@@ -51,15 +51,15 @@ static float pitch = 0.0f;
 static float fov = 45.0f;
 
 struct Cfg {
-  Object* reference;
+  Object *reference;
   const bool is_dynamic;
-  const char* vertex_shader;
-  const char* pixel_shader;
+  const char *vertex_shader;
+  const char *pixel_shader;
 };
 
 // auto& a = Shape<ObjectWall>::ShapeVerticesBuffer2();
 
-int main(int, char**) {  // С пустым main() падает на андроиде!
+int main(int, char **) {  // С пустым main() падает на андроиде!
   // Каждому типу объектов - уникальный key.
   enum { wall, missile, player, gun };
   std::unordered_map<int, ObjectsStaticInfo> cfgs2{
@@ -78,10 +78,10 @@ int main(int, char**) {  // С пустым main() падает на андро�
   World game_world = World(constants::maze_dimension);
   RendererSdl renderer;
   Physics physics;
-  for (auto const& [key, cfg] : cfgs) {
+  for (auto const &[key, cfg] : cfgs) {
     physics.SetupObject(key, cfg.reference, cfgs2[key]);
   }
-  for (auto const& [key, cfg] : cfgs2) {
+  for (auto const &[key, cfg] : cfgs2) {
     renderer.SetupStatic(key, &cfg.vertices_buffer, cfg.vertex_shader,
                          cfg.pixel_shader);
   }
@@ -92,13 +92,13 @@ int main(int, char**) {  // С пустым main() падает на андро�
     float y = game_world.panels_data_array().at(i++);
     float z = game_world.panels_data_array().at(i++);
     float w = game_world.panels_data_array().at(i++);
-    Object* o = new ObjectWall(Vec(x, y, z, x, y, z), w);
+    Object *o = new ObjectWall(Vec(x, y, z, x, y, z), w);
     physics.AddObject(wall, o);
   }
   for (float i = 0; i < 5; ++i) {
     for (float j = 0; j < 5; ++j) {
       for (float k = 0; k < 5; ++k) {
-        Object* o = new ObjectMissile(
+        Object *o = new ObjectMissile(
             Vec(0 + i, 20 + j, 5 + k, 0 + i, 19 + j, 5 + k), 0.5);
         physics.AddObject(missile, o);
       }
@@ -107,11 +107,11 @@ int main(int, char**) {  // С пустым main() падает на андро�
   //  Object* o = new ObjectMissile(Vec(0, 20, 5, 0, 21, 5), 10);
   //  physics.AddObject(missile, o);
   // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
-  Object* player1 = new ObjectPlayer(Vec(0, 15, 5, 0, 14, 5));
+  Object *player1 = new ObjectPlayer(Vec(0, 15, 5, 0, 14, 5));
   // physics.AddObject(player, player2);
   physics.AddObject(player, player1);
 
-  Object* gun1 = new ObjectGun(Vec());
+  Object *gun1 = new ObjectGun(Vec());
   gun1->Owner(player1);
   physics.AddObject(gun, gun1);
 
@@ -204,7 +204,7 @@ int main(int, char**) {  // С пустым main() падает на андро�
 
     physics.Step();
     renderer.UpdateCommon(&projection[0][0], &view[0][0], &model[0][0]);
-    for (auto const& [key, cfg] : cfgs)
+    for (auto const &[key, cfg] : cfgs)
       renderer.UpdateDynamic(key, physics.SizeofCoordsParamsBuffer(key),
                              physics.CoordsParamsBuffer(key),
                              physics.NumShapes(key));
