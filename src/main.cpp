@@ -38,7 +38,8 @@
 #include "renderer_sdl.hpp"
 #include "shader.hpp"
 // camera
-static glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
+static glm::vec3 cameraPos = glm::vec3(
+    0.0f, 20.0f, 50.0f);  // отладка: позиция примерно сверху лабиринта
 static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -75,7 +76,7 @@ int main(int, char**) {  // С пустым main() падает на андро�
   //                          ^^^ static или dynaimic
 
   World game_world = World(constants::maze_dimension);
-  RendererSdl renderer; 
+  RendererSdl renderer;
   Physics physics;
   for (auto const& [key, cfg] : cfgs) {
     physics.SetupObject(key, cfg.reference, cfgs2[key]);
@@ -91,20 +92,23 @@ int main(int, char**) {  // С пустым main() падает на андро�
     float y = game_world.panels_data_array().at(i++);
     float z = game_world.panels_data_array().at(i++);
     float w = game_world.panels_data_array().at(i++);
-    Object* o = new ObjectWall(Vec(x, y, z), w);
+    Object* o = new ObjectWall(Vec(x, y, z, x, y, z), w);
     physics.AddObject(wall, o);
   }
-  for (float i = 0; i < 10; ++i) {
-    for (float j = 0; j < 10; ++j) {
-      for (float k = 0; k < 10; ++k) {
-        Object* o = new ObjectMissile(Vec(i * 3, k * 3, -j * 3, -1, 0, 1), 0.5);
+  for (float i = 0; i < 5; ++i) {
+    for (float j = 0; j < 5; ++j) {
+      for (float k = 0; k < 5; ++k) {
+        Object* o = new ObjectMissile(
+            Vec(0 + i, 20 + j, 5 + k, 0 + i, 19 + j, 5 + k), 0.5);
         physics.AddObject(missile, o);
       }
     }
   }
-  Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
-  Object* player1 = new ObjectPlayer(Vec(0, -0.45, 1, 0, 1, 1));
-  physics.AddObject(player, player2);
+  //  Object* o = new ObjectMissile(Vec(0, 20, 5, 0, 21, 5), 10);
+  //  physics.AddObject(missile, o);
+  // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
+  Object* player1 = new ObjectPlayer(Vec(0, 15, 5, 0, 14, 5));
+  // physics.AddObject(player, player2);
   physics.AddObject(player, player1);
 
   Object* gun1 = new ObjectGun(Vec());
@@ -113,21 +117,31 @@ int main(int, char**) {  // С пустым main() падает на андро�
 
   int done = 0;
   bool camera_toggle = true;
+  bool right_mouse_button_held = false;
+  const float cameraSpeed = 0.2f;
   while (!done) {
     // Дальше делаем интерактив с объектами мира.
     while (SDL_PollEvent(&renderer.event)) {
       if (renderer.event.type == SDL_QUIT) {
         done = 1;
+      } else if (renderer.event.type == SDL_MOUSEBUTTONDOWN ||
+                 renderer.event.type == SDL_MOUSEBUTTONUP) {
+        if (renderer.event.button.button == SDL_BUTTON_LEFT) {
+          std::cout << "LMB" << std::endl;
+        } else if (renderer.event.button.button == SDL_BUTTON_RIGHT) {
+          right_mouse_button_held =
+              renderer.event.button.state == SDL_PRESSED ? true : false;
+        }
       } else if (renderer.event.type == SDL_KEYDOWN) {
-        // std::cout << "key down delta: " << Physics::Delta() << std::endl;
-        const float cameraSpeed = 0.2f;
+        std::cout << "key down delta: " << renderer.event.key.keysym.sym
+                  << std::endl;
         switch (renderer.event.key.keysym.sym) {
           case SDLK_w:
-            // std::cout << "w" << std::endl;
+            //            std::cout << "w" << std::endl;
             cameraPos += cameraSpeed * cameraFront;
             break;
           case SDLK_s:
-            // std::cout << "s" << std::endl;
+            //            std::cout << "s" << std::endl;
             cameraPos -= cameraSpeed * cameraFront;
             break;
           case SDLK_a:
@@ -164,6 +178,7 @@ int main(int, char**) {  // С пустым main() падает на андро�
         cameraFront = glm::normalize(front);
       }
     }
+    if (right_mouse_button_held) cameraPos += cameraSpeed * cameraFront;
 
     // pass projection matrix to shader (note that in this case it could change
     // every frame)

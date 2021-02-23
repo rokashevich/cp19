@@ -71,7 +71,7 @@ class Physics : protected Timer {
 
   void Step() {
     // Сдвигаем таймер на прошедшее с предыдущего шага время.
-    Timer::Step(Physics::step_ticks_);
+    Timer::Step(Physics::frame_ms_);
 
     for (auto const& key_group_pair : object_groups_) {
       ObjectGroupContainer* group_container = key_group_pair.second;
@@ -79,11 +79,37 @@ class Physics : protected Timer {
       for (auto const& object : group_container->objects) {
         object->Step();
         Object* owner = object->Owner();
+
         Point coord;
         if (owner)
-          coord = owner->V()->Begin() + owner->AttachmentPoint();
-        else
-          coord = object->V()->Begin();
+          coord = owner->V().Begin() + owner->AttachmentPoint();
+        else {
+          // Приращивание вектора скорости.
+          Vec g{0, 0, 0, 0, -0.02, 0};
+          // g = g / 0.05;
+          if (object->V().Begin() == object->V().End()) {
+            // std::cout << "1" << std::endl;
+          } else {
+            //            std::cout << object->V().Begin().x << "," <<
+            //            object->V().Begin().y
+            //                      << "," << object->V().Begin().z << ","
+            //                      << object->V().End().x << "," <<
+            //                      object->V().End().y
+            //                      << "," << object->V().End().z << " - ";
+
+            object->V() = object->V() + g;
+            object->V() = object->V() >> 0.05;
+            // std::cout << "0" << std::endl;
+
+            //            std::cout << object->V().Begin().x << "," <<
+            //            object->V().Begin().y
+            //                      << "," << object->V().Begin().z << ","
+            //                      << object->V().End().x << "," <<
+            //                      object->V().End().y
+            //                      << "," << object->V().End().z << std::endl;
+          }
+          coord = object->V().Begin();
+        }
         for (auto const& shape_coords_params : object->CoordsParams()) {
           group_container->coords_params_buffer_.at(++i) =
               coord.x + shape_coords_params.at(0);
@@ -105,5 +131,6 @@ class Physics : protected Timer {
     return object_groups_.find(key)->second;
   }
   static int target_fps_;
-  static int step_ticks_;
+  static int frame_ms_;
+  static float frame_fraction_sec_;
 };
