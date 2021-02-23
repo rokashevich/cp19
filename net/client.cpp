@@ -14,7 +14,9 @@
 #include "interplay.hpp"
 
 int main() {
-  // auto client = Interplay::Client("12345");
+  boost::asio::io_context io_context;
+  Interplay::Client client(io_context, "127.0.0.1");
+  io_context.run();
 
   return 0;
 }

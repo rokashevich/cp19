@@ -21,7 +21,7 @@
 
 int main() {
   boost::asio::io_context io_context;
-  Interplay::server srv(io_context, 15001);
+  Interplay::Server srv(io_context, 12345);
   srv.async_accept();
   io_context.run();
   return 0;
