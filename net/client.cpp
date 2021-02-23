@@ -14,7 +14,7 @@
 #include "interplay.hpp"
 
 int main() {
-  auto client = Interplay::Client("12345");
+  // auto client = Interplay::Client("12345");
 
   return 0;
 }
