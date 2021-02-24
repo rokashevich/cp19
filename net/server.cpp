@@ -11,13 +11,18 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <boost/enable_shared_from_this.hpp>
+#include <boost/shared_ptr.hpp>
 #include <iostream>
 
 #include "interplay.hpp"
 
 int main() {
-  std::cout << "before start server" << std::endl;
-  auto server = Interplay::Server("12345");
-  std::cout << "after stared server" << std::endl;
+  boost::asio::io_context io_context;
+  Interplay::Server srv(io_context, 12345);
+  srv.async_accept();
+  io_context.run();
   return 0;
 }
