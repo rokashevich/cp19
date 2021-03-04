@@ -114,14 +114,6 @@ int main(int, char **) {  // С пустым main() падает на андро
     while (SDL_PollEvent(&renderer.event)) {
       if (renderer.event.type == SDL_QUIT) {
         done = 1;
-      } else if (renderer.event.type == SDL_MOUSEBUTTONDOWN ||
-                 renderer.event.type == SDL_MOUSEBUTTONUP) {
-        if (renderer.event.button.button == SDL_BUTTON_LEFT) {
-          std::cout << "LMB" << std::endl;
-        } else if (renderer.event.button.button == SDL_BUTTON_RIGHT) {
-          right_mouse_button_held =
-              renderer.event.button.state == SDL_PRESSED ? true : false;
-        }
       } else if (renderer.event.type == SDL_KEYDOWN) {
         std::cout << "key down delta: " << renderer.event.key.keysym.sym
                   << std::endl;
