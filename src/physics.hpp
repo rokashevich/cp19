@@ -73,24 +73,29 @@ class Physics : protected Timer {
     // Сдвигаем таймер на прошедшее с предыдущего шага время.
     Timer::Step(Physics::frame_ms_);
 
+    // Первая итерация по всем объектам - смещаем на запрашиваему величину.
+    for (auto const& key_group_pair : object_groups_) {
+      ObjectGroupContainer* group_container = key_group_pair.second;
+      for (auto const& object : group_container->objects) {
+        object->Step();
+        const Vec g{0, 0, 0, 0, -0.02, 0};  // ускор свобод падения
+        if (object->Weight() > 0) {  // динамический объект
+          object->V() = object->V() + g;
+        }
+      }
+    }
+    // Вторая итерация - разрешаем коллизии.
     for (auto const& key_group_pair : object_groups_) {
       ObjectGroupContainer* group_container = key_group_pair.second;
       int i = -1;
       for (auto const& object : group_container->objects) {
-        object->Step();
-        Object* owner = object->Owner();
-
-        Point coord;
-        if (owner)
-          coord = owner->V().Begin() + owner->AttachmentPoint();
-        else {
-          const Vec g{0, 0, 0, 0, -0.02, 0};  // ускор свобод падения
-          if (object->Weight() > 0) {  // динамический объект
-            object->V() = object->V() + g;
-            object->V() = object->V() >> 0.1;
-          }
-          coord = object->V().Begin();
-        }
+        const Point b = object->V().Begin();
+        object->V() = object->V() >> 0.1;
+        const Point e = object->V().Begin();
+        if (i == -1)
+          std::cout << "dist:" << b.y << "-" << e.y << " :"
+                    << group_container->objects.size() << std::endl;
+        const Point& coord = object->V().Begin();
         for (auto const& shape_coords_params : object->CoordsParams()) {
           group_container->coords_params_buffer_.at(++i) =
               coord.x + shape_coords_params.at(0);

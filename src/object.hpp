@@ -27,8 +27,7 @@ class Shape {
 // Базовый класс физического объекта игрового мира.
 class Object {
   Vec v_;
-  int weight_;  // >0 обычный объект, =0 стена, <0 артефакт
-  Object* owner_;
+  int weight_;  // >0 обычный объект, =0 стена, <0 артефактphy
 
  protected:
   Point attachment_point_;
@@ -53,8 +52,6 @@ class Object {
     return coords_params_;
   }
 
-  void Owner(Object* owner) { owner_ = owner; }
-  Object* Owner() { return owner_; }
   Point AttachmentPoint() { return attachment_point_; }
   int Weight() { return weight_; }
 };

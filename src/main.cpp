@@ -15,7 +15,6 @@
 #include "world.hpp"
 
 // Сгенерированные из glsl файлов.
-#include "pixel_gun.hpp"
 #include "pixel_missile.hpp"
 #include "pixel_player.hpp"
 #include "pixel_wall.hpp"
@@ -29,7 +28,6 @@
 #include "constants.hpp"
 #include "generator_shape.hpp"
 #include "object.hpp"
-#include "object_gun.hpp"
 #include "object_missile.hpp"
 #include "object_player.hpp"
 #include "object_wall.hpp"
@@ -39,12 +37,12 @@
 #include "shader.hpp"
 // camera
 static glm::vec3 cameraPos = glm::vec3(
-    0.0f, 20.0f, 50.0f);  // отладка: позиция примерно сверху лабиринта
+    0.0f, 15.0f, 55.0f);  // отладка: позиция примерно сверху лабиринта
 static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 static float yaw =
-    -90.0f;  // yaw is initialized to -90.0 degrees since a yaw of 0.0 results
+    -90.0f;  // yaw is initialized to -90.0 degrees since a yaw of 0.0 results12
              // in a direction vector pointing to the right so we initially
              // rotate a bit to the left.
 static float pitch = 0.0f;
@@ -61,19 +59,15 @@ struct Cfg {
 
 int main(int, char **) {  // С пустым main() падает на андроиде!
   // Каждому типу объектов - уникальный key.
-  enum { wall, missile, player, gun };
+  enum { wall, missile, player };
   std::unordered_map<int, ObjectsStaticInfo> cfgs2{
       {wall, Shape<ObjectWall>::StaticInfo()},
       {missile, Shape<ObjectMissile>::StaticInfo()},
-      {player, Shape<ObjectPlayer>::StaticInfo()},
-      {gun, Shape<ObjectGun>::StaticInfo()},
-  };
+      {player, Shape<ObjectPlayer>::StaticInfo()}};
   std::unordered_map<int, Cfg> cfgs{
       {wall, {new ObjectWall(), false, vertex_wall, pixel_wall}},
       {missile, {new ObjectMissile(), true, vertex_missile, pixel_missile}},
-      {player, {new ObjectPlayer(), true, vertex_player, pixel_player}},
-      {gun, {new ObjectGun(), true, vertex_gun, pixel_gun}}};
-  //                          ^^^ static или dynaimic
+      {player, {new ObjectPlayer(), true, vertex_player, pixel_player}}};
 
   World game_world = World(constants::maze_dimension);
   RendererSdl renderer;
@@ -110,10 +104,6 @@ int main(int, char **) {  // С пустым main() падает на андро
   Object *player1 = new ObjectPlayer(Vec(0, 15, 5, 0, 14, 5));
   // physics.AddObject(player, player2);
   physics.AddObject(player, player1);
-
-  Object *gun1 = new ObjectGun(Vec());
-  gun1->Owner(player1);
-  physics.AddObject(gun, gun1);
 
   int done = 0;
   bool camera_toggle = true;
