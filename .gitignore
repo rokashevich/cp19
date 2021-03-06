@@ -20,3 +20,4 @@ build-*-*
 build
 generated
 *.pro.user
+.cache
