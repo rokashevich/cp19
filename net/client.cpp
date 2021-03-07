@@ -25,7 +25,7 @@ int main() {
   client.SendMessage("second\n");
   client.SendMessage("third\n");
   client.SendMessage("fourth\n");
-  client.SendMessage("fith\n");
+  client.SendMessage("fifth\n");
   //  }
 
   t.join();

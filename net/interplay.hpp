@@ -24,7 +24,21 @@ class Session : public std::enable_shared_from_this<Session> {
                                           std::size_t bytes_transferred) {
           std::cout << std::istream(&self->streambuf_).rdbuf() << std::endl;
           // streambuf_.consume(bytes_transferred);
+          Reply();
           Start();
+        });
+  }
+
+  void Reply() {
+    std::cout << "replying" << std::endl;
+    boost::asio::async_write(
+        socket_, io::buffer("message recieved\n"),
+        [this](boost::system::error_code ec, std::size_t /*length*/) {
+          if (!ec) {
+            std::cout << "replying ok\n" << std::endl;
+          } else {
+            socket_.close();
+          }
         });
   }
 
@@ -41,19 +55,17 @@ class Server {
         acceptor_(io_context, boost::asio::ip::tcp::endpoint(
                                   boost::asio::ip::tcp::v4(), port)) {}
 
-  void async_accept() {
-    // socket_.emplace(io_context_);
-
+  void AsyncAccept() {
     acceptor_.async_accept(*socket_, [&](boost::system::error_code error) {
       std::make_shared<Session>(std::move(*socket_))->Start();
-      async_accept();
+      AsyncAccept();
     });
   }
 
  private:
   boost::asio::io_context& io_context_;
-  boost::asio::ip::tcp::acceptor acceptor_;
   std::optional<boost::asio::ip::tcp::socket> socket_;
+  boost::asio::ip::tcp::acceptor acceptor_; 
 };
 ////////////////////////////////////
 
@@ -64,38 +76,35 @@ class Client {
     std::cout << "Address: " << hostname << "\n";
     boost::asio::ip::tcp::endpoint endpoint(
         boost::asio::ip::address::from_string(hostname), 12345);
-    //    socket_.async_connect(
-    //        endpoint, std::bind(&Client::on_connect, this,
-    //        std::placeholders::_1));
 
-    do_connect(endpoint);
+    DoConnect(endpoint);
   }
 
   void SendMessage(const std::string& msg) {
-    // std::cout << "message received 1 = " << msg << std::endl;
     boost::asio::post(io_context_, [this, msg]() {
-      //      std::cout << "message received\n";
-      //      std::cout << "message raeceived 2 = " << msg << std::endl;
-
       bool write_in_progress = !write_msgs_.empty();
       write_msgs_.push(msg);
       if (!write_in_progress) {
-        do_write();
+        DoWrite();
       }
     });
   }
 
+  void Close() {
+    boost::asio::post(io_context_, [this]() { socket_.close(); });
+  }
+
  private:
-  void do_connect(const boost::asio::ip::tcp::endpoint endpoint) {
+  void DoConnect(const boost::asio::ip::tcp::endpoint endpoint) {
     socket_.async_connect(endpoint,
                           [this](const boost::system::error_code& ec) {
                             if (!ec) {
-                              do_read();
+                              DoRead();
                             }
                           });
   }
 
-  void do_write() {
+  void DoWrite() {
     boost::asio::async_write(
         socket_,
         io::buffer(write_msgs_.front().data(), write_msgs_.front().length()),
@@ -104,7 +113,7 @@ class Client {
             std::cout << "writing message\n";
             write_msgs_.pop();
             if (!write_msgs_.empty()) {
-              do_write();
+              DoWrite();
             }
           } else {
             socket_.close();
@@ -112,40 +121,20 @@ class Client {
         });
   }
 
-  void do_read() {
-    boost::asio::async_read(
-        socket_, response_,
+  void DoRead() {
+    std::cout << "reading" << std::endl;
+    boost::asio::async_read_until(
+        socket_, response_, '\n',
         [this](error_code error, std::size_t bytes_transferred) {
           if (!error) {
             std::cout << "Read: " << error.message()
                       << ", bytes transferred: " << bytes_transferred << "\n\n"
                       << std::istream(&response_).rdbuf() << "\n";
-            do_read();
+            DoRead();
           } else {
             socket_.close();
           }
         });
-  }
-  //  void on_connect(const boost::system::error_code& error) {
-  //    std::cout << "Connect: " << error.message() << "\n";
-  //    io::async_write(socket_, io::buffer(message_),
-  //                    std::bind(&Client::on_write, this,
-  //                    std::placeholders::_1,
-  //                              std::placeholders::_2));
-  //  }
-
-  void on_write(error_code error, std::size_t bytes_transferred) {
-    std::cout << "Write: " << error.message()
-              << ", bytes transferred: " << bytes_transferred << "\n";
-    io::async_read(socket_, response_,
-                   std::bind(&Client::on_read, this, std::placeholders::_1,
-                             std::placeholders::_2));
-  }
-
-  void on_read(error_code error, std::size_t bytes_transferred) {
-    std::cout << "Read: " << error.message()
-              << ", bytes transferred: " << bytes_transferred << "\n\n"
-              << std::istream(&response_).rdbuf() << "\n";
   }
 
   io::io_context& io_context_;
