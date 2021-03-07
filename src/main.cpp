@@ -7,6 +7,7 @@
 #include <list>
 #include <typeinfo>
 #include <unordered_map>
+
 // Сторонние библиотеки идут вместе с проектом.
 #include "SDL.h"
 #include "glm/glm.hpp"
@@ -24,7 +25,6 @@
 #include "vertex_wall.hpp"
 
 // Заголовочные файлы проекта
-
 #include "constants.hpp"
 #include "generator_shape.hpp"
 #include "object.hpp"
@@ -35,18 +35,14 @@
 #include "point.hpp"
 #include "renderer_sdl.hpp"
 #include "shader.hpp"
+
 // camera
-static glm::vec3 cameraPos = glm::vec3(
-    0.0f, 15.0f, 55.0f);  // отладка: позиция примерно сверху лабиринта
+static glm::vec3 cameraPos =
+    glm::vec3(0.0f, 0.0f, .0f);  // отладка: позиция примерно сверху лабиринта
 static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-static float yaw =
-    -90.0f;  // yaw is initialized to -90.0 degrees since a yaw of 0.0 results12
-             // in a direction vector pointing to the right so we initially
-             // rotate a bit to the left.
+static float yaw = 0.0f;
 static float pitch = 0.0f;
-static float fov = 45.0f;
 
 struct Cfg {
   Object *reference;
@@ -107,90 +103,86 @@ int main(int, char **) {  // С пустым main() падает на андро
 
   int done = 0;
   bool camera_toggle = true;
-  bool right_mouse_button_held = false;
   const float cameraSpeed = 0.2f;
+
+  // Основной игровой цикл!
   while (!done) {
     // Дальше делаем интерактив с объектами мира.
     while (SDL_PollEvent(&renderer.event)) {
       if (renderer.event.type == SDL_QUIT) {
         done = 1;
       } else if (renderer.event.type == SDL_KEYDOWN) {
-        std::cout << "key down delta: " << renderer.event.key.keysym.sym
-                  << std::endl;
         switch (renderer.event.key.keysym.sym) {
           case SDLK_w:
-            //            std::cout << "w" << std::endl;
             cameraPos += cameraSpeed * cameraFront;
             break;
           case SDLK_s:
-            //            std::cout << "s" << std::endl;
             cameraPos -= cameraSpeed * cameraFront;
             break;
           case SDLK_a:
-            // std::cout << "a" << std::endl;
             cameraPos -=
                 glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
             break;
           case SDLK_d:
-            // std::cout << "d" << std::endl;
             cameraPos +=
                 glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
             break;
           case SDLK_t:
-            std::cout << "toggle camera" << std::endl;
             camera_toggle = !camera_toggle;
             break;
           default:
             break;
         }
       } else if (renderer.event.type == SDL_MOUSEMOTION) {
-        static float sensitivity = 0.1f;  // change this value to your liking
-        yaw += renderer.event.motion.xrel * sensitivity;
-        pitch -= renderer.event.motion.yrel * sensitivity;
-
-        // make sure that when pitch is out of bounds, screen doesn't get
-        // flipped
-        if (pitch > 89.0f) pitch = 89.0f;
-        if (pitch < -89.0f) pitch = -89.0f;
-
-        glm::vec3 front;
-        front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-        front.y = sin(glm::radians(pitch));
-        front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-        cameraFront = glm::normalize(front);
+        //        static float sensitivity = 0.1f;
+        //        yaw += renderer.event.motion.xrel * sensitivity;
+        //        pitch -= renderer.event.motion.yrel * sensitivity;
+        //        // when pitch is out of bounds
+        //        if (pitch > 89.0f) pitch = 89.0f;
+        //        if (pitch < -89.0f) pitch = -89.0f;
+        //        glm::vec3 front;
+        //        front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+        //        front.y = sin(glm::radians(pitch));
+        //        front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+        //        cameraFront = glm::normalize(front);
       }
     }
-    if (right_mouse_button_held) cameraPos += cameraSpeed * cameraFront;
 
+    // Расчитываем перемещения всех объектов с учётом введённых в предыдущем
+    // блоке интеракций.
+    physics.Step();
+
+    // Что-то с матрицами...
     // pass projection matrix to shader (note that in this case it could change
     // every frame)
     glm::mat4 projection =
-        glm::perspective(glm::radians(fov),
+        glm::perspective(120.0f,
                          static_cast<float>(constants::screen_width) /
                              static_cast<float>(constants::screen_height),
-                         0.1f, 100.0f);
+                         1.0f, 100.0f);
     // camera/view transformation
     glm::mat4 view;
     // if (camera_toggle)
-    view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    // view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     //    else {
-    //      glm::vec3 pos{o->x() - 2, o->y() - 2, o->z() - 2};
-    //      view = glm::lookAt(pos, -pos - cameraFront, cameraUp);
+    //    glm::vec3 pos{player1->V().Begin().x, player1->V().Begin().y,
+    //                  player1->V().Begin().z};
+    //    view = glm::lookAt(pos + glm::vec3{0, 2, 0}, pos, cameraUp);
+    view = glm::lookAt(glm::vec3{-30, 30, -30}, glm::vec3{0, 0, 0},
+                       glm::vec3{0, 1, 0});
+
     //    }
     // make sure to initialize matrix to identity matrix first
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-    float angle = 0.0f;
+    float angle = 10.0f;
     model =
         glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
-    physics.Step();
     renderer.UpdateCommon(&projection[0][0], &view[0][0], &model[0][0]);
     for (auto const &[key, cfg] : cfgs)
       renderer.UpdateDynamic(key, physics.SizeofCoordsParamsBuffer(key),
                              physics.CoordsParamsBuffer(key),
                              physics.NumShapes(key));
-
     renderer.RenderFrame();
   }
 

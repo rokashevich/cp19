@@ -69,6 +69,8 @@ World::World(const int resolution) : panel_size_{3} {
       }
     }
   }
+  panels_.at(2).at(0).at(0).at(0) = 9;
+  panels_.at(2).at(4).at(4).at(4) = 9;
   // Делаем проходы в полах, кроме первого этажа.
   for (int i = 1; i < resolution; ++i) {
     panels_.at(kSurfaceXZ)

@@ -78,10 +78,11 @@ class Physics : protected Timer {
       ObjectGroupContainer* group_container = key_group_pair.second;
       for (auto const& object : group_container->objects) {
         object->Step();
-        const Vec g{0, 0, 0, 0, -0.02, 0};  // ускор свобод падения
-        if (object->Weight() > 0) {  // динамический объект
-          object->V() = object->V() + g;
-        }
+        // todo физику пока отменяем
+        // const Vec g{0, 0, 0, 0, -0.02, 0};  // ускор свобод падения
+        // if (object->Weight() > 0) {  // динамический объект
+        //  object->V() = object->V() + g;
+        //}
       }
     }
     // Вторая итерация - разрешаем коллизии.
@@ -89,12 +90,9 @@ class Physics : protected Timer {
       ObjectGroupContainer* group_container = key_group_pair.second;
       int i = -1;
       for (auto const& object : group_container->objects) {
-        const Point b = object->V().Begin();
-        object->V() = object->V() >> 0.1;
-        const Point e = object->V().Begin();
-        if (i == -1)
-          std::cout << "dist:" << b.y << "-" << e.y << " :"
-                    << group_container->objects.size() << std::endl;
+        // todo физику пока отменяем
+        // const Point b = object->V().Begin();
+        //       object->V() = object->V() >> 0.1;
         const Point& coord = object->V().Begin();
         for (auto const& shape_coords_params : object->CoordsParams()) {
           group_container->coords_params_buffer_.at(++i) =
