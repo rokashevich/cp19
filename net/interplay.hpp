@@ -2,6 +2,7 @@
 
 #include <boost/asio.hpp>
 #include <iostream>
+#include <queue>
 
 #define ASIO_STANDALONE
 
@@ -60,8 +61,6 @@ class Client {
  public:
   Client(io::io_context& io_context, std::string const& hostname)
       : socket_(io_context), io_context_(io_context) {
-    message_ = "Initialization of client\n";
-
     std::cout << "Address: " << hostname << "\n";
     boost::asio::ip::tcp::endpoint endpoint(
         boost::asio::ip::address::from_string(hostname), 12345);
@@ -73,12 +72,16 @@ class Client {
   }
 
   void SendMessage(const std::string& msg) {
-    message_ = msg;
-    std::cout << "message received 1 = " << msg << std::endl;
+    // std::cout << "message received 1 = " << msg << std::endl;
     boost::asio::post(io_context_, [this, msg]() {
       //      std::cout << "message received\n";
       //      std::cout << "message raeceived 2 = " << msg << std::endl;
-      do_write(msg);
+
+      bool write_in_progress = !write_msgs_.empty();
+      write_msgs_.push(msg);
+      if (!write_in_progress) {
+        do_write();
+      }
     });
   }
 
@@ -92,13 +95,17 @@ class Client {
                           });
   }
 
-  void do_write(std::string msg) {
+  void do_write() {
     boost::asio::async_write(
-        socket_, io::buffer(msg),
+        socket_,
+        io::buffer(write_msgs_.front().data(), write_msgs_.front().length()),
         [this](boost::system::error_code ec, std::size_t /*length*/) {
           if (!ec) {
             std::cout << "writing message\n";
-            // do_write();
+            write_msgs_.pop();
+            if (!write_msgs_.empty()) {
+              do_write();
+            }
           } else {
             socket_.close();
           }
@@ -141,10 +148,10 @@ class Client {
               << std::istream(&response_).rdbuf() << "\n";
   }
 
-  boost::asio::io_context& io_context_;
+  io::io_context& io_context_;
   tcp::socket socket_;
-  std::string message_;
   io::streambuf response_;
+  std::queue<std::string> write_msgs_;
 };
 
 }  // namespace Interplay
