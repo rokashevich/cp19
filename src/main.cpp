@@ -97,7 +97,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   //  Object* o = new ObjectMissile(Vec(0, 20, 5, 0, 21, 5), 10);
   //  physics.AddObject(missile, o);
   // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
-  Object *player1 = new ObjectPlayer(Vec(0, 15, 5, 0, 14, 5));
+  Object *player1 = new ObjectPlayer(Vec(0, 0, 0, 0, 14, 5));
   // physics.AddObject(player, player2);
   physics.AddObject(player, player1);
 
@@ -156,7 +156,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     // pass projection matrix to shader (note that in this case it could change
     // every frame)
     glm::mat4 projection =
-        glm::perspective(120.0f,
+        glm::perspective(glm::radians(100.0f),
                          static_cast<float>(constants::screen_width) /
                              static_cast<float>(constants::screen_height),
                          1.0f, 100.0f);
@@ -165,11 +165,13 @@ int main(int, char **) {  // С пустым main() падает на андро
     // if (camera_toggle)
     // view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     //    else {
-    //    glm::vec3 pos{player1->V().Begin().x, player1->V().Begin().y,
-    //                  player1->V().Begin().z};
+    glm::vec3 followed{player1->V().Begin().x, player1->V().Begin().y,
+                       player1->V().Begin().z};
     //    view = glm::lookAt(pos + glm::vec3{0, 2, 0}, pos, cameraUp);
-    view = glm::lookAt(glm::vec3{-30, 30, -30}, glm::vec3{0, 0, 0},
+    view = glm::lookAt(followed + glm::vec3{-2, 2, -2}, followed,
                        glm::vec3{0, 1, 0});
+    //    view = glm::lookAt(followed - glm::vec3{10, 10, 10}, followed,
+    //                       glm::vec3{0, 1, 0});
 
     //    }
     // make sure to initialize matrix to identity matrix first
