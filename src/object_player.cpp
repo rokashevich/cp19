@@ -8,10 +8,10 @@
 #include "vertex_player.hpp"
 template <>
 const ObjectsStaticInfo Shape<ObjectPlayer>::objects_static_info_{
-    ShapeGenerator::Cuboid(1, 2, 1), vertex_player, pixel_player};
+    ShapeGenerator::Cuboid(1, 1, 1), vertex_player, pixel_player};
 
 const std::vector<float> ObjectPlayer::vertices_buffer_ =
-    ShapeGenerator::Cuboid(1, 2, 1);
+    ShapeGenerator::Cuboid(1, 1, 1);
 
 ObjectPlayer::ObjectPlayer(Vec v, int legs, int body, int head, int arms)
     : Object(v, legs + body + head + arms),

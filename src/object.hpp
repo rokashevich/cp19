@@ -30,7 +30,6 @@ class Object {
   int weight_;  // >0 обычный объект, =0 стена, <0 артефактphy
 
  protected:
-  Point attachment_point_;
   std::vector<std::array<float, 4>> coords_params_;
 
  public:
@@ -52,6 +51,5 @@ class Object {
     return coords_params_;
   }
 
-  Point AttachmentPoint() { return attachment_point_; }
   int Weight() { return weight_; }
 };

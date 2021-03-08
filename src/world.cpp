@@ -89,22 +89,22 @@ World::World(const int resolution) : panel_size_{3} {
           const int health = panels_.at(i).at(s).at(x).at(y);
           if (health < 0) continue;
           const float param = i * 100 + health;
-
+          const float half = panel_size_ / 2;
           switch (i) {
             case kSurfaceXY:
               panels_data_.push_back(panel_size_ * x);
               panels_data_.push_back(panel_size_ * y);
-              panels_data_.push_back(panel_size_ * s);
+              panels_data_.push_back(panel_size_ * s - half);
               break;
             case kSurfaceYZ:
-              panels_data_.push_back(panel_size_ * s - panel_size_ * 0.5);
+              panels_data_.push_back(panel_size_ * s - half);
               panels_data_.push_back(panel_size_ * y);
-              panels_data_.push_back(panel_size_ * x + panel_size_ * 0.5);
+              panels_data_.push_back(panel_size_ * x);
               break;
             case kSurfaceXZ:
               panels_data_.push_back(panel_size_ * x);
-              panels_data_.push_back(panel_size_ * s - panel_size_ * 0.5);
-              panels_data_.push_back(panel_size_ * y + panel_size_ * 0.5);
+              panels_data_.push_back(panel_size_ * s - half);
+              panels_data_.push_back(panel_size_ * y);
               break;
           }
           panels_data_.push_back(param);

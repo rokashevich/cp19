@@ -82,6 +82,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     float y = game_world.panels_data_array().at(i++);
     float z = game_world.panels_data_array().at(i++);
     float w = game_world.panels_data_array().at(i++);
+    std::cout << x << " " << y << " " << z << std::endl;
     Object *o = new ObjectWall(Vec(x, y, z, x, y, z), w);
     physics.AddObject(wall, o);
   }
@@ -101,11 +102,10 @@ int main(int, char **) {  // С пустым main() падает на андро
   // physics.AddObject(player, player2);
   physics.AddObject(player, player1);
 
+  // Основной игровой цикл!
   int done = 0;
   bool camera_toggle = true;
   const float cameraSpeed = 0.2f;
-
-  // Основной игровой цикл!
   while (!done) {
     // Дальше делаем интерактив с объектами мира.
     while (SDL_PollEvent(&renderer.event)) {
@@ -133,18 +133,18 @@ int main(int, char **) {  // С пустым main() падает на андро
           default:
             break;
         }
-      } else if (renderer.event.type == SDL_MOUSEMOTION) {
-        //        static float sensitivity = 0.1f;
-        //        yaw += renderer.event.motion.xrel * sensitivity;
-        //        pitch -= renderer.event.motion.yrel * sensitivity;
-        //        // when pitch is out of bounds
-        //        if (pitch > 89.0f) pitch = 89.0f;
-        //        if (pitch < -89.0f) pitch = -89.0f;
-        //        glm::vec3 front;
-        //        front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-        //        front.y = sin(glm::radians(pitch));
-        //        front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-        //        cameraFront = glm::normalize(front);
+      } else if (renderer.event.type == SDL_MOUSEMOTION && !camera_toggle) {
+        static float sensitivity = 0.1f;
+        yaw += renderer.event.motion.xrel * sensitivity;
+        pitch -= renderer.event.motion.yrel * sensitivity;
+        // when pitch is out of bounds
+        if (pitch > 89.0f) pitch = 89.0f;
+        if (pitch < -89.0f) pitch = -89.0f;
+        glm::vec3 front;
+        front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+        front.y = sin(glm::radians(pitch));
+        front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+        cameraFront = glm::normalize(front);
       }
     }
 
@@ -162,18 +162,14 @@ int main(int, char **) {  // С пустым main() падает на андро
                          1.0f, 100.0f);
     // camera/view transformation
     glm::mat4 view;
-    // if (camera_toggle)
-    // view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-    //    else {
-    glm::vec3 followed{player1->V().Begin().x, player1->V().Begin().y,
-                       player1->V().Begin().z};
-    //    view = glm::lookAt(pos + glm::vec3{0, 2, 0}, pos, cameraUp);
-    view = glm::lookAt(followed + glm::vec3{-2, 2, -2}, followed,
-                       glm::vec3{0, 1, 0});
-    //    view = glm::lookAt(followed - glm::vec3{10, 10, 10}, followed,
-    //                       glm::vec3{0, 1, 0});
-
-    //    }
+    if (!camera_toggle)
+      view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    else {
+      glm::vec3 followed{player1->V().Begin().x, player1->V().Begin().y,
+                         player1->V().Begin().z};
+      view = glm::lookAt(followed + glm::vec3{-2, 2, -2}, followed,
+                         glm::vec3{0, 1, 0});
+    }
     // make sure to initialize matrix to identity matrix first
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
