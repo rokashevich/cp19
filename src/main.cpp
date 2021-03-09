@@ -19,7 +19,6 @@
 #include "pixel_missile.hpp"
 #include "pixel_player.hpp"
 #include "pixel_wall.hpp"
-#include "vertex_gun.hpp"
 #include "vertex_missile.hpp"
 #include "vertex_player.hpp"
 #include "vertex_wall.hpp"
