@@ -26,6 +26,9 @@ class Shape {
 
 // Базовый класс физического объекта игрового мира.
 class Object {
+  P motion_external_;  // Запрошенное движение извне (кнопками, Ai).
+  P motion_internal_;  // Фактическое движение (блокируемое анимацией).
+  int timer_inertia_;  // Таймер отработки анимации.
   Vec v_;
   int weight_;  // >0 обычный объект, =0 стена, <0 артефактphy
 
@@ -36,6 +39,7 @@ class Object {
   Object(Vec v = Vec(), float weight = 0);
   virtual ~Object() {}
 
+  void SetMotion(P& p) { motion_external_ = p; }
   Vec& V() { return v_; }
 
   // Возвращает координты вершин базовой формы: параллелепипеда, куба, шара, и

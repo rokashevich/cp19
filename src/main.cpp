@@ -81,7 +81,6 @@ int main(int, char **) {  // С пустым main() падает на андро
     float y = game_world.panels_data_array().at(i++);
     float z = game_world.panels_data_array().at(i++);
     float w = game_world.panels_data_array().at(i++);
-    std::cout << x << " " << y << " " << z << std::endl;
     Object *o = new ObjectWall(Vec(x, y, z, x, y, z), w);
     physics.AddObject(wall, o);
   }
@@ -105,24 +104,34 @@ int main(int, char **) {  // С пустым main() падает на андро
   int done = 0;
   bool camera_toggle = true;
   const float cameraSpeed = 0.2f;
+  Object *controlled = player1;
   while (!done) {
-    // Дальше делаем интерактив с объектами мира.
+    std::cout << "pollevent: ";
+    P motion{0, 0, 0};  // Вектор, по которому хотим направить игрока.
     while (SDL_PollEvent(&renderer.event)) {
       if (renderer.event.type == SDL_QUIT) {
         done = 1;
       } else if (renderer.event.type == SDL_KEYDOWN) {
         switch (renderer.event.key.keysym.sym) {
-          case SDLK_w:
+          case SDLK_w:  // Вперёд (по -z).
+            std::cout << "w ";
+            motion += P{0, 0, -1};
             cameraPos += cameraSpeed * cameraFront;
             break;
-          case SDLK_s:
+          case SDLK_s:  // Назад (по z).
+            std::cout << "s ";
+            motion += P{0, 0, 1};
             cameraPos -= cameraSpeed * cameraFront;
             break;
-          case SDLK_a:
+          case SDLK_a:  // Влево (по -х).
+            std::cout << "a ";
+            motion += P{-1, 0, 0};
             cameraPos -=
                 glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
             break;
-          case SDLK_d:
+          case SDLK_d:  // Вправо (по х).
+            std::cout << "d ";
+            motion += P{1, 0, 0};
             cameraPos +=
                 glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
             break;
@@ -146,6 +155,7 @@ int main(int, char **) {  // С пустым main() падает на андро
         cameraFront = glm::normalize(front);
       }
     }
+    std::cout << " motion: " << motion << std::endl;
 
     // Расчитываем перемещения всех объектов с учётом введённых в предыдущем
     // блоке интеракций.
