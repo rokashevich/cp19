@@ -106,40 +106,39 @@ int main(int, char **) {  // С пустым main() падает на андро
   const float cameraSpeed = 0.2f;
   Object *controlled = player1;
   while (!done) {
-    std::cout << "pollevent: ";
+    // Определяем нажатия кнопок и движения мышкой.
+    const Uint8 *state = SDL_GetKeyboardState(NULL);
     P motion{0, 0, 0};  // Вектор, по которому хотим направить игрока.
     while (SDL_PollEvent(&renderer.event)) {
       if (renderer.event.type == SDL_QUIT) {
         done = 1;
-      } else if (renderer.event.type == SDL_KEYDOWN) {
-        switch (renderer.event.key.keysym.sym) {
-          case SDLK_w:  // Вперёд (по -z).
-            std::cout << "w ";
-            motion += P{0, 0, -1};
-            cameraPos += cameraSpeed * cameraFront;
-            break;
-          case SDLK_s:  // Назад (по z).
-            std::cout << "s ";
-            motion += P{0, 0, 1};
-            cameraPos -= cameraSpeed * cameraFront;
-            break;
-          case SDLK_a:  // Влево (по -х).
-            std::cout << "a ";
-            motion += P{-1, 0, 0};
-            cameraPos -=
-                glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-            break;
-          case SDLK_d:  // Вправо (по х).
-            std::cout << "d ";
-            motion += P{1, 0, 0};
-            cameraPos +=
-                glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-            break;
-          case SDLK_t:
-            camera_toggle = !camera_toggle;
-            break;
-          default:
-            break;
+      } else if (renderer.event.type == SDL_KEYDOWN ||
+                 renderer.event.type == SDL_KEYUP) {
+        if (state[SDL_SCANCODE_W]) {
+          std::cout << "w ";
+          motion += P{0, 0, -1};
+          cameraPos += cameraSpeed * cameraFront;
+        }
+        if (state[SDL_SCANCODE_S]) {
+          std::cout << "s ";
+          motion += P{0, 0, 1};
+          cameraPos -= cameraSpeed * cameraFront;
+        }
+        if (state[SDL_SCANCODE_A]) {
+          std::cout << "a ";
+          motion += P{-1, 0, 0};
+          cameraPos -=
+              glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        }
+        if (state[SDL_SCANCODE_D]) {
+          std::cout << "d ";
+          motion += P{1, 0, 0};
+          cameraPos +=
+              glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        }
+        if (state[SDL_SCANCODE_T] && renderer.event.type != SDL_KEYUP) {
+          std::cout << "toggle ";
+          camera_toggle = !camera_toggle;
         }
       } else if (renderer.event.type == SDL_MOUSEMOTION && !camera_toggle) {
         static float sensitivity = 0.1f;
@@ -155,6 +154,7 @@ int main(int, char **) {  // С пустым main() падает на андро
         cameraFront = glm::normalize(front);
       }
     }
+    std::cout << std::endl;
     std::cout << " motion: " << motion << std::endl;
 
     // Расчитываем перемещения всех объектов с учётом введённых в предыдущем
