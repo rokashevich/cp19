@@ -1,5 +1,6 @@
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
+#include <bits/stdint-intn.h>
 #include <time.h>
 
 #include <array>
@@ -13,7 +14,6 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "world.hpp"
 
 // Сгенерированные из glsl файлов.
 #include "pixel_missile.hpp"
@@ -34,6 +34,7 @@
 #include "point.hpp"
 #include "renderer_sdl.hpp"
 #include "shader.hpp"
+#include "world.hpp"
 
 // camera
 static glm::vec3 cameraPos =
@@ -102,45 +103,36 @@ int main(int, char **) {  // С пустым main() падает на андро
 
   // Основной игровой цикл!
   int done = 0;
-  bool camera_toggle = true;
+  bool input_bound_to_object = true;
   const float cameraSpeed = 0.2f;
   Object *controlled = player1;
+
   while (!done) {
-    // Определяем нажатия кнопок и движения мышкой.
+    // Внешнее управление!
+
+    // Структура "пожеланий" управления человечком (нами с клавиатуры/телефона
+    // или AI бота). Не факт что физический движок разрешит перемещение в этом
+    // направлении!
+    struct Input {
+      int backward_forward;  // -1 0 +1
+      int left_right;        // -1 0 + 1
+      bool up;               // true false
+    } input{0, 0, false};
     const Uint8 *state = SDL_GetKeyboardState(NULL);
-    P motion{0, 0, 0};  // Вектор, по которому хотим направить игрока.
     while (SDL_PollEvent(&renderer.event)) {
       if (renderer.event.type == SDL_QUIT) {
         done = 1;
       } else if (renderer.event.type == SDL_KEYDOWN ||
                  renderer.event.type == SDL_KEYUP) {
-        if (state[SDL_SCANCODE_W]) {
-          std::cout << "w ";
-          motion += P{0, 0, -1};
-          cameraPos += cameraSpeed * cameraFront;
-        }
-        if (state[SDL_SCANCODE_S]) {
-          std::cout << "s ";
-          motion += P{0, 0, 1};
-          cameraPos -= cameraSpeed * cameraFront;
-        }
-        if (state[SDL_SCANCODE_A]) {
-          std::cout << "a ";
-          motion += P{-1, 0, 0};
-          cameraPos -=
-              glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-        }
-        if (state[SDL_SCANCODE_D]) {
-          std::cout << "d ";
-          motion += P{1, 0, 0};
-          cameraPos +=
-              glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-        }
-        if (state[SDL_SCANCODE_T] && renderer.event.type != SDL_KEYUP) {
-          std::cout << "toggle ";
-          camera_toggle = !camera_toggle;
-        }
-      } else if (renderer.event.type == SDL_MOUSEMOTION && !camera_toggle) {
+        if (state[SDL_SCANCODE_W]) input.backward_forward += 1;
+        if (state[SDL_SCANCODE_S]) input.backward_forward += -1;
+        if (state[SDL_SCANCODE_A]) input.left_right += -1;
+        if (state[SDL_SCANCODE_D]) input.left_right += 1;
+        if (state[SDL_SCANCODE_SPACE]) input.up = true;
+        if (state[SDL_SCANCODE_T] && renderer.event.type != SDL_KEYUP)
+          input_bound_to_object = !input_bound_to_object;
+      } else if (renderer.event.type == SDL_MOUSEMOTION &&
+                 !input_bound_to_object) {
         static float sensitivity = 0.1f;
         yaw += renderer.event.motion.xrel * sensitivity;
         pitch -= renderer.event.motion.yrel * sensitivity;
@@ -154,8 +146,35 @@ int main(int, char **) {  // С пустым main() падает на андро
         cameraFront = glm::normalize(front);
       }
     }
-    std::cout << std::endl;
-    std::cout << " motion: " << motion << std::endl;
+
+    // Преобразуем запрошенное управление из формата кнопок
+    // вперёд-назад/влево-вправо/вверх в вектор в координатах игрового мира
+    glm::mat4 view;
+    glm::mat4 trans = glm::mat4(1.0f);
+    if (input_bound_to_object) {  // Управление объектом.
+      if (input.backward_forward == 1) controlled->V().Begin().x += 0.1;
+      if (input.backward_forward == -1) controlled->V().Begin().x -= 0.1;
+      if (input.left_right == 1)
+        trans =
+            glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+      if (input.left_right == -1)
+        trans =
+            glm::rotate(trans, glm::radians(-90.0f), glm::vec3(0.0, 0.0, 1.0));
+      glm::vec3 followed{player1->V().Begin().x, player1->V().Begin().y,
+                         player1->V().Begin().z};
+      view = glm::lookAt(followed + glm::vec3{-2, 2, -2}, followed,
+                         glm::vec3{0, 1, 0});
+    } else {  // Управление камерой.
+      if (input.backward_forward == 1) cameraPos += cameraSpeed * cameraFront;
+      if (input.backward_forward == -1) cameraPos -= cameraSpeed * cameraFront;
+      if (input.left_right == 1)
+        cameraPos -=
+            glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+      if (input.left_right == -1)
+        cameraPos +=
+            glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+      view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    }
 
     // Расчитываем перемещения всех объектов с учётом введённых в предыдущем
     // блоке интеракций.
@@ -169,16 +188,6 @@ int main(int, char **) {  // С пустым main() падает на андро
                          static_cast<float>(constants::screen_width) /
                              static_cast<float>(constants::screen_height),
                          1.0f, 100.0f);
-    // camera/view transformation
-    glm::mat4 view;
-    if (!camera_toggle)
-      view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-    else {
-      glm::vec3 followed{player1->V().Begin().x, player1->V().Begin().y,
-                         player1->V().Begin().z};
-      view = glm::lookAt(followed + glm::vec3{-2, 2, -2}, followed,
-                         glm::vec3{0, 1, 0});
-    }
     // make sure to initialize matrix to identity matrix first
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));

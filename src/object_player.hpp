@@ -19,7 +19,8 @@ class ObjectPlayer : public Object, Shape<ObjectPlayer> {
                int arms = 9);
   ~ObjectPlayer();
   void Step() final {
-//    Object::coords_params_.at(0).at(0) = -0.6;
+    Object::coords_params_.at(0).at(0) = -0.5;
+    Object::coords_params_.at(0).at(1) = -0.75;
     Object::coords_params_.at(0).at(3) = 1;
     Object::coords_params_.at(1).at(1) = 0;
     Object::coords_params_.at(1).at(3) = 1;

@@ -1,8 +1,8 @@
 #version 300 es
 
-layout (location = 0) in vec3 pos_in;
-layout (location = 1) in vec4 instanced_arg;
-layout (location = 2) in vec3 bar;
+layout(location = 0) in vec3 pos_in;
+layout(location = 1) in vec4 instanced_arg;
+layout(location = 2) in vec3 bar;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -10,19 +10,23 @@ uniform mat4 projection;
 out vec3 vColor;
 out vec3 vBC;
 void main() {
-  vec3 offset = vec3(instanced_arg.x,instanced_arg.y,instanced_arg.z);
+  vec3 offset = vec3(instanced_arg.x, instanced_arg.y, instanced_arg.z);
   float scale = instanced_arg.w;
-  vec3 pos = vec3(pos_in.x*scale, pos_in.y*scale, pos_in.z*scale);
+  vec3 pos = vec3(pos_in.x * scale, pos_in.y * scale, pos_in.z * scale);
 
-vBC = bar;
-if (vBC.x == 1.0)
-  vColor = vec3(1,0,0);
-else if (vBC.y == 1.0)
-  vColor = vec3(0,1,0);
-else if (vBC.z == 1.0)
-  vColor = vec3(0,0,1);
+  vBC = bar;
+  if (vBC.x == 1.0)
+    vColor = vec3(1, 0, 0);
+  else if (vBC.y == 1.0)
+    vColor = vec3(1, 0, 0);
+  else if (vBC.z == 1.0)
+    vColor = vec3(1, 0, 0);
 
+  mat4 trans = projection * view * model;
+  float s = sin(90.0);
+  float c = cos(90.0);
+  mat4 rot = mat4(0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0,
+                  0.0, 0.0, 0.0, 1.0);
 
-
-  gl_Position = projection * view * model * vec4(pos + offset, 1.0);
+  gl_Position = trans * rot * vec4(pos + offset, 1.0);
 }
