@@ -97,7 +97,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   //  Object* o = new ObjectMissile(Vec(0, 20, 5, 0, 21, 5), 10);
   //  physics.AddObject(missile, o);
   // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
-  Object *player1 = new ObjectPlayer(Vec(0, 0, 0, 0, 14, 5));
+  Object *player1 = new ObjectPlayer(Vec(1, 0, 0, 0, 14, 5));
   // physics.AddObject(player, player2);
   physics.AddObject(player, player1);
 
@@ -168,10 +168,10 @@ int main(int, char **) {  // С пустым main() падает на андро
       if (input.backward_forward == 1) cameraPos += cameraSpeed * cameraFront;
       if (input.backward_forward == -1) cameraPos -= cameraSpeed * cameraFront;
       if (input.left_right == 1)
-        cameraPos -=
+        cameraPos +=
             glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
       if (input.left_right == -1)
-        cameraPos +=
+        cameraPos -=
             glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
       view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     }
@@ -180,20 +180,20 @@ int main(int, char **) {  // С пустым main() падает на андро
     // блоке интеракций.
     physics.Step();
 
-    // Что-то с матрицами...
     // pass projection matrix to shader (note that in this case it could change
     // every frame)
     glm::mat4 projection =
         glm::perspective(glm::radians(100.0f),
                          static_cast<float>(constants::screen_width) /
                              static_cast<float>(constants::screen_height),
-                         1.0f, 100.0f);
+                         0.1f, 100.0f);
     // make sure to initialize matrix to identity matrix first
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-    float angle = 10.0f;
+    float angle = 0.0f;
     model =
-        glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.1f, 0.0f));
+
     renderer.UpdateCommon(&projection[0][0], &view[0][0], &model[0][0]);
     for (auto const &[key, cfg] : cfgs)
       renderer.UpdateDynamic(key, physics.SizeofCoordsParamsBuffer(key),
