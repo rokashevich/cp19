@@ -20,6 +20,7 @@ class RendererSdl {
     unsigned int vao;
     size_t instanced_num_bytes_;
     float* instanced_data_;
+
     int num_vertices_;
     int num_instances_;
   };
@@ -117,6 +118,22 @@ class RendererSdl {
                             (void*)0);
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glVertexAttribDivisor(2, 0);
+
+      // Далее отсылаем в шейдер координаты и поворты родителя (если есть).
+      std::vector<float> parent_offset{2, 2, 2};
+      // std::vector<float> parent_angles { 30, 30, 30 }
+      unsigned int parent_offset_VBO;
+      glGenBuffers(1, &parent_offset_VBO);
+      glBindBuffer(GL_ARRAY_BUFFER, parent_offset_VBO);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(float) * parent_offset.size(),
+                   parent_offset.data(), GL_DYNAMIC_DRAW);
+      glEnableVertexAttribArray(3);
+      glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                            (void*)0);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glVertexAttribDivisor(3, 1);
+
+      // Рисуем!
       glDrawArraysInstanced(GL_TRIANGLES, 0, renderable->num_vertices_,
                             renderable->num_instances_);
       glBindVertexArray(0);

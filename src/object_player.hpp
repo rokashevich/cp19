@@ -24,6 +24,7 @@ class ObjectPlayer : public Object, Shape<ObjectPlayer> {
     Object::coords_params_.at(0).at(3) = 1;
 
     Object::coords_params_.at(1).at(1) = -1.25;
+    Object::coords_params_.at(1).at(2) = 0.25;
     Object::coords_params_.at(1).at(3) = 1.5;
   }
   const std::vector<float>* ShapeVerticesBuffer() final;

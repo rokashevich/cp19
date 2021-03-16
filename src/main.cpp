@@ -152,17 +152,28 @@ int main(int, char **) {  // С пустым main() падает на андро
     glm::mat4 view;
     glm::mat4 trans = glm::mat4(1.0f);
     if (input_bound_to_object) {  // Управление объектом.
-      if (input.backward_forward == 1) controlled->V().Begin().x += 0.1;
-      if (input.backward_forward == -1) controlled->V().Begin().x -= 0.1;
-      if (input.left_right == 1)
-        trans =
-            glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-      if (input.left_right == -1)
-        trans =
-            glm::rotate(trans, glm::radians(-90.0f), glm::vec3(0.0, 0.0, 1.0));
+      if (input.backward_forward == 1) {
+        // controlled->V().Begin().x += 0.1;
+        controlled->SetOrientation(P{0, 1, 0});
+      }
+      if (input.backward_forward == -1) {
+        // controlled->V().Begin().x -= 0.1;
+        controlled->SetOrientation(P{0, -1, 0});
+      }
+      if (input.left_right == 1) {
+        controlled->SetOrientation(P{0, 0, -1});
+        // trans =
+        //    glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+      }
+      if (input.left_right == -1) {
+        controlled->SetOrientation(P{0, 0, 1});
+        // trans =
+        //    glm::rotate(trans, glm::radians(-90.0f), glm::vec3(0.0,
+        //    0.0, 1.0));
+      }
       glm::vec3 followed{player1->V().Begin().x, player1->V().Begin().y,
                          player1->V().Begin().z};
-      view = glm::lookAt(followed + glm::vec3{-2, 2, -2}, followed,
+      view = glm::lookAt(followed + glm::vec3{-2, 2, 0}, followed,
                          glm::vec3{0, 1, 0});
     } else {  // Управление камерой.
       if (input.backward_forward == 1) cameraPos += cameraSpeed * cameraFront;

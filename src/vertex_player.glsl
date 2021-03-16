@@ -3,7 +3,9 @@
 layout(location = 0) in vec3 pos_in;
 layout(location = 1) in vec4 instanced_arg;
 layout(location = 2) in vec3 bar;
-layout(location = 3) in vec3 rotation_angles;
+
+layout(location = 3) in vec3 parent_offset;
+// layout(location = 4) in vec3 parent_angles;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -24,6 +26,9 @@ void main() {
   } else {
     vColor = vec3(0, 1, 1);
     angle = 0.0;
+  }
+  if (parent_offset.x == 2.0) {
+    vColor = vec3(1, 0, 0);
   }
   float s = sin(angle);
   float c = cos(angle);
@@ -49,8 +54,5 @@ void main() {
   pos = trans_to * rot * pos;
   pos = trans_back * pos;
   pos = projection * view * model * (pos + offset);
-  // vec4 position = projection * view * model * vec4(pos + offset, 1.0);
-  // position = trans_to * rot * position;
-  // position = trans_back * position;
   gl_Position = pos;
 }
