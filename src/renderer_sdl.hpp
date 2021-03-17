@@ -113,11 +113,11 @@ class RendererSdl {
       glBindBuffer(GL_ARRAY_BUFFER, instance_bar_VBO);
       glBufferData(GL_ARRAY_BUFFER, sizeof(float) * bar.size(), bar.data(),
                    GL_DYNAMIC_DRAW);
-      glEnableVertexAttribArray(2);
-      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+      glEnableVertexAttribArray(4);
+      glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
                             (void*)0);
       glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glVertexAttribDivisor(2, 0);
+      glVertexAttribDivisor(4, 0);
 
       // Далее отсылаем в шейдер координаты и поворты родителя (если есть).
       std::vector<float> parent_offset{2, 2, 2};
