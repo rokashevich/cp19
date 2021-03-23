@@ -45,6 +45,7 @@ static float yaw = 0.0f;
 static float pitch = 0.0f;
 
 struct Cfg {
+  ObjectsStaticInfo static_info;
   Object *reference;
   const bool is_dynamic;
   const char *vertex_shader;
@@ -56,24 +57,26 @@ struct Cfg {
 int main(int, char **) {  // С пустым main() падает на андроиде!
   // Каждому типу объектов - уникальный key.
   enum { wall, missile, player };
-  std::unordered_map<int, ObjectsStaticInfo> cfgs2{
-      {wall, Shape<ObjectWall>::StaticInfo()},
-      {missile, Shape<ObjectMissile>::StaticInfo()},
-      {player, Shape<ObjectPlayer>::StaticInfo()}};
   std::unordered_map<int, Cfg> cfgs{
-      {wall, {new ObjectWall(), false, vertex_wall, pixel_wall}},
-      {missile, {new ObjectMissile(), true, vertex_missile, pixel_missile}},
-      {player, {new ObjectPlayer(), true, vertex_player, pixel_player}}};
+      {wall,
+       {Shape<ObjectWall>::StaticInfo(), new ObjectWall(), false, vertex_wall,
+        pixel_wall}},
+      {missile,
+       {Shape<ObjectMissile>::StaticInfo(), new ObjectMissile(), true,
+        vertex_missile, pixel_missile}},
+      {player,
+       {Shape<ObjectPlayer>::StaticInfo(), new ObjectPlayer(), true,
+        vertex_player, pixel_player}}};
 
   World game_world = World(constants::maze_dimension);
   RendererSdl renderer;
   Physics physics;
-  for (auto const &[key, cfg] : cfgs) {
-    physics.SetupObject(key, cfg.reference, cfgs2[key]);
-  }
-  for (auto const &[key, cfg] : cfgs2) {
-    renderer.SetupStatic(key, &cfg.vertices_buffer, cfg.vertex_shader,
-                         cfg.pixel_shader);
+  for (auto &iter : cfgs) {
+    int key = iter.first;
+    Cfg &cfg = iter.second;
+    physics.SetupObject(key, cfg.reference, cfg.static_info);
+    renderer.SetupStatic(key, &cfg.static_info.vertices_buffer,
+                         cfg.vertex_shader, cfg.pixel_shader);
   }
 
   // Отладка.
