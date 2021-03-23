@@ -35,8 +35,7 @@ class Physics : protected Timer {
     ObjectGroupContainer* group = FindGroupContainer(key);
     group->objects.push_back(object);
     const int current_size = group->coords_params_buffer_.size();
-    const int shapes_in_object =
-        group->reference_object_->CoordsParams().size();
+    const int shapes_in_object = group->reference_object_->Offsets().size();
     assert(shapes_in_object > 0);
     const int add_size = 4 * shapes_in_object;
     group->coords_params_buffer_.resize(current_size + add_size);
@@ -94,7 +93,7 @@ class Physics : protected Timer {
         // const Point b = object->V().Begin();
         //       object->V() = object->V() >> 0.1;
         const Point& coord = object->V().Begin();
-        for (auto const& shape_coords_params : object->CoordsParams()) {
+        for (auto const& shape_coords_params : object->Offsets()) {
           group_container->coords_params_buffer_.at(++i) =
               coord.x + shape_coords_params.at(0);
           group_container->coords_params_buffer_.at(++i) =

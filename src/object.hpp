@@ -35,7 +35,8 @@ class Object {
   int weight_;  // >0 обычный объект, =0 стена, <0 артефактphy
 
  protected:
-  std::vector<std::array<float, 4>> coords_params_;
+  // Координаты смещений базовых объектов.
+  std::vector<std::array<float, 4>> offsets_;
 
  public:
   Object(Vec v = Vec(), float weight = 0);
@@ -56,8 +57,8 @@ class Object {
   virtual void Step() {}
 
   // Массив координат базовых объектов для инстансированного рендеринга.
-  virtual const std::vector<std::array<float, 4>>& CoordsParams() {
-    return coords_params_;
+  virtual const std::vector<std::array<float, 4>>& Offsets() {
+    return offsets_;
   }
 
   int Weight() { return weight_; }

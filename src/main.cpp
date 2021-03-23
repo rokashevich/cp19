@@ -97,7 +97,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   //  Object* o = new ObjectMissile(Vec(0, 20, 5, 0, 21, 5), 10);
   //  physics.AddObject(missile, o);
   // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
-  Object *player1 = new ObjectPlayer(Vec(1, 0, 0, 0, 14, 5));
+  Object *player1 = new ObjectPlayer(Vec(2, 1, 0, 0, 14, 5));
   // physics.AddObject(player, player2);
   physics.AddObject(player, player1);
 

@@ -15,6 +15,6 @@ class ObjectMissile : public Object, Shape<ObjectMissile> {
  public:
   ObjectMissile(Vec v = Vec(), float diameter = 1);
   ~ObjectMissile();
-  void Step() final { Object::coords_params_.at(0).at(3) = diameter_ / 2; }
+  void Step() final { Object::offsets_.at(0).at(3) = diameter_ / 2; }
   const std::vector<float>* ShapeVerticesBuffer() final;
 };

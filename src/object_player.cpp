@@ -19,7 +19,7 @@ ObjectPlayer::ObjectPlayer(Vec v, int legs, int body, int head, int arms)
       body_(body),
       head_(head),
       arms_(arms) {
-  Object::coords_params_.resize(2);
+  Object::offsets_.resize(2);
 }
 ObjectPlayer::~ObjectPlayer(){};
 
