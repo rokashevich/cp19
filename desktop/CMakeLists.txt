@@ -27,23 +27,13 @@ set(Shaders
   ${SRC}/vertex_player.glsl
   ${SRC}/vertex_wall.glsl)
 
+file(GLOB GameSources
+    "${SRC}/*.hpp"
+    "${SRC}/*.cpp"
+)
+
 add_executable(cp19
-  ${SRC}/main.cpp
-  ${SRC}/world.cpp
-  ${SRC}/object.cpp
-  ${SRC}/object_missile.cpp
-  ${SRC}/object_player.cpp
-  ${SRC}/object_wall.cpp
-  ${SRC}/point.hpp
-  ${SRC}/vec.hpp
-  ${SRC}/shader.hpp
-  ${SRC}/physics.cpp
-  ${SRC}/physics.hpp
-  ${SRC}/timer.cpp
-  ${SRC}/generator_shape.cpp
-  ${SRC}/generator_maze2d.cpp
-  ${SRC}/renderer_sdl.cpp
-  ${SRC}/constants.hpp
+  ${GameSources}
   ${Shaders})
 
 add_custom_target(vertex_wall ALL COMMAND
