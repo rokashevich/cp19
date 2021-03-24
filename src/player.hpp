@@ -6,7 +6,7 @@
 #include "point.hpp"
 #include "vec.hpp"
 // Солдат.
-class ObjectPlayer : public Object, Shape<ObjectPlayer> {
+class Player : public Object, Shape<Player> {
   static const std::vector<float> vertices_buffer_;
   int legs_;
   int body_;
@@ -15,9 +15,8 @@ class ObjectPlayer : public Object, Shape<ObjectPlayer> {
   int gun_;
 
  public:
-  ObjectPlayer(Vec v = Vec(), int legs = 9, int body = 9, int head = 9,
-               int arms = 9);
-  ~ObjectPlayer();
+  Player(Vec v = Vec(), int legs = 9, int body = 9, int head = 9, int arms = 9);
+  ~Player();
   void Step() final {
     Object::offsets_.at(0).at(0) = 0;
     Object::offsets_.at(0).at(1) = 0;

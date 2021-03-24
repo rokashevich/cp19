@@ -8,13 +8,13 @@
 // Снаряд.
 // Все снаряды одинаковые, отличаются скоростью, размером и плотностью
 // - из этих переменных расчитывается убойная сила конкретного снаряда.
-class ObjectMissile : public Object, Shape<ObjectMissile> {
+class Missile : public Object, Shape<Missile> {
   static const std::vector<float> vertices_buffer_;
   const float diameter_;
 
  public:
-  ObjectMissile(Vec v = Vec(), float diameter = 1);
-  ~ObjectMissile();
+  Missile(Vec v = Vec(), float diameter = 1);
+  ~Missile();
   void Step() final { Object::offsets_.at(0).at(3) = diameter_ / 2; }
   const std::vector<float>* ShapeVerticesBuffer() final;
 };

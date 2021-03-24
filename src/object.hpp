@@ -8,7 +8,7 @@
 #include "point.hpp"
 #include "vec.hpp"
 
-struct ObjectsStaticInfo {
+struct ShapeInfo {
   std::vector<float> vertices_buffer;
   const char* vertex_shader;
   const char* pixel_shader;
@@ -16,7 +16,7 @@ struct ObjectsStaticInfo {
 
 template <class T>
 class Shape {
-  static const ObjectsStaticInfo objects_static_info_;
+  static const ShapeInfo objects_static_info_;
   static const std::vector<float> vertices_buffer_;
 
  public:

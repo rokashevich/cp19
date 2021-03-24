@@ -23,7 +23,7 @@ class Physics : protected Timer {
   std::unordered_map<int, ObjectGroupContainer*> object_groups_;
 
  public:
-  void SetupObject(int key, Object* reference_object, ObjectsStaticInfo& osi) {
+  void SetupObject(int key, Object* reference_object) {
     assert(object_groups_.find(key) == object_groups_.end());
     auto container = new ObjectGroupContainer;
     container->reference_object_ = reference_object;

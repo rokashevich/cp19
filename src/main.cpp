@@ -26,14 +26,14 @@
 // Заголовочные файлы проекта
 #include "constants.hpp"
 #include "generator_shape.hpp"
+#include "missile.hpp"
 #include "object.hpp"
-#include "object_missile.hpp"
-#include "object_player.hpp"
-#include "object_wall.hpp"
 #include "physics.hpp"
+#include "player.hpp"
 #include "point.hpp"
 #include "renderer_sdl.hpp"
 #include "shader.hpp"
+#include "wall.hpp"
 #include "world.hpp"
 
 // camera
@@ -45,7 +45,7 @@ static float yaw = 0.0f;
 static float pitch = 0.0f;
 
 struct Cfg {
-  ObjectsStaticInfo static_info;
+  ShapeInfo static_info;
   Object *reference;
   const bool is_dynamic;
   const char *vertex_shader;
@@ -59,14 +59,13 @@ int main(int, char **) {  // С пустым main() падает на андро
   enum { wall, missile, player };
   std::unordered_map<int, Cfg> cfgs{
       {wall,
-       {Shape<ObjectWall>::StaticInfo(), new ObjectWall(), false, vertex_wall,
-        pixel_wall}},
+       {Shape<Wall>::StaticInfo(), new Wall(), false, vertex_wall, pixel_wall}},
       {missile,
-       {Shape<ObjectMissile>::StaticInfo(), new ObjectMissile(), true,
-        vertex_missile, pixel_missile}},
+       {Shape<Missile>::StaticInfo(), new Missile(), true, vertex_missile,
+        pixel_missile}},
       {player,
-       {Shape<ObjectPlayer>::StaticInfo(), new ObjectPlayer(), true,
-        vertex_player, pixel_player}}};
+       {Shape<Player>::StaticInfo(), new Player(), true, vertex_player,
+        pixel_player}}};
 
   World game_world = World(constants::maze_dimension);
   RendererSdl renderer;
@@ -74,7 +73,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   for (auto &iter : cfgs) {
     int key = iter.first;
     Cfg &cfg = iter.second;
-    physics.SetupObject(key, cfg.reference, cfg.static_info);
+    physics.SetupObject(key, cfg.reference);
     renderer.SetupStatic(key, &cfg.static_info.vertices_buffer,
                          cfg.vertex_shader, cfg.pixel_shader);
   }
@@ -85,14 +84,14 @@ int main(int, char **) {  // С пустым main() падает на андро
     float y = game_world.panels_data_array().at(i++);
     float z = game_world.panels_data_array().at(i++);
     float w = game_world.panels_data_array().at(i++);
-    Object *o = new ObjectWall(Vec(x, y, z, x, y, z), w);
+    Object *o = new Wall(Vec(x, y, z, x, y, z), w);
     physics.AddObject(wall, o);
   }
   for (float i = 0; i < 5; ++i) {
     for (float j = 0; j < 5; ++j) {
       for (float k = 0; k < 5; ++k) {
-        Object *o = new ObjectMissile(
-            Vec(0 + i, 20 + j, 5 + k, 0 + i, 19 + j, 5 + k), 0.5);
+        Object *o =
+            new Missile(Vec(0 + i, 20 + j, 5 + k, 0 + i, 19 + j, 5 + k), 0.5);
         physics.AddObject(missile, o);
       }
     }
@@ -100,7 +99,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   //  Object* o = new ObjectMissile(Vec(0, 20, 5, 0, 21, 5), 10);
   //  physics.AddObject(missile, o);
   // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
-  Object *player1 = new ObjectPlayer(Vec(2, 1, 0, 0, 14, 5));
+  Object *player1 = new Player(Vec(2, 1, 0, 0, 14, 5));
   // physics.AddObject(player, player2);
   physics.AddObject(player, player1);
 
@@ -153,7 +152,7 @@ int main(int, char **) {  // С пустым main() падает на андро
     // Преобразуем запрошенное управление из формата кнопок
     // вперёд-назад/влево-вправо/вверх в вектор в координатах игрового мира
     glm::mat4 view;
-    glm::mat4 trans = glm::mat4(1.0f);
+    // glm::mat4 trans = glm::mat4(1.0f);
     if (input_bound_to_object) {  // Управление объектом.
       if (input.backward_forward == 1) {
         // controlled->V().Begin().x += 0.1;
@@ -209,10 +208,12 @@ int main(int, char **) {  // С пустым main() падает на андро
         glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.1f, 0.0f));
 
     renderer.UpdateCommon(&projection[0][0], &view[0][0], &model[0][0]);
-    for (auto const &[key, cfg] : cfgs)
+    for (const auto &cfg : cfgs) {
+      const int key = cfg.first;
       renderer.UpdateDynamic(key, physics.SizeofCoordsParamsBuffer(key),
                              physics.CoordsParamsBuffer(key),
                              physics.NumShapes(key));
+    }
     renderer.RenderFrame();
   }
 
