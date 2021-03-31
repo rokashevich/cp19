@@ -38,6 +38,12 @@ class Object {
   // Координаты смещений базовых объектов.
   std::vector<std::array<float, 4>> offsets_;
 
+  // Три угла поворота относительно осей из 0,0,0.
+  std::vector<std::array<float, 3>> angles_;
+
+  // Параметры объекта: высота, ширина, здоровье.
+  std::vector<std::array<float, 3>> params_;
+
  public:
   Object(Vec v = Vec(), float weight = 0);
   virtual ~Object() {}
@@ -56,10 +62,13 @@ class Object {
   // Для обновления параметров для шейдера.
   virtual void Step() {}
 
-  // Массив координат базовых объектов для инстансированного рендеринга.
   virtual const std::vector<std::array<float, 4>>& Offsets() {
     return offsets_;
   }
+
+  virtual const std::vector<std::array<float, 3>>& Angles() { return angles_; }
+
+  virtual const std::vector<std::array<float, 3>>& Params() { return params_; }
 
   int Weight() { return weight_; }
 };

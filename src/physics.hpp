@@ -17,8 +17,16 @@ class Physics : protected Timer {
     Object* reference_object_;
     int num_shapes;
     std::vector<Object*> objects;
-    std::vector<float> coords_params_buffer_;
-    std::size_t sizeof_coords_params_buffer_;
+
+    // Буфферы для шейдеров.
+    // В шейдеры данные передаются в виде одномерных массивов floatов и
+    // размеры этих массивов в байтах. Делается это каждый кадр!
+    std::vector<float> coords_;
+    std::vector<float> angles_;
+    std::vector<float> params_;
+    std::size_t coords_size_;
+    std::size_t angles_size_;
+    std::size_t params_size_;
   };
   std::unordered_map<int, ObjectGroupContainer*> object_groups_;
 
@@ -34,28 +42,41 @@ class Physics : protected Timer {
   void AddObject(int key, Object* object) {
     ObjectGroupContainer* group = FindGroupContainer(key);
     group->objects.push_back(object);
-    const int current_size = group->coords_params_buffer_.size();
+
+    const int current_size = group->coords_.size();
     const int shapes_in_object = group->reference_object_->Offsets().size();
-    assert(shapes_in_object > 0);
-    const int add_size = 4 * shapes_in_object;
-    group->coords_params_buffer_.resize(current_size + add_size);
-    group->sizeof_coords_params_buffer_ =
-        group->coords_params_buffer_.size() * sizeof(float);
     group->num_shapes += shapes_in_object;
+
+    group->coords_.resize(current_size + 3 * shapes_in_object);
+    group->coords_size_ = group->coords_.size() * sizeof(float);
+    group->angles_.resize(current_size + 3 * shapes_in_object);
+    group->angles_size_ = group->angles_.size() * sizeof(float);
+    group->params_.resize(current_size + 3 * shapes_in_object);
+    group->params_size_ = group->params_.size() * sizeof(float);
   }
 
-  float* CoordsParamsBuffer(int key) {
-    auto it = object_groups_.find(key);
-    assert(it != object_groups_.end());
-    ObjectGroupContainer* contaier = object_groups_.find(key)->second;
-    return contaier->coords_params_buffer_.data();
+  float* Coords(int key) {
+    return object_groups_.find(key)->second->coords_.data();
   }
 
-  std::size_t SizeofCoordsParamsBuffer(int key) {
-    auto it = object_groups_.find(key);
-    assert(it != object_groups_.end());
-    const ObjectGroupContainer* contaier = object_groups_.find(key)->second;
-    return contaier->sizeof_coords_params_buffer_;
+  std::size_t CoordsSize(int key) {
+    return object_groups_.find(key)->second->coords_size_;
+  }
+
+  float* Angles(int key) {
+    return object_groups_.find(key)->second->angles_.data();
+  }
+
+  std::size_t AnglesSize(int key) {
+    return object_groups_.find(key)->second->angles_size_;
+  }
+
+  float* Params(int key) {
+    return object_groups_.find(key)->second->params_.data();
+  }
+
+  std::size_t ParamsSize(int key) {
+    return object_groups_.find(key)->second->params_size_;
   }
 
   int NumShapes(int key) {
@@ -86,22 +107,18 @@ class Physics : protected Timer {
     }
     // Вторая итерация - разрешаем коллизии.
     for (auto const& key_group_pair : object_groups_) {
-      ObjectGroupContainer* group_container = key_group_pair.second;
+      ObjectGroupContainer* group = key_group_pair.second;
       int i = -1;
-      for (auto const& object : group_container->objects) {
+      for (auto const& object : group->objects) {
         // todo физику пока отменяем
         // const Point b = object->V().Begin();
         //       object->V() = object->V() >> 0.1;
         const Point& coord = object->V().Begin();
         for (auto const& shape_coords_params : object->Offsets()) {
-          group_container->coords_params_buffer_.at(++i) =
-              coord.x + shape_coords_params.at(0);
-          group_container->coords_params_buffer_.at(++i) =
-              coord.y + shape_coords_params.at(1);
-          group_container->coords_params_buffer_.at(++i) =
-              coord.z + shape_coords_params.at(2);
-          group_container->coords_params_buffer_.at(++i) =
-              shape_coords_params.at(3);
+          group->coords_.at(++i) = coord.x + shape_coords_params.at(0);
+          group->coords_.at(++i) = coord.y + shape_coords_params.at(1);
+          group->coords_.at(++i) = coord.z + shape_coords_params.at(2);
+          // group->coords_.at(++i) = shape_coords_params.at(3);
         }
       }
     }

@@ -1,7 +1,7 @@
 #version 300 es
 
 layout(location = 0) in vec3 vertex_in;  // Вершина базового объекта.
-layout(location = 1) in vec4 offset_in;  // Его смещение относительно 0,0,0.
+layout(location = 1) in vec3 offset_in;  // Его смещение относительно 0,0,0.
 layout(location = 2) in vec3 params_in;  // Длина, ширина, здоровье.
 layout(location = 3) in vec3 angles_in;  // Углы поворотов.
 layout(location = 4) in vec3 barycentric_in;
@@ -38,28 +38,27 @@ vec3 color(int health) {
 }
 
 void main() {
-  int param = int(offset_in.w);
-  int surface = param / 100;  // Плоскость: 1-xy, 2-yz, 3-xz.
-  int health = param % 100;   // Здоровье 1-10.
+  // int param = int(offset_in.w);
+  int surface = 1;  // param / 100;  // Плоскость: 1-xy, 2-yz, 3-xz.
+  int health = 10;  // param % 100;   // Здоровье 1-10.
 
   vec3 offset;
   vec3 pos;
 
+  offset = vec3(offset_in.x, offset_in.y, offset_in.z);
+  pos = vec3(vertex_in.x, vertex_in.y, vertex_in.z);
+
   if (surface == 0) {  // xy
-    offset = vec3(offset_in.x, offset_in.y, offset_in.z);
-    pos = vec3(vertex_in.x, vertex_in.y, vertex_in.z);
+    // pos = vec3(vertex_in.x, vertex_in.y, vertex_in.z);
     vColor = color(health);
   } else if (surface == 1) {  // yz
-    offset = vec3(offset_in.x, offset_in.y, offset_in.z);
-    pos = vec3(vertex_in.z, vertex_in.y, vertex_in.x);
+    // pos = vec3(vertex_in.z, vertex_in.y, vertex_in.x);
     vColor = color(health);
   } else if (surface == 2) {  // xz
-    offset = vec3(offset_in.x, offset_in.y, offset_in.z);
-    pos = vec3(vertex_in.y, vertex_in.z, vertex_in.x);
+    // pos = vec3(vertex_in.y, vertex_in.z, vertex_in.x);
     vColor = color(health);
   } else {
-    offset = vec3(0, 0, 0);
-    pos = vec3(vertex_in.y, vertex_in.z, vertex_in.x);
+    // pos = vec3(vertex_in.y, vertex_in.z, vertex_in.x);
     vColor = vec3(1, 1, 1);
   }
   gl_Position = projection * view * model * vec4(pos + offset, 1.0);

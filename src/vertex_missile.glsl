@@ -14,7 +14,7 @@ out vec3 vBC;
 
 void main() {
   vec3 offset = vec3(offset_in.x, offset_in.y, offset_in.z);
-  float scale = offset_in.w;
+  float scale = 0.2;  // offset_in.w;
   vec3 pos =
       vec3(vertex_in.x * scale, vertex_in.y * scale, vertex_in.z * scale);
 

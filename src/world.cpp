@@ -88,23 +88,42 @@ World::World(const int resolution) : panel_size_{3} {
         for (int y = 0; y < resolution; ++y) {
           const int health = panels_.at(i).at(s).at(x).at(y);
           if (health < 0) continue;
-          const float param = i * 100 + health;
+          const float param = i * 100 + health;  // todo del
           const float half = panel_size_ / 2;
           switch (i) {
             case kSurfaceXY:
               panels_data_.push_back(panel_size_ * x);
               panels_data_.push_back(panel_size_ * y);
               panels_data_.push_back(panel_size_ * s - half);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
               break;
             case kSurfaceYZ:
               panels_data_.push_back(panel_size_ * s - half);
               panels_data_.push_back(panel_size_ * y);
               panels_data_.push_back(panel_size_ * x);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
+
               break;
             case kSurfaceXZ:
               panels_data_.push_back(panel_size_ * x);
               panels_data_.push_back(panel_size_ * s - half);
               panels_data_.push_back(panel_size_ * y);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
+              panels_data_.push_back(0);
               break;
           }
           panels_data_.push_back(param);

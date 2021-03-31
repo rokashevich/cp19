@@ -18,11 +18,19 @@ class RendererSdl {
   struct Renderable {
     Shader* shader;
     unsigned int vao;
-    size_t instanced_num_bytes_;
-    float* instanced_data_;
 
     int num_vertices_;
     int num_instances_;
+
+    // Массивы float-ов для передачи в шейдеры.
+    float* offsets_data_;  // Смещения относительно 0,0,0.
+    size_t offsets_size_;
+
+    float* angles_data_;  // Углы поворота вокруг соответствующих осей.
+    size_t angles_size_;
+
+    float* params_data_;  // Длина, ширина, здоровье базового объекта.
+    size_t params_size_;
   };
   std::unordered_map<int, Renderable*> renderables_;
 
@@ -58,13 +66,21 @@ class RendererSdl {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
 
-  void UpdateDynamic(int id, size_t num_bytes, float* const data,
-                     int num_instances) {
+  void UpdateDynamic(int id, size_t offsets_size, float* offsets_data,
+                     int num_instances, size_t angles_size, float* angles_data,
+                     size_t params_size, float* params_data) {
     Renderable* renderable = renderables_.find(id)->second;
-    assert(renderable != nullptr);
-    renderable->instanced_num_bytes_ = num_bytes;
-    renderable->instanced_data_ = data;
+
     renderable->num_instances_ = num_instances;
+
+    renderable->offsets_size_ = offsets_size;
+    renderable->offsets_data_ = offsets_data;
+
+    renderable->angles_size_ = angles_size;
+    renderable->angles_data_ = angles_data;
+
+    renderable->params_size_ = params_size;
+    renderable->params_data_ = params_data;
   }
 
   void RenderFrame() {
@@ -85,10 +101,10 @@ class RendererSdl {
       unsigned int vbo;
       glGenBuffers(1, &vbo);
       glBindBuffer(GL_ARRAY_BUFFER, vbo);
-      glBufferData(GL_ARRAY_BUFFER, renderable->instanced_num_bytes_,
-                   renderable->instanced_data_, GL_DYNAMIC_DRAW);
+      glBufferData(GL_ARRAY_BUFFER, renderable->offsets_size_,
+                   renderable->offsets_data_, GL_DYNAMIC_DRAW);
       glEnableVertexAttribArray(1);
-      glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
                             (void*)0);
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glVertexAttribDivisor(1, 1);

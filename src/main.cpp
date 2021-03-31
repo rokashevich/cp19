@@ -83,8 +83,16 @@ int main(int, char **) {  // С пустым main() падает на андро
     float x = game_world.panels_data_array().at(i++);
     float y = game_world.panels_data_array().at(i++);
     float z = game_world.panels_data_array().at(i++);
+    float a = game_world.panels_data_array().at(i++);
+    float b = game_world.panels_data_array().at(i++);
+    float c = game_world.panels_data_array().at(i++);
+    float width = game_world.panels_data_array().at(i++);
+    float height = game_world.panels_data_array().at(i++);
+    float health = game_world.panels_data_array().at(i++);
     float w = game_world.panels_data_array().at(i++);
-    Object *o = new Wall(Vec(x, y, z, x, y, z), w);
+    glm::vec3 angles = {a, b, c};
+    glm::vec3 params = {width, height, health};
+    Object *o = new Wall(Vec(x, y, z, x, y, z), w, angles, params);
     physics.AddObject(wall, o);
   }
   for (float i = 0; i < 5; ++i) {
@@ -210,9 +218,10 @@ int main(int, char **) {  // С пустым main() падает на андро
     renderer.UpdateCommon(&projection[0][0], &view[0][0], &model[0][0]);
     for (const auto &cfg : cfgs) {
       const int key = cfg.first;
-      renderer.UpdateDynamic(key, physics.SizeofCoordsParamsBuffer(key),
-                             physics.CoordsParamsBuffer(key),
-                             physics.NumShapes(key));
+      renderer.UpdateDynamic(key, physics.CoordsSize(key), physics.Coords(key),
+                             physics.NumShapes(key), physics.AnglesSize(key),
+                             physics.Angles(key), physics.ParamsSize(key),
+                             physics.Params(key));
     }
     renderer.RenderFrame();
   }
