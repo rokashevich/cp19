@@ -20,9 +20,12 @@
 #include "interplay.hpp"
 
 int main() {
-  boost::asio::io_context io_context;
-  Interplay::Server srv(io_context, 12345);
-  srv.AsyncAccept();
-  io_context.run();
+  Interplay::Server srv(12345);
+  srv.Start();
+
+  while (1) {
+    srv.Update(-1, true);
+  }
+
   return 0;
 }
