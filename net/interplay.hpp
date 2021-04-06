@@ -3,6 +3,7 @@
 #include <boost/asio.hpp>
 #include <iostream>
 #include <queue>
+#include <mutex>
 
 #define ASIO_STANDALONE
 
@@ -22,19 +23,19 @@ class NetQueue {
  public:
   // Returns and maintains item at front of Queue
   const std::string& Front() {
-    std::scoped_lock lock(mutex_queue_);
+    std::lock_guard<std::mutex> lock(mutex_queue_);
     return deq_queue.front();
   }
 
   // Returns and maintains item at back of Queue
   const std::string& Back() {
-    std::scoped_lock lock(mutex_queue_);
+    std::lock_guard<std::mutex> lock(mutex_queue_);
     return deq_queue.back();
   }
 
   // Removes and returns item from front of Queue
   std::string PopFront() {
-    std::scoped_lock lock(mutex_queue_);
+    std::lock_guard<std::mutex> lock(mutex_queue_);
     auto t = std::move(deq_queue.front());
     deq_queue.pop_front();
     return t;
@@ -42,7 +43,7 @@ class NetQueue {
 
   // Removes and returns item from back of Queue
   std::string PopBack() {
-    std::scoped_lock lock(mutex_queue_);
+    std::lock_guard<std::mutex> lock(mutex_queue_);
     auto t = std::move(deq_queue.back());
     deq_queue.pop_back();
     return t;
@@ -50,7 +51,7 @@ class NetQueue {
 
   // Adds an item to back of Queue
   void PushBack(const std::string& item) {
-    std::scoped_lock lock(mutex_queue_);
+    std::lock_guard<std::mutex> lock(mutex_queue_);
     deq_queue.emplace_back(std::move(item));
 
     std::unique_lock<std::mutex> ul(mutex_blocking_);
@@ -59,7 +60,7 @@ class NetQueue {
 
   // Adds an item to front of Queue
   void PushFront(const std::string& item) {
-    std::scoped_lock lock(mutex_queue_);
+    std::lock_guard<std::mutex> lock(mutex_queue_);
     deq_queue.emplace_front(std::move(item));
 
     std::unique_lock<std::mutex> ul(mutex_blocking_);
@@ -68,19 +69,19 @@ class NetQueue {
 
   // Returns true if Queue has no items
   bool Empty() {
-    std::scoped_lock lock(mutex_queue_);
+    std::lock_guard<std::mutex> lock(mutex_queue_);
     return deq_queue.empty();
   }
 
   // Returns number of items in Queue
   size_t Size() {
-    std::scoped_lock lock(mutex_queue_);
+    std::lock_guard<std::mutex> lock(mutex_queue_);
     return deq_queue.size();
   }
 
   // Clears Queue
   void Clear() {
-    std::scoped_lock lock(mutex_queue_);
+    std::lock_guard<std::mutex> lock(mutex_queue_);
     deq_queue.clear();
   }
 
