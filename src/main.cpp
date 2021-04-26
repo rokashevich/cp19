@@ -89,10 +89,9 @@ int main(int, char **) {  // С пустым main() падает на андро
     float width = game_world.panels_data_array().at(i++);
     float height = game_world.panels_data_array().at(i++);
     float health = game_world.panels_data_array().at(i++);
-    float w = game_world.panels_data_array().at(i++);
     glm::vec3 angles = {a, b, c};
     glm::vec3 params = {width, height, health};
-    Object *o = new Wall(Vec(x, y, z, x, y, z), w, angles, params);
+    Object *o = new Wall(Vec(x, y, z, x, y, z), angles, params);
     physics.AddObject(wall, o);
   }
   for (float i = 0; i < 5; ++i) {

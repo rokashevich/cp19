@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstddef>
+#include <glm/vec3.hpp>
 #include <iostream>
 #include <vector>
 
@@ -36,7 +37,7 @@ class Object {
 
  protected:
   // Координаты смещений базовых объектов.
-  std::vector<std::array<float, 4>> offsets_;
+  std::vector<std::array<float, 3>> offsets_;
 
   // Три угла поворота относительно осей из 0,0,0.
   std::vector<std::array<float, 3>> angles_;
@@ -45,7 +46,8 @@ class Object {
   std::vector<std::array<float, 3>> params_;
 
  public:
-  Object(Vec v = Vec(), float weight = 0);
+  Object(Vec v = Vec(), float weight = 0, glm::vec3 angles = {0, 0, 0},
+         glm::vec3 params = {0, 0, 0});
   virtual ~Object() {}
 
   P& GetOrientation() { return orientation_; }
@@ -62,7 +64,7 @@ class Object {
   // Для обновления параметров для шейдера.
   virtual void Step() {}
 
-  virtual const std::vector<std::array<float, 4>>& Offsets() {
+  virtual const std::vector<std::array<float, 3>>& Offsets() {
     return offsets_;
   }
 
