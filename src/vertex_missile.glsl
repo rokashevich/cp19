@@ -1,9 +1,9 @@
 #version 300 es
 
 layout(location = 0) in vec3 vertex_in;  // Вершина базового объекта.
-layout(location = 1) in vec4 offset_in;  // Его смещение относительно 0,0,0.
-layout(location = 2) in vec3 params_in;  // Длина, ширина, здоровье.
-layout(location = 3) in vec3 angles_in;  // Углы поворотов.
+layout(location = 1) in vec3 offset_in;  // Его смещение относительно 0,0,0.
+layout(location = 2) in vec3 angles_in;  // Углы поворотов.
+layout(location = 3) in vec3 params_in;  // Длина, ширина, здоровье.
 layout(location = 4) in vec3 barycentric_in;
 
 uniform mat4 model;

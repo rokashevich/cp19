@@ -12,7 +12,8 @@
 #include "timer.hpp"
 
 class Physics : protected Timer {
-  struct ObjectGroupContainer {
+  // Контейнер хранения информации по объектам одного вида.
+  struct Group {
     bool is_dynamic;
     Object* reference_object_;
     int num_shapes;
@@ -28,19 +29,19 @@ class Physics : protected Timer {
     std::size_t angles_size_;
     std::size_t params_size_;
   };
-  std::unordered_map<int, ObjectGroupContainer*> object_groups_;
+  std::unordered_map<int, Group*> object_groups_;
 
  public:
   void SetupObject(int key, Object* reference_object) {
     assert(object_groups_.find(key) == object_groups_.end());
-    auto container = new ObjectGroupContainer;
+    auto container = new Group;
     container->reference_object_ = reference_object;
     container->num_shapes = 0;
     object_groups_[key] = container;
   }
 
   void AddObject(int key, Object* object) {
-    ObjectGroupContainer* group = FindGroupContainer(key);
+    Group* group = FindGroupContainer(key);
     group->objects.push_back(object);
 
     const int current_size = group->coords_.size();
@@ -80,12 +81,12 @@ class Physics : protected Timer {
   }
 
   int NumShapes(int key) {
-    ObjectGroupContainer* group = FindGroupContainer(key);
+    Group* group = FindGroupContainer(key);
     return group->num_shapes;
   }
 
   const float* ShapeVerticesBuffer(int key) {
-    ObjectGroupContainer* container = FindGroupContainer(key);
+    Group* container = FindGroupContainer(key);
     return container->reference_object_->ShapeVerticesBuffer()->data();
   }
 
@@ -95,7 +96,7 @@ class Physics : protected Timer {
 
     // Первая итерация по всем объектам - смещаем на запрашиваему величину.
     for (auto const& key_group_pair : object_groups_) {
-      ObjectGroupContainer* group_container = key_group_pair.second;
+      Group* group_container = key_group_pair.second;
       for (auto const& object : group_container->objects) {
         object->Step();
         // todo физику пока отменяем
@@ -107,25 +108,35 @@ class Physics : protected Timer {
     }
     // Вторая итерация - разрешаем коллизии.
     for (auto const& key_group_pair : object_groups_) {
-      ObjectGroupContainer* group = key_group_pair.second;
-      int i = -1;
+      Group* group = key_group_pair.second;
+      int i = 0;
       for (auto const& object : group->objects) {
         // todo физику пока отменяем
         // const Point b = object->V().Begin();
         //       object->V() = object->V() >> 0.1;
         const Point& coord = object->V().Begin();
-        for (auto const& shape_coords_params : object->Offsets()) {
-          group->coords_.at(++i) = coord.x + shape_coords_params.at(0);
-          group->coords_.at(++i) = coord.y + shape_coords_params.at(1);
-          group->coords_.at(++i) = coord.z + shape_coords_params.at(2);
-          // group->coords_.at(++i) = shape_coords_params.at(3);
+        for (const auto& x : object->Offsets()) {
+          group->coords_.at(i + 0) = coord.x + x.at(0);
+          group->coords_.at(i + 1) = coord.y + x.at(1);
+          group->coords_.at(i + 2) = coord.z + x.at(2);
         }
+        for (const auto& x : object->Angles()) {
+          group->angles_.at(i + 0) = x.at(0);
+          group->angles_.at(i + 1) = x.at(1);
+          group->angles_.at(i + 2) = x.at(2);
+        }
+        for (const auto& x : object->Params()) {
+          group->params_.at(i + 0) = x.at(0);
+          group->params_.at(i + 1) = x.at(1);
+          group->params_.at(i + 2) = x.at(2);
+        }
+        i += 3;
       }
     }
   }
 
  private:
-  ObjectGroupContainer* FindGroupContainer(int key) {
+  Group* FindGroupContainer(int key) {
     auto it = object_groups_.find(key);
     assert(it != object_groups_.end());
     return object_groups_.find(key)->second;

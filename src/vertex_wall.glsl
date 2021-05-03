@@ -2,8 +2,8 @@
 
 layout(location = 0) in vec3 vertex_in;  // Вершина базового объекта.
 layout(location = 1) in vec3 offset_in;  // Его смещение относительно 0,0,0.
-layout(location = 2) in vec3 params_in;  // Длина, ширина, здоровье.
-layout(location = 3) in vec3 angles_in;  // Углы поворотов.
+layout(location = 2) in vec3 angles_in;  // Углы поворотов.
+layout(location = 3) in vec3 params_in;  // Длина, ширина, здоровье.
 layout(location = 4) in vec3 barycentric_in;
 
 uniform mat4 model;
@@ -16,7 +16,7 @@ vec3 color(int health) {
   if (health == 10)
     return vec3(1, 0, 0);
   else if (health == 9)
-    return vec3(0, 1, 0);
+    return vec3(1, 1, 0);
   else if (health == 8)
     return vec3(0, 0, 1);
   else if (health == 7)
@@ -48,18 +48,13 @@ void main() {
   offset = vec3(offset_in.x, offset_in.y, offset_in.z);
   pos = vec3(vertex_in.x, vertex_in.y, vertex_in.z);
 
-  if (surface == 0) {  // xy
-    // pos = vec3(vertex_in.x, vertex_in.y, vertex_in.z);
-    vColor = color(health);
-  } else if (surface == 1) {  // yz
-    // pos = vec3(vertex_in.z, vertex_in.y, vertex_in.x);
-    vColor = color(health);
-  } else if (surface == 2) {  // xz
-    // pos = vec3(vertex_in.y, vertex_in.z, vertex_in.x);
-    vColor = color(health);
+  // xy // pos = vec3(vertex_in.x, vertex_in.y, vertex_in.z);
+  // yz // pos = vec3(vertex_in.z, vertex_in.y, vertex_in.x);
+  // xz // pos = vec3(vertex_in.y, vertex_in.z, vertex_in.x);
+  if (angles_in.z == 90.0) {
+    vColor = vec3(1, 0, 0);
   } else {
-    // pos = vec3(vertex_in.y, vertex_in.z, vertex_in.x);
-    vColor = vec3(1, 1, 1);
+    vColor = vec3(0, 1, 0);
   }
   gl_Position = projection * view * model * vec4(pos + offset, 1.0);
   vBC = barycentric_in;

@@ -32,10 +32,6 @@ file(GLOB GameSources
     "${SRC}/*.cpp"
 )
 
-add_executable(cp19
-  ${GameSources}
-  ${Shaders})
-
 add_custom_target(vertex_wall ALL COMMAND
   python3 ${TOOLS}/embedfile.py
     vertex_wall
@@ -71,6 +67,11 @@ add_custom_target(pixel_player ALL COMMAND
     pixel_player
     ${SRC}/pixel_player.glsl
     ${GENERATED}/pixel_player.hpp)
+
+add_executable(cp19
+  ${GameSources}
+  ${Shaders})
+target_include_directories(cp19 PRIVATE ${SDL2_DIR}/include/SDL2 ../glm ${GENERATED})
 
 add_dependencies(cp19
   pixel_missile
