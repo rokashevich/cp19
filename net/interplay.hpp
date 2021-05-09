@@ -1,9 +1,14 @@
 ﻿#pragma once
 
 #include <boost/asio.hpp>
+#include <chrono>
+#include <ctime>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
-#include <queue>
 #include <mutex>
+#include <queue>
+#include <string>
 
 #define ASIO_STANDALONE
 
@@ -171,7 +176,9 @@ class Connection : public std::enable_shared_from_this<Connection> {
 
               // std::cout << "[SERVER] received message \"" << message << "\""
               //<< std::endl;
-              message_queue_in_.PushBack(message);
+              message_queue_in_.PushBack(
+                  socket_.remote_endpoint().address().to_string() + ' ' +
+                  message);
               streambuf_.consume(length);
               Read();
             }
@@ -337,6 +344,18 @@ class Server {
  protected:
   void OnMessage(/*std::shared_ptr<Connection> client, */ std::string& msg) {
     std::cout << "[SERVER] received message \"" << msg << "\"" << std::endl;
+
+    std::time_t result = std::time(nullptr);
+    std::ofstream log_file;
+    log_file.open("log.txt", std::ios_base::app);
+    auto time = std::localtime(&result);
+    log_file << std::setfill('0') << std::setw(2) << time->tm_mday << "/"
+             << std::setfill('0') << std::setw(2) << time->tm_mon + 1 << "/"
+             << time->tm_year + 1900 << ' ' << time->tm_hour << ":"
+             << time->tm_min << ":" << time->tm_sec << ' ';
+    // std::asctime(std::localtime(&result));
+    log_file << msg << std::endl;
+    log_file.close();
   }
 
   //  void AsyncAccept() {
