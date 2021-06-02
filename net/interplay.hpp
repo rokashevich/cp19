@@ -125,7 +125,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
   }
 
   void ConnectToServer(
-      const asio::ip::tcp::resolver::results_type /*asio::ip::tcp::endpoint*/&
+      const asio::ip::tcp::resolver::results_type& /*asio::ip::tcp::endpoint&*/
           endpoints) {
     // Only clients can connect to servers
     if (owner_ == Owner::Client) {
@@ -145,6 +145,21 @@ class Connection : public std::enable_shared_from_this<Connection> {
   }
 
   bool IsConnected() const { return socket_.is_open(); }
+
+  void Send(const std::string& msg) {
+    asio::post(io_context_, [this, msg]() {
+      // If the queue has a message in it, then we must
+      // assume that it is in the process of asynchronously being written.
+      // Either way add the message to the queue to be output. If no messages
+      // were available to be written, then start the process of writing the
+      // message at the front of the queue.
+      bool write_in_progress = !message_queue_out_.Empty();
+      message_queue_out_.PushBack(msg);
+      if (!write_in_progress) {
+        Write();
+      }
+    });
+  }
 
  private:
   void Read() {
@@ -402,13 +417,14 @@ class Client {
 
   bool Connect(const std::string& hostname, const uint16_t port) {
     try {
-      //      // Resolve hostname/ip-address into tangiable physical address
-      //      asio::ip::tcp::resolver resolver(io_context_);
-      //      asio::ip::tcp::resolver::results_type endpoints =
-      //          resolver.resolve(host, std::to_string(port));
+      // Resolve hostname/ip-address into tangiable physical address
+      asio::ip::tcp::resolver resolver(io_context_);
+      asio::ip::tcp::resolver::results_type endpoints =
+          resolver.resolve(hostname, std::to_string(port));
 
-      asio::ip::tcp::endpoint endpoint(asio::ip::address::from_string(hostname),
-                                       port);
+      // asio::ip::tcp::endpoint
+      // endpoint(asio::ip::address::from_string(hostname),
+      //                                 port);
 
       // Create connection
       connection_ = std::make_unique<Connection>(
@@ -416,7 +432,7 @@ class Client {
           asio::ip::tcp::socket(io_context_), message_queue_in_);
 
       // Tell the connection object to connect to server
-      // connection_->ConnectToServer(endpoint);
+      connection_->ConnectToServer(endpoints);
 
       // Start Context Thread
       thread_context_ = std::thread([this]() { io_context_.run(); });
@@ -450,23 +466,11 @@ class Client {
       return false;
   }
 
-  //  void SendMessage(const std::string& msg) {
-  //    boost::asio::post(io_context_, [this, msg]() {
-  //      bool write_in_progress = !write_msgs_.empty();
-  //      write_msgs_.push(msg);
-  //      if (!write_in_progress) {
-  //        DoWrite();
-  //      }
-  //    });
-  //  }
+  void SendMessage(const std::string& msg) {
+    if (IsConnected()) connection_->Send(msg);
+  }
 
-  //  void Disconnect() {
-  //    io_context_.stop();
-
-  //    if (thread_context_.joinable()) thread_context_.join();
-  //  }
-
-  // private:
+ private:
   //  void DoWrite() {
   //    boost::asio::async_write(
   //        socket_,
