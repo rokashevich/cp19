@@ -1,17 +1,20 @@
 ﻿#pragma once
 
 #include <boost/asio.hpp>
+#include <chrono>
+#include <ctime>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
-#include <queue>
 #include <mutex>
+#include <queue>
+#include <string>
 
 #define ASIO_STANDALONE
 
 namespace Interplay {
 
 namespace asio = boost::asio;
-// namespace ip = io::ip;
-// using tcp = ip::tcp;
 
 // Queue
 class NetQueue {
@@ -120,7 +123,6 @@ class Connection : public std::enable_shared_from_this<Connection> {
   }
 
   void ConnectToServer(const asio::ip::tcp::resolver::results_type& endpoints) {
-    // Only clients can connect to servers
     if (owner_ == Owner::Client) {
       // Request asio attempts to connect to an endpoint
       asio::async_connect(
@@ -139,79 +141,69 @@ class Connection : public std::enable_shared_from_this<Connection> {
 
   bool IsConnected() const { return socket_.is_open(); }
 
+  void Send(const std::string& msg) {
+    asio::post(io_context_, [this, msg]() {
+      // If no messages were available to be written, then start the process of
+      // writing the message at the front of the queue.
+      bool write_in_progress = !message_queue_out_.Empty();
+      message_queue_out_.PushBack(msg);
+      if (!write_in_progress) {
+        Write();
+      }
+    });
+  }
+
  private:
   void Read() {
-    // If this function is called, a header has already been read, and that
-    // header request we read a body, The space for that body has already been
-    // allocated in the temporary message object, so just wait for the bytes to
-    // arrive...
-    asio::async_read(socket_, asio::buffer(message_buf_),
-                     [this](std::error_code ec, std::size_t length) {
-                       if (!ec) {
-                         // A complete message header has been read, check if
-                         // this message has a body to follow...
-                         if (!message_buf_.empty()) {
-                           message_queue_in_.PushBack(message_buf_);
-                           Read();
-                         }
-                       } else {
-                         // Reading form the client went wrong, most likely a
-                         // disconnect has occurred. Close the socket and let
-                         // the system tidy it up later.
-                         std::cout << "Read Fail.\n";
-                         socket_.close();
-                       }
-                     });
+    asio::async_read_until(
+        socket_, streambuf_, '\n',
+        [this](std::error_code ec, std::size_t length) {
+          std::cout << "[SERVER] Read from " << socket_.remote_endpoint()
+                    << std::endl;
+          if (!ec) {
+            if (streambuf_.size()) {
+              std::string message((std::istreambuf_iterator<char>(&streambuf_)),
+                                  std::istreambuf_iterator<char>());
+
+              message.erase(std::find_if(message.rbegin(), message.rend(),
+                                         [](unsigned char ch) {
+                                           return !std::isspace(ch);
+                                         })
+                                .base(),
+                            message.end());
+
+              // std::cout << "[SERVER] received message \"" << message << "\""
+              //<< std::endl;
+              message_queue_in_.PushBack(
+                  socket_.remote_endpoint().address().to_string() + ' ' +
+                  message);
+              streambuf_.consume(length);
+              Read();
+            }
+          } else {
+            std::cout << "Read Fail.\n";
+            socket_.close();
+          }
+        });
   }
 
   void Write() {
-    // If this function is called, a header has just been sent, and that header
-    // indicated a body existed for this message. Fill a transmission buffer
-    // with the body data, and send it!
     asio::async_write(socket_, asio::buffer(message_queue_out_.Front()),
                       [this](std::error_code ec, std::size_t length) {
                         if (!ec) {
-                          // Sending was successful, so we are done with the
-                          // message and remove it from the queue
+                          // Sending was successful, so remove it from the queue
                           message_queue_out_.PopFront();
 
-                          // If the queue still has messages in it, then issue
-                          // the task to send the next messages' header.
+                          // If the queue still has messages in it, then send
+                          // the next message.
                           if (!message_queue_out_.Empty()) {
                             Write();
                           }
                         } else {
-                          // Sending failed, see WriteHeader() equivalent for
-                          // description :P
                           std::cout << "Write Fail.\n";
                           socket_.close();
                         }
                       });
-  }
-
-  //  void Start() {
-  //    boost::asio::async_read_until(
-  //        socket_, streambuf_, '\n',
-  //        [self = shared_from_this(), this](boost::system::error_code error,
-  //                                          std::size_t bytes_transferred) {
-  //          std::cout << std::istream(&self->streambuf_).rdbuf() << std::endl;
-  //          // streambuf_.consume(bytes_transferred);
-  //          Reply();
-  //          Start();
-  //        });
-  //  }
-
-  void Reply() {
-    std::cout << "replying" << std::endl;
-    boost::asio::async_write(
-        socket_, asio::buffer("message recieved\n"),
-        [this](boost::system::error_code ec, std::size_t /*length*/) {
-          if (!ec) {
-            std::cout << "replying ok\n" << std::endl;
-          } else {
-            socket_.close();
-          }
-        });
   }
 
  private:
@@ -220,7 +212,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
   std::string message_buf_;
   NetQueue& message_queue_in_;
   NetQueue message_queue_out_;
-  // asio::streambuf streambuf_;
+  asio::streambuf streambuf_;
   Owner owner_;
 };
 
@@ -234,14 +226,9 @@ class Server {
 
   bool Start() {
     try {
-      // Issue a task to the asio context - This is important
-      // as it will prime the context with "work", and stop it
-      // from exiting immediately. Since this is a server, we
-      // want it primed ready to handle clients trying to
-      // connect.
       WaitForClientConnection();
 
-      // запускаем контекст в отдельном треде
+      // Launch the context in a separate thread
       thread_context_ = std::thread([this]() { io_context_.run(); });
     } catch (std::exception& e) {
       // Something prohibited the server from listening
@@ -262,14 +249,10 @@ class Server {
   }
 
   void WaitForClientConnection() {
-    // Prime context with an instruction to wait until a socket connects. This
-    // is the purpose of an "acceptor" object. It will provide a unique socket
-    // for each incoming connection attempt
     acceptor_.async_accept([this](std::error_code ec,
                                   asio::ip::tcp::socket socket) {
       // Triggered by incoming connection request
       if (!ec) {
-        // Display some useful(?) information
         std::cout << "[SERVER] New Connection: " << socket.remote_endpoint()
                   << "\n";
 
@@ -280,18 +263,14 @@ class Server {
 
         connections_deq_.push_back(std::move(new_conn));
 
-        // And very important! Issue a task to the connection's
-        // asio context to sit and wait for bytes to arrive!
         connections_deq_.back()->ConnectToClient();
 
-        std::cout << "[] Connection Approved\n";
+        std::cout << "[SERVER] Connection Approved\n";
       } else {
-        // Error has occurred during acceptance
         std::cout << "[SERVER] New Connection Error: " << ec.message() << "\n";
       }
 
-      // Prime the asio context with more work - again simply wait for
-      // another connection...
+      // Wait for another connection
       WaitForClientConnection();
     });
   }
@@ -315,15 +294,19 @@ class Server {
 
  protected:
   void OnMessage(/*std::shared_ptr<Connection> client, */ std::string& msg) {
-    std::cout << msg;
-  }
+    std::cout << "[SERVER] Received message \"" << msg << "\"" << std::endl;
 
-  //  void AsyncAccept() {
-  //    acceptor_.async_accept(*socket_, [&](boost::system::error_code error) {
-  //      std::make_shared<Connection>(std::move(*socket_))->Start();
-  //      AsyncAccept();
-  //    });
-  //  }
+    std::time_t result = std::time(nullptr);
+    std::ofstream log_file;
+    log_file.open("log.txt", std::ios_base::app);
+    auto time = std::localtime(&result);
+    log_file << std::setfill('0') << std::setw(2) << time->tm_mday << "/"
+             << std::setfill('0') << std::setw(2) << time->tm_mon + 1 << "/"
+             << time->tm_year + 1900 << ' ' << time->tm_hour << ":"
+             << time->tm_min << ":" << time->tm_sec << ' ';
+    log_file << msg << std::endl;
+    log_file.close();
+  }
 
  private:
   boost::asio::io_context io_context_;
@@ -337,84 +320,68 @@ class Server {
 
 //////////////////////////////////////
 
-// class Client {
-// public:
-//  Client(io::io_context& io_context, std::string const& hostname)
-//      : socket_(io_context), io_context_(io_context) {
-//    std::cout << "Address: " << hostname << "\n";
-//    boost::asio::ip::tcp::endpoint endpoint(
-//        boost::asio::ip::address::from_string(hostname), 12345);
+class Client {
+ public:
+  Client() {}
 
-//    DoConnect(endpoint);
-//  }
-//  ~Client() { Disconnect(); }
+  ~Client() { Disconnect(); }
 
-//  void SendMessage(const std::string& msg) {
-//    boost::asio::post(io_context_, [this, msg]() {
-//      bool write_in_progress = !write_msgs_.empty();
-//      write_msgs_.push(msg);
-//      if (!write_in_progress) {
-//        DoWrite();
-//      }
-//    });
-//  }
+  bool Connect(const std::string& hostname, const uint16_t port) {
+    try {
+      // Resolve hostname/ip-address into tangiable physical address
+      asio::ip::tcp::resolver resolver(io_context_);
+      asio::ip::tcp::resolver::results_type endpoints =
+          resolver.resolve(hostname, std::to_string(port));
 
-//  void Disconnect() {
-//    io_context_.stop();
+      // Create connection
+      connection_ = std::make_unique<Connection>(
+          Connection::Owner::Client, io_context_,
+          asio::ip::tcp::socket(io_context_), message_queue_in_);
 
-//    if (thread_context_.joinable()) thread_context_.join();
-//  }
+      // Tell the connection object to connect to server
+      connection_->ConnectToServer(endpoints);
 
-// private:
-//  void DoConnect(const boost::asio::ip::tcp::endpoint endpoint) {
-//    thread_context_ = std::thread([this]() { io_context_.run(); });
-//    socket_.async_connect(endpoint,
-//                          [this](const boost::system::error_code& ec) {
-//                            if (!ec) {
-//                              DoRead();
-//                            }
-//                          });
-//  }
+      // Start Context Thread
+      thread_context_ = std::thread([this]() { io_context_.run(); });
+    } catch (std::exception& e) {
+      std::cerr << "Client Exception: " << e.what() << "\n";
+      return false;
+    }
+    return true;
+  }
 
-//  void DoWrite() {
-//    boost::asio::async_write(
-//        socket_,
-//        io::buffer(write_msgs_.front().data(), write_msgs_.front().length()),
-//        [this](boost::system::error_code ec, std::size_t /*length*/) {
-//          if (!ec) {
-//            std::cout << "writing message\n";
-//            write_msgs_.pop();
-//            if (!write_msgs_.empty()) {
-//              DoWrite();
-//            }
-//          } else {
-//            socket_.close();
-//          }
-//        });
-//  }
+  void Disconnect() {
+    if (IsConnected()) {
+      connection_->Disconnect();
+    }
 
-//  void DoRead() {
-//    std::cout << "reading" << std::endl;
-//    boost::asio::async_read_until(
-//        socket_, response_, '\n',
-//        [this](error_code error, std::size_t bytes_transferred) {
-//          if (!error) {
-//            std::cout << "Read: " << error.message()
-//                      << ", bytes transferred: " << bytes_transferred <<
-//                      "\n\n"
-//                      << std::istream(&response_).rdbuf() << "\n";
-//            DoRead();
-//          } else {
-//            socket_.close();
-//          }
-//        });
-//  }
+    // Cleaning up
+    io_context_.stop();
 
-//  io::io_context& io_context_;
-//  tcp::socket socket_;
-//  std::thread thread_context_;
-//  io::streambuf response_;
-//  std::queue<std::string> write_msgs_;
-//};
+    if (thread_context_.joinable()) thread_context_.join();
+
+    connection_.release();
+  }
+
+  bool IsConnected() {
+    if (connection_)
+      return connection_->IsConnected();
+    else
+      return false;
+  }
+
+  void SendMessage(const std::string& msg) {
+    if (IsConnected()) connection_->Send(msg);
+  }
+
+ protected:
+  asio::io_context io_context_;
+  std::thread thread_context_;
+  std::unique_ptr<Connection> connection_;
+
+ private:
+  // This is the thread safe queue of incoming messages from server
+  NetQueue message_queue_in_;
+};
 
 }  // namespace Interplay
