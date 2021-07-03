@@ -18,12 +18,12 @@ class Player : public Object, Shape<Player> {
   Player(Vec v = Vec(), int legs = 9, int body = 9, int head = 9, int arms = 9);
   ~Player();
   void Step() final {
-    Object::offsets_.at(0).at(0) = 0;
-    Object::offsets_.at(0).at(1) = 0;
+    Object::offsets_old_.at(0).at(0) = 0;
+    Object::offsets_old_.at(0).at(1) = 0;
     // Object::offsets_.at(0).at(3) = 1;
 
-    Object::offsets_.at(1).at(1) = -1.25;
-    Object::offsets_.at(1).at(2) = 0.25;
+    Object::offsets_old_.at(1).at(1) = -1.25;
+    Object::offsets_old_.at(1).at(2) = 0.25;
     // Object::offsets_.at(1).at(3) = 1.5;
   }
   const std::vector<float>* ShapeVerticesBuffer() final;

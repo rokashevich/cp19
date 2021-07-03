@@ -19,7 +19,7 @@ Player::Player(Vec v, int legs, int body, int head, int arms)
       body_(body),
       head_(head),
       arms_(arms) {
-  Object::offsets_.resize(2);
+  Object::offsets_old_.resize(2);
 }
 Player::~Player(){};
 

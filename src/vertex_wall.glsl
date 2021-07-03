@@ -46,15 +46,19 @@ void main() {
   vec3 pos;
 
   offset = vec3(offset_in.x, offset_in.y, offset_in.z);
-  pos = vec3(vertex_in.x, vertex_in.y, vertex_in.z);
 
   // xy // pos = vec3(vertex_in.x, vertex_in.y, vertex_in.z);
   // yz // pos = vec3(vertex_in.z, vertex_in.y, vertex_in.x);
   // xz // pos = vec3(vertex_in.y, vertex_in.z, vertex_in.x);
-  if (angles_in.z == 90.0) {
-    vColor = vec3(1, 0, 0);
-  } else {
+  if (angles_in.x == 90.0) {  // yz стена торцом
+    pos = vec3(vertex_in.z, vertex_in.y, vertex_in.x);
     vColor = vec3(0, 1, 0);
+  } else if (angles_in.y == 90.0) {  // xz стена плоскостью
+    pos = vec3(vertex_in.y, vertex_in.z, vertex_in.x);
+    vColor = vec3(0, 0, 1);
+  } else {  // пол xy
+    pos = vec3(vertex_in.x, vertex_in.y, vertex_in.z);
+    vColor = vec3(1, 0, 0);
   }
   gl_Position = projection * view * model * vec4(pos + offset, 1.0);
   vBC = barycentric_in;

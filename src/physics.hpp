@@ -40,14 +40,19 @@ class Physics : protected Timer {
     object_groups_[key] = container;
   }
 
+  // Регистрирует объект типа key.
   void AddObject(int key, Object* object) {
+    // TODO Переделать на фиксированный массив векторов!
     Group* group = FindGroupContainer(key);
     group->objects.push_back(object);
 
-    const int current_size = group->coords_.size();
-    const int shapes_in_object = group->reference_object_->Offsets().size();
+    // Добавили объект - добавляем и кол-во граней в одном объекте
+    // для последующей инстансированной отрисовки.
+    const auto current_size{group->coords_.size()};
+    const auto shapes_in_object{group->reference_object_->Offsets().size()};
     group->num_shapes += shapes_in_object;
 
+    // 3, 3 и 4 - это кол-во floatoв в coords, angles и params объекта.
     group->coords_.resize(current_size + 3 * shapes_in_object);
     group->coords_size_ = group->coords_.size() * sizeof(float);
     group->angles_.resize(current_size + 3 * shapes_in_object);
@@ -110,25 +115,24 @@ class Physics : protected Timer {
     for (auto const& key_group_pair : object_groups_) {
       Group* group = key_group_pair.second;
       int i = 0;
-      for (auto const& object : group->objects) {
+      for (const auto& object : group->objects) {
         // todo физику пока отменяем
         // const Point b = object->V().Begin();
         //       object->V() = object->V() >> 0.1;
-        const Point& coord = object->V().Begin();
-        for (const auto& x : object->Offsets()) {
-          group->coords_.at(i + 0) = coord.x + x.at(0);
-          group->coords_.at(i + 1) = coord.y + x.at(1);
-          group->coords_.at(i + 2) = coord.z + x.at(2);
-        }
-        for (const auto& x : object->Angles()) {
-          group->angles_.at(i + 0) = x.at(0);
-          group->angles_.at(i + 1) = x.at(1);
-          group->angles_.at(i + 2) = x.at(2);
-        }
+
+        group->coords_.at(i + 0) = object->Coords().x;
+        group->coords_.at(i + 1) = object->Coords().y;
+        group->coords_.at(i + 2) = object->Coords().z;
+
+        group->angles_.at(i + 0) = object->Angles().x;
+        group->angles_.at(i + 1) = object->Angles().y;
+        group->angles_.at(i + 2) = object->Angles().z;
+
         for (const auto& x : object->Params()) {
           group->params_.at(i + 0) = x.at(0);
           group->params_.at(i + 1) = x.at(1);
           group->params_.at(i + 2) = x.at(2);
+          // group->params_.at(i + 3) = x.at(3);
         }
         i += 3;
       }

@@ -114,11 +114,11 @@ class RendererSdl {
       glBindBuffer(GL_ARRAY_BUFFER, vbo1);
       glBufferData(GL_ARRAY_BUFFER, renderable->angles_size_,
                    renderable->angles_data_, GL_DYNAMIC_DRAW);
-      std::cout << renderable->num_instances_ << std::endl;
-      if (renderable->num_instances_ > 200)
-        for (int i = 0; i < renderable->angles_size_; ++i) {
-          std::cout << renderable->angles_data_[i];
-        }
+      // std::cout << renderable->num_instances_ << std::endl;
+      // if (renderable->num_instances_ > 200)
+      //   for (int i = 0; i < renderable->angles_size_; ++i) {
+      //     std::cout << renderable->angles_data_[i];
+      //   }
       glEnableVertexAttribArray(2);
       glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
                             (void*)0);

@@ -56,16 +56,19 @@ struct Cfg {
 
 int main(int, char **) {  // С пустым main() падает на андроиде!
   // Каждому типу объектов - уникальный key.
-  enum { wall, missile, player };
+  enum { wall /*, missile, player*/ };
   std::unordered_map<int, Cfg> cfgs{
       {wall,
-       {Shape<Wall>::StaticInfo(), new Wall(), false, vertex_wall, pixel_wall}},
+       {Shape<Wall>::StaticInfo(), new Wall(), false, vertex_wall, pixel_wall}}
+       
+       
+       /*,
       {missile,
        {Shape<Missile>::StaticInfo(), new Missile(), true, vertex_missile,
         pixel_missile}},
       {player,
        {Shape<Player>::StaticInfo(), new Player(), true, vertex_player,
-        pixel_player}}};
+        pixel_player}}*/};
 
   World game_world = World(constants::maze_dimension);
   RendererSdl renderer;
@@ -90,25 +93,32 @@ int main(int, char **) {  // С пустым main() падает на андро
     float height = game_world.panels_data_array().at(i++);
     float health = game_world.panels_data_array().at(i++);
     glm::vec3 angles = {a, b, c};
-    glm::vec3 params = {width, height, health};
-    Object *o = new Wall(Vec(x, y, z, x, y, z), angles, params);
+    glm::vec4 params = {width, height, health, 0.0f};
+    // std::cout << a << "-" << b << "-" << z << std::endl;
+    Object *o = new Wall(glm::vec3{x, y, z}, angles, params);
     physics.AddObject(wall, o);
   }
-  for (float i = 0; i < 5; ++i) {
-    for (float j = 0; j < 5; ++j) {
-      for (float k = 0; k < 5; ++k) {
-        Object *o =
-            new Missile(Vec(0 + i, 20 + j, 5 + k, 0 + i, 19 + j, 5 + k), 0.5);
-        physics.AddObject(missile, o);
-      }
-    }
-  }
+  // Тестовые снаряды.
+  // for (float i = 0; i < 5; ++i) {
+  //   for (float j = 0; j < 5; ++j) {
+  //     for (float k = 0; k < 5; ++k) {
+  //       Object *o =
+  //           new Missile(Vec(0 + i, 20 + j, 5 + k, 0 + i, 19 + j, 5 + k),
+  //           0.5);
+  //       physics.AddObject(missile, o);
+  //     }
+  //   }
+  // }
+  // Object *o = new Missile(Vec(0, 20, 5, 0, 19, 5), 0.5);
+  // physics.AddObject(missile, o);
+
+  // Тестовые игроки.
   //  Object* o = new ObjectMissile(Vec(0, 20, 5, 0, 21, 5), 10);
   //  physics.AddObject(missile, o);
   // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
   Object *player1 = new Player(Vec(2, 1, 0, 0, 14, 5));
   // physics.AddObject(player, player2);
-  physics.AddObject(player, player1);
+  //  physics.AddObject(player, player1);
 
   // Основной игровой цикл!
   int done = 0;

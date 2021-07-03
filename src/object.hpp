@@ -3,6 +3,7 @@
 #include <array>
 #include <cstddef>
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <iostream>
 #include <vector>
 
@@ -27,28 +28,28 @@ class Shape {
 
 // Базовый класс физического объекта игрового мира.
 class Object {
-  P orientation_;  // В какую сторону смотрит объект.
+  glm::vec3 coords_;  // смещения относительно центра мира
+  glm::vec3 angles_;  // углы поворотов отосительно центра объекта
+  glm::vec4 params_;  // параметры объекта зависят от конкретного объекта
+ public:
+  Object(glm::vec3 coords, glm::vec3 angles, glm::vec4 params);
+  virtual ~Object() {}
+  const auto& Coords() { return coords_; }
+  const auto& Angles() { return angles_; }
 
+ public:
+  // TODO OLD
+  P orientation_;  // В какую сторону смотрит объект.
   P motion_external_;  // Запрошенное движение извне (кнопками, Ai).
   P motion_internal_;  // Фактическое движение (блокируемое анимацией).
   int timer_inertia_;  // Таймер отработки анимации.
   Vec v_;
   int weight_;  // >0 обычный объект, =0 стена, <0 артефактphy
-
- protected:
-  // Координаты смещений базовых объектов.
-  std::vector<std::array<float, 3>> offsets_;
-
-  // Три угла поворота относительно осей из 0,0,0.
-  std::vector<std::array<float, 3>> angles_;
-
-  // Параметры объекта: высота, ширина, здоровье.
-  std::vector<std::array<float, 3>> params_;
-
- public:
+  std::vector<std::array<float, 3>> offsets_old_;
+  std::vector<std::array<float, 3>> angles_old_;
+  std::vector<std::array<float, 3>> params_old_;
   Object(Vec v = Vec(), float weight = 0, glm::vec3 angles = {0, 0, 0},
          glm::vec3 params = {0, 0, 0});
-  virtual ~Object() {}
 
   P& GetOrientation() { return orientation_; }
   void SetOrientation(P p) { orientation_ = p; }
@@ -65,12 +66,12 @@ class Object {
   virtual void Step() {}
 
   virtual const std::vector<std::array<float, 3>>& Offsets() {
-    return offsets_;
+    return offsets_old_;
   }
 
-  virtual const std::vector<std::array<float, 3>>& Angles() { return angles_; }
-
-  virtual const std::vector<std::array<float, 3>>& Params() { return params_; }
+  virtual const std::vector<std::array<float, 3>>& Params() {
+    return params_old_;
+  }
 
   int Weight() { return weight_; }
 };
