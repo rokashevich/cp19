@@ -91,7 +91,7 @@ World::World(const int resolution) : panel_size_{3} {
           const float param = i * 100 + health;  // todo del
           const float half = panel_size_ / 2;
           switch (i) {
-            case kSurfaceXY:  // Плоскость по умолчанию - фронтальная стена.
+            case kSurfaceXY:  // по умолчанию - фронтальная стена
               panels_data_.push_back(panel_size_ * x);
               panels_data_.push_back(panel_size_ * y);
               panels_data_.push_back(panel_size_ * s - half);
@@ -102,24 +102,24 @@ World::World(const int resolution) : panel_size_{3} {
               panels_data_.push_back(0);
               panels_data_.push_back(0);
               break;
-            case kSurfaceYZ:  // Плоскость пола-потолка.
+            case kSurfaceYZ:  // стена ребром
               panels_data_.push_back(panel_size_ * s - half);
               panels_data_.push_back(panel_size_ * y);
               panels_data_.push_back(panel_size_ * x);
-              panels_data_.push_back(90);
               panels_data_.push_back(0);
+              panels_data_.push_back(90);  // вокруг y на 90
               panels_data_.push_back(0);
               panels_data_.push_back(0);
               panels_data_.push_back(0);
               panels_data_.push_back(0);
 
               break;
-            case kSurfaceXZ:  // Стена ребром - развёрнутая ребром.
+            case kSurfaceXZ:  // пол-потолок
               panels_data_.push_back(panel_size_ * x);
               panels_data_.push_back(panel_size_ * s - half);
               panels_data_.push_back(panel_size_ * y);
+              panels_data_.push_back(90);  // вокруг x на 90
               panels_data_.push_back(0);
-              panels_data_.push_back(90);
               panels_data_.push_back(0);
               panels_data_.push_back(0);
               panels_data_.push_back(0);

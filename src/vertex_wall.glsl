@@ -47,16 +47,13 @@ void main() {
 
   offset = vec3(offset_in.x, offset_in.y, offset_in.z);
 
-  // xy // pos = vec3(vertex_in.x, vertex_in.y, vertex_in.z);
-  // yz // pos = vec3(vertex_in.z, vertex_in.y, vertex_in.x);
-  // xz // pos = vec3(vertex_in.y, vertex_in.z, vertex_in.x);
-  if (angles_in.x == 90.0) {  // yz стена торцом
+  if (angles_in.y == 90.0) {  // yz стена ребром
     pos = vec3(vertex_in.z, vertex_in.y, vertex_in.x);
     vColor = vec3(0, 1, 0);
-  } else if (angles_in.y == 90.0) {  // xz стена плоскостью
+  } else if (angles_in.x == 90.0) {  // xz пол-потолок
     pos = vec3(vertex_in.y, vertex_in.z, vertex_in.x);
     vColor = vec3(0, 0, 1);
-  } else {  // пол xy
+  } else {  // фронтальная стена xy
     pos = vec3(vertex_in.x, vertex_in.y, vertex_in.z);
     vColor = vec3(1, 0, 0);
   }
