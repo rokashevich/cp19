@@ -56,20 +56,19 @@ struct Cfg {
 
 int main(int, char **) {  // С пустым main() падает на андроиде!
   // Каждому типу объектов - уникальный key.
-  enum { wall /*, missile, player*/ };
+  enum { wall, player /*, missile*/ };
   std::unordered_map<int, Cfg> cfgs{
       {wall,
-       {Shape<Wall>::StaticInfo(), new Wall(), false, vertex_wall, pixel_wall}}
-       
-       
-       /*,
-      {missile,
-       {Shape<Missile>::StaticInfo(), new Missile(), true, vertex_missile,
-        pixel_missile}},
+       {Shape<Wall>::StaticInfo(), new Wall(), false, vertex_wall, pixel_wall}},
       {player,
        {Shape<Player>::StaticInfo(), new Player(), true, vertex_player,
-        pixel_player}}*/};
+        pixel_player}}
 
+  };
+  /*,
+        {missile,
+         {Shape<Missile>::StaticInfo(), new Missile(), true, vertex_missile,
+          pixel_missile}}*/
   World game_world = World(constants::maze_dimension);
   RendererSdl renderer;
   Physics physics;
@@ -118,7 +117,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
   Object *player1 = new Player(Vec(2, 1, 0, 0, 14, 5));
   // physics.AddObject(player, player2);
-  //  physics.AddObject(player, player1);
+  physics.AddObject(player, player1);
 
   // Основной игровой цикл!
   int done = 0;

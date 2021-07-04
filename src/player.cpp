@@ -13,6 +13,10 @@ const ShapeInfo Shape<Player>::objects_static_info_{
 const std::vector<float> Player::vertices_buffer_ =
     ShapeGenerator::Cuboid(1, 1, 1);
 
+Player::Player(glm::vec3 coords, glm::vec3 angles, glm::vec4 params)
+    : Object(coords, angles, params) {}
+
+// TODO OLD
 Player::Player(Vec v, int legs, int body, int head, int arms)
     : Object(v, legs + body + head + arms),
       legs_(legs),

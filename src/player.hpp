@@ -15,6 +15,8 @@ class Player : public Object, Shape<Player> {
   int gun_;
 
  public:
+  Player(glm::vec3 coords, glm::vec3 angles, glm::vec4 params);
+  // TODO OLD
   Player(Vec v = Vec(), int legs = 9, int body = 9, int head = 9, int arms = 9);
   ~Player();
   void Step() final {
