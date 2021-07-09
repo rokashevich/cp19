@@ -28,14 +28,17 @@ class Shape {
 
 // Базовый класс физического объекта игрового мира.
 class Object {
-  glm::vec3 coords_;  // смещения относительно центра мира
-  glm::vec3 angles_;  // углы поворотов отосительно центра объекта
-  glm::vec4 params_;  // параметры объекта зависят от конкретного объекта
+  std::vector<float> coords_;
+  std::vector<float> angles_;
+  std::vector<float> params_;
+
  public:
-  Object(glm::vec3 coords, glm::vec3 angles, glm::vec4 params);
+  Object(glm::vec3 coords, glm::vec3 angles = {0, 0, 0},
+         glm::vec4 params = {0, 0, 0, 0});
   virtual ~Object() {}
   const auto& Coords() { return coords_; }
   const auto& Angles() { return angles_; }
+  const auto& Params() { return params_; }
 
  public:
   // TODO OLD
@@ -67,10 +70,6 @@ class Object {
 
   virtual const std::vector<std::array<float, 3>>& Offsets() {
     return offsets_old_;
-  }
-
-  virtual const std::vector<std::array<float, 3>>& Params() {
-    return params_old_;
   }
 
   int Weight() { return weight_; }

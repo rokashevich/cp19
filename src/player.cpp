@@ -13,8 +13,7 @@ const ShapeInfo Shape<Player>::objects_static_info_{
 const std::vector<float> Player::vertices_buffer_ =
     ShapeGenerator::Cuboid(1, 1, 1);
 
-Player::Player(glm::vec3 coords, glm::vec3 angles, glm::vec4 params)
-    : Object(coords, angles, params) {}
+Player::Player(glm::vec3 coords) : Object(coords) {}
 
 // TODO OLD
 Player::Player(Vec v, int legs, int body, int head, int arms)
@@ -23,7 +22,7 @@ Player::Player(Vec v, int legs, int body, int head, int arms)
       body_(body),
       head_(head),
       arms_(arms) {
-  Object::offsets_old_.resize(2);
+  // Object::offsets_old_.resize(2);
 }
 Player::~Player(){};
 

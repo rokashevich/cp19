@@ -100,17 +100,17 @@ class Physics : protected Timer {
     Timer::Step(Physics::frame_ms_);
 
     // Первая итерация по всем объектам - смещаем на запрашиваему величину.
-    for (auto const& key_group_pair : object_groups_) {
-      Group* group_container = key_group_pair.second;
-      for (auto const& object : group_container->objects) {
-        object->Step();
-        // todo физику пока отменяем
-        // const Vec g{0, 0, 0, 0, -0.02, 0};  // ускор свобод падения
-        // if (object->Weight() > 0) {  // динамический объект
-        //  object->V() = object->V() + g;
-        //}
-      }
-    }
+    // for (auto const& key_group_pair : object_groups_) {
+    //   Group* group_container = key_group_pair.second;
+    //   for (auto const& object : group_container->objects) {
+    //     object->Step();
+    //     // todo физику пока отменяем
+    //     // const Vec g{0, 0, 0, 0, -0.02, 0};  // ускор свобод падения
+    //     // if (object->Weight() > 0) {  // динамический объект
+    //     //  object->V() = object->V() + g;
+    //     //}
+    //   }
+    // }
     // Вторая итерация - разрешаем коллизии.
     for (auto const& key_group_pair : object_groups_) {
       Group* group = key_group_pair.second;
@@ -120,20 +120,18 @@ class Physics : protected Timer {
         // const Point b = object->V().Begin();
         //       object->V() = object->V() >> 0.1;
 
-        group->coords_.at(i + 0) = object->Coords().x;
-        group->coords_.at(i + 1) = object->Coords().y;
-        group->coords_.at(i + 2) = object->Coords().z;
+        group->coords_.at(i + 0) = object->Coords().at(0);
+        group->coords_.at(i + 1) = object->Coords().at(1);
+        group->coords_.at(i + 2) = object->Coords().at(2);
 
-        group->angles_.at(i + 0) = object->Angles().x;
-        group->angles_.at(i + 1) = object->Angles().y;
-        group->angles_.at(i + 2) = object->Angles().z;
+        group->angles_.at(i + 0) = object->Angles().at(0);
+        group->angles_.at(i + 1) = object->Angles().at(1);
+        group->angles_.at(i + 2) = object->Angles().at(2);
 
-        for (const auto& x : object->Params()) {
-          group->params_.at(i + 0) = x.at(0);
-          group->params_.at(i + 1) = x.at(1);
-          group->params_.at(i + 2) = x.at(2);
-          // group->params_.at(i + 3) = x.at(3);
-        }
+        group->params_.at(i + 0) = object->Params().at(0);
+        group->params_.at(i + 1) = object->Params().at(1);
+        group->params_.at(i + 2) = object->Params().at(2);
+
         i += 3;
       }
     }

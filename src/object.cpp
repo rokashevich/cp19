@@ -2,8 +2,20 @@
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
-Object::Object(glm::vec3 coords, glm::vec3 angles, glm::vec4 params)
-    : coords_{coords}, angles_{angles}, params_{params} {}
+Object::Object(glm::vec3 coords, glm::vec3 angles, glm::vec4 params) {
+  coords_.push_back(coords.x);
+  coords_.push_back(coords.y);
+  coords_.push_back(coords.z);
+
+  angles_.push_back(angles.x);
+  angles_.push_back(angles.y);
+  angles_.push_back(angles.z);
+
+  params_.push_back(params.x);
+  params_.push_back(params.y);
+  params_.push_back(params.z);
+  params_.push_back(params.w);
+}
 // TODO OLD
 Object::Object(Vec v, float weight, glm::vec3 angles, glm::vec3 params)
     : v_(v), weight_(weight) {
