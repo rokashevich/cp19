@@ -15,7 +15,6 @@ class Physics : protected Timer {
   // Контейнер хранения информации по объектам одного вида.
   struct Group {
     bool is_dynamic;
-    Object* reference_object_;
     int num_shapes;
     std::vector<Object*> objects;
 
@@ -32,10 +31,9 @@ class Physics : protected Timer {
   std::unordered_map<int, Group*> object_groups_;
 
  public:
-  void SetupObject(int key, Object* reference_object) {
+  void SetupObject(int key) {
     assert(object_groups_.find(key) == object_groups_.end());
     auto container = new Group;
-    container->reference_object_ = reference_object;
     container->num_shapes = 0;
     object_groups_[key] = container;
   }
@@ -49,7 +47,7 @@ class Physics : protected Timer {
     // Добавили объект - добавляем и кол-во граней в одном объекте
     // для последующей инстансированной отрисовки.
     const auto current_size{group->coords_.size()};
-    const auto shapes_in_object{group->reference_object_->Offsets().size()};
+    const auto shapes_in_object{object->NumShapes()};
     group->num_shapes += shapes_in_object;
 
     // 3, 3 и 4 - это кол-во floatoв в coords, angles и params объекта.
@@ -88,11 +86,6 @@ class Physics : protected Timer {
   int NumShapes(int key) {
     Group* group = FindGroupContainer(key);
     return group->num_shapes;
-  }
-
-  const float* ShapeVerticesBuffer(int key) {
-    Group* container = FindGroupContainer(key);
-    return container->reference_object_->ShapeVerticesBuffer()->data();
   }
 
   void Step() {

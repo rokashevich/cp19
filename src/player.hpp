@@ -16,10 +16,10 @@ class Player : public Object, Shape<Player> {
 
  public:
   Player(glm::vec3 coords);
-  // TODO OLD
-  Player(Vec v = Vec(), int legs = 9, int body = 9, int head = 9, int arms = 9);
   ~Player();
-  // void Step() final {
+  // TODO OLD
+  //  Player(Vec v = Vec(), int legs(9), int body = 9, int head = 9, int arms =
+  // 9); void Step() final {
   //   Object::offsets_old_.at(0).at(0) = 0;
   //   Object::offsets_old_.at(0).at(1) = 0;
   //   // Object::offsets_.at(0).at(3) = 1;

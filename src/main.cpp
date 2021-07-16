@@ -46,7 +46,6 @@ static float pitch = 0.0f;
 
 struct Cfg {
   ShapeInfo static_info;
-  Object *reference;
   const bool is_dynamic;
   const char *vertex_shader;
   const char *pixel_shader;
@@ -58,13 +57,9 @@ int main(int, char **) {  // С пустым main() падает на андро
   // Каждому типу объектов - уникальный key.
   enum { wall, player /*, missile*/ };
   std::unordered_map<int, Cfg> cfgs{
-      {wall,
-       {Shape<Wall>::StaticInfo(), new Wall(), false, vertex_wall, pixel_wall}},
+      {wall, {Shape<Wall>::StaticInfo(), false, vertex_wall, pixel_wall}},
       {player,
-       {Shape<Player>::StaticInfo(), new Player(), true, vertex_player,
-        pixel_player}}
-
-  };
+       {Shape<Player>::StaticInfo(), true, vertex_player, pixel_player}}};
   /*,
         {missile,
          {Shape<Missile>::StaticInfo(), new Missile(), true, vertex_missile,
@@ -75,7 +70,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   for (auto &iter : cfgs) {
     int key = iter.first;
     Cfg &cfg = iter.second;
-    physics.SetupObject(key, cfg.reference);
+    physics.SetupObject(key);
     renderer.SetupStatic(key, &cfg.static_info.vertices_buffer,
                          cfg.vertex_shader, cfg.pixel_shader);
   }

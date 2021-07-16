@@ -33,12 +33,13 @@ class Object {
   std::vector<float> params_;
 
  public:
-  Object(glm::vec3 coords, glm::vec3 angles = {0, 0, 0},
+  Object(glm::vec3 coords = {0, 0, 0}, glm::vec3 angles = {0, 0, 0},
          glm::vec4 params = {0, 0, 0, 0});
   virtual ~Object() {}
   const auto& Coords() { return coords_; }
   const auto& Angles() { return angles_; }
   const auto& Params() { return params_; }
+  int NumShapes() { return 1; }
 
  public:
   // TODO OLD
@@ -51,8 +52,8 @@ class Object {
   std::vector<std::array<float, 3>> offsets_old_;
   std::vector<std::array<float, 3>> angles_old_;
   std::vector<std::array<float, 3>> params_old_;
-  Object(Vec v = Vec(), float weight = 0, glm::vec3 angles = {0, 0, 0},
-         glm::vec3 params = {0, 0, 0});
+  // Object(Vec v = Vec(), float weight = 0, glm::vec3 angles = {0, 0, 0},
+  //        glm::vec3 params = {0, 0, 0});
 
   P& GetOrientation() { return orientation_; }
   void SetOrientation(P p) { orientation_ = p; }

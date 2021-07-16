@@ -12,9 +12,9 @@ const ShapeInfo Shape<Missile>::objects_static_info_{
 const std::vector<float> Missile::vertices_buffer_ =
     ShapeGenerator::Icosphere();
 
-Missile::Missile(Vec v, float diameter)
-    : Object(v, constants::pi * diameter * diameter * diameter / 6 * 1000),
-      diameter_(diameter) {}
+// Missile::Missile(Vec v, float diameter)
+//     : Object(v, constants::pi * diameter * diameter * diameter / 6 * 1000),
+//       diameter_(diameter) {}
 
 Missile::~Missile() {}
 

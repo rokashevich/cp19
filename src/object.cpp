@@ -2,7 +2,8 @@
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
-Object::Object(glm::vec3 coords, glm::vec3 angles, glm::vec4 params) {
+Object::Object(glm::vec3 coords, glm::vec3 angles, glm::vec4 params)
+    : num_shapes_(num_shapes) {
   coords_.push_back(coords.x);
   coords_.push_back(coords.y);
   coords_.push_back(coords.z);
@@ -17,8 +18,8 @@ Object::Object(glm::vec3 coords, glm::vec3 angles, glm::vec4 params) {
   params_.push_back(params.w);
 }
 // TODO OLD
-Object::Object(Vec v, float weight, glm::vec3 angles, glm::vec3 params)
-    : v_(v), weight_(weight) {
-  offsets_old_.resize(1);
-  offsets_old_.at(0) = {0, 0, 0};
-}
+// Object::Object(Vec v, float weight, glm::vec3 angles, glm::vec3 params)
+//     : v_(v), weight_(weight) {
+//   offsets_old_.resize(1);
+//   offsets_old_.at(0) = {0, 0, 0};
+// }

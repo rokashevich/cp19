@@ -13,12 +13,12 @@ const std::vector<float> Wall::vertices_buffer_ =
     ShapeGenerator::Cuboid(2.9, 2.9, 0.05);
 
 Wall::Wall(glm::vec3 coords, glm::vec3 angles, glm::vec4 params)
-    : Object(coords, angles, params) {}
+    : Object(coords) {}
 Wall::~Wall() {}
 
 // TODO OLD
-Wall::Wall(Vec v, glm::vec3 angles, glm::vec3 params)
-    : Object(v, 0, angles, params) {}
+// Wall::Wall(Vec v, glm::vec3 angles, glm::vec3 params)
+//     : Object(v, 0, angles, params) {}
 
 const std::vector<float>* Wall::ShapeVerticesBuffer() {
   return &Wall::vertices_buffer_;

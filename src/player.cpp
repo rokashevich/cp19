@@ -16,14 +16,14 @@ const std::vector<float> Player::vertices_buffer_ =
 Player::Player(glm::vec3 coords) : Object(coords) {}
 
 // TODO OLD
-Player::Player(Vec v, int legs, int body, int head, int arms)
-    : Object(v, legs + body + head + arms),
-      legs_(legs),
-      body_(body),
-      head_(head),
-      arms_(arms) {
-  // Object::offsets_old_.resize(2);
-}
+// Player::Player(Vec v, int legs, int body, int head, int arms)
+//     : Object(v, legs + body + head + arms),
+//       legs_(legs),
+//       body_(body),
+//       head_(head),
+//       arms_(arms) {
+//   // Object::offsets_old_.resize(2);
+// }
 Player::~Player(){};
 
 const std::vector<float>* Player::ShapeVerticesBuffer() {
