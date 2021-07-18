@@ -321,10 +321,9 @@ class Server {
 };
 
 //////////////////////////////////////
-
 class Client {
  public:
-  Client() {}
+  Client() { Connect("127.0.0.1", 12345); }
 
   ~Client() { Disconnect(); }
 
@@ -384,6 +383,19 @@ class Client {
  private:
   // This is the thread safe queue of incoming messages from server
   NetQueue message_queue_in_;
+};
+
+class SingletonClient {
+ public:
+  static Client& Instance() {
+    static Client single_instance;
+    return single_instance;
+  }
+
+ private:
+  SingletonClient() {}
+  SingletonClient(const SingletonClient& root) = delete;
+  SingletonClient& operator=(const SingletonClient&) = delete;
 };
 
 }  // namespace Interplay

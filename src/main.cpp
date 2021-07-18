@@ -24,6 +24,7 @@
 #include "vertex_wall.hpp"
 
 // Заголовочные файлы проекта
+#include "../net/interplay.hpp"
 #include "constants.hpp"
 #include "generator_shape.hpp"
 #include "missile.hpp"
@@ -54,6 +55,7 @@ struct Cfg {
 // auto& a = Shape<ObjectWall>::ShapeVerticesBuffer2();
 
 int main(int, char **) {  // С пустым main() падает на андроиде!
+  Interplay::SingletonClient::Instance().SendMessage("I'm from main!\n");
   // Каждому типу объектов - уникальный key.
   enum { wall, player /*, missile*/ };
   std::unordered_map<int, Cfg> cfgs{
