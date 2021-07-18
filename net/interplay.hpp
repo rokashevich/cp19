@@ -302,8 +302,10 @@ class Server {
     auto time = std::localtime(&result);
     log_file << std::setfill('0') << std::setw(2) << time->tm_mday << "/"
              << std::setfill('0') << std::setw(2) << time->tm_mon + 1 << "/"
-             << time->tm_year + 1900 << ' ' << time->tm_hour << ":"
-             << time->tm_min << ":" << time->tm_sec << ' ';
+             << time->tm_year + 1900 << ' ' << std::setfill('0') << std::setw(2)
+             << time->tm_hour << ":" << std::setfill('0') << std::setw(2)
+             << time->tm_min << ":" << std::setfill('0') << std::setw(2)
+             << time->tm_sec << ' ';
     log_file << msg << std::endl;
     log_file.close();
   }
