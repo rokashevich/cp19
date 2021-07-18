@@ -67,10 +67,10 @@ int main(int, char **) {  // С пустым main() падает на андро
   World game_world = World(constants::maze_dimension);
   RendererSdl renderer;
   Physics physics;
-  for (auto &iter : cfgs) {
-    int key = iter.first;
-    Cfg &cfg = iter.second;
-    physics.SetupObject(key);
+  for (auto iter : cfgs) {
+    auto key = iter.first;
+    auto cfg = iter.second;
+    physics.RegisterObject(key);
     renderer.SetupStatic(key, &cfg.static_info.vertices_buffer,
                          cfg.vertex_shader, cfg.pixel_shader);
   }
@@ -111,7 +111,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   //  physics.AddObject(missile, o);
   // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
 
-  Object *player1 = new Player(glm::vec3{2, 1, 0});
+  Object *player1 = new Player(glm::vec3{2, 1, 0}, glm::vec3{0, 0, 0});
 
   // physics.AddObject(player, player2);
   physics.AddObject(player, player1);

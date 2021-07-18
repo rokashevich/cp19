@@ -2,8 +2,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
-Object::Object(glm::vec3 coords, glm::vec3 angles, glm::vec4 params)
-    : num_shapes_(num_shapes) {
+Object::Object(glm::vec3 coords, glm::vec3 angles, glm::vec4 params) {
   coords_.push_back(coords.x);
   coords_.push_back(coords.y);
   coords_.push_back(coords.z);

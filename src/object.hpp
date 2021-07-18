@@ -28,6 +28,11 @@ class Shape {
 
 // Базовый класс физического объекта игрового мира.
 class Object {
+ protected:
+  static constexpr int num_coords_ = 3;
+  static constexpr int num_angles_ = 3;
+  static constexpr int num_params_ = 4;
+  static constexpr int num_shapes_ = 1;
   std::vector<float> coords_;
   std::vector<float> angles_;
   std::vector<float> params_;
@@ -39,7 +44,7 @@ class Object {
   const auto& Coords() { return coords_; }
   const auto& Angles() { return angles_; }
   const auto& Params() { return params_; }
-  int NumShapes() { return 1; }
+  virtual int NumShapes() { return Object::num_shapes_; }
 
  public:
   // TODO OLD
