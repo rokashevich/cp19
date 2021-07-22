@@ -131,6 +131,7 @@ World::World(const int resolution) : panel_size_{3} {
       }
     }
   }
+  std::cout << "Wall panels count: " << panels_count_ << std::endl;
 }
 
 World::~World() {}

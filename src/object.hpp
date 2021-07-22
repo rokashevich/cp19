@@ -44,7 +44,9 @@ class Object {
   const auto& Coords() { return coords_; }
   const auto& Angles() { return angles_; }
   const auto& Params() { return params_; }
-  virtual int NumShapes() { return Object::num_shapes_; }
+  virtual int NumInstances() { return Object::num_shapes_; }
+  // Для обновления параметров для шейдера.
+  virtual void Step() {}
 
  public:
   // TODO OLD
@@ -70,9 +72,6 @@ class Object {
   // т.д. в виде: x1,y1,z1,x2,y2,z2,..., где каждая тройка координат
   // представляет собой тругольник. Передаётся в рендер.
   virtual const std::vector<float>* ShapeVerticesBuffer() = 0;
-
-  // Для обновления параметров для шейдера.
-  virtual void Step() {}
 
   virtual const std::vector<std::array<float, 3>>& Offsets() {
     return offsets_old_;

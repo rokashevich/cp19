@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cassert>
+#include <functional>
 #include <iostream>
 #include <list>
 #include <typeindex>
@@ -14,7 +15,7 @@
 class Physics : protected Timer {
   // Контейнер хранения информации по объектам одного вида.
   struct Group {
-    int num_shapes;
+    int num_instances{};
     std::vector<Object*> objects;
 
     // Буфферы для шейдеров.
@@ -23,18 +24,20 @@ class Physics : protected Timer {
     std::vector<float> coords_;
     std::vector<float> angles_;
     std::vector<float> params_;
-    std::size_t coords_size_;
-    std::size_t angles_size_;
-    std::size_t params_size_;
   };
-  std::unordered_map<int, Group*> object_groups_;
+  std::unordered_map<int, Group*> groups_;
+  std::function<void(int, int, const std::vector<float>&,
+                     const std::vector<float>&, const std::vector<float>&)>
+      ObjectsChangedCallback;
 
  public:
-  void RegisterObject(int key) {
-    auto group = new Group;
-    group->num_shapes = 0;
-    object_groups_[key] = group;
+  Physics(
+      std::function<void(int, int, const std::vector<float>&,
+                         const std::vector<float>&, const std::vector<float>&)>
+          objects_changed_callback) {
+    ObjectsChangedCallback = objects_changed_callback;
   }
+  void RegisterObject(int key) { groups_[key] = new Group; }
 
   // Регистрирует объект типа key.
   void AddObject(int key, Object* object) {
@@ -45,54 +48,26 @@ class Physics : protected Timer {
     // Добавили объект - добавляем и кол-во граней в одном объекте
     // для последующей инстансированной отрисовки.
     const auto current_size{group->coords_.size()};
-    const auto shapes_in_object{object->NumShapes()};
-    group->num_shapes += shapes_in_object;
+    group->num_instances += object->NumInstances();
 
     // 3, 3 и 4 - это кол-во floatoв в coords, angles и params объекта.
-    group->coords_.resize(current_size + 3 * shapes_in_object);
-    group->coords_size_ = group->coords_.size() * sizeof(float);
-    group->angles_.resize(current_size + 3 * shapes_in_object);
-    group->angles_size_ = group->angles_.size() * sizeof(float);
-    group->params_.resize(current_size + 3 * shapes_in_object);
-    group->params_size_ = group->params_.size() * sizeof(float);
-  }
+    group->coords_.resize(current_size + 3 * object->NumInstances());
+    group->angles_.resize(current_size + 3 * object->NumInstances());
+    group->params_.resize(current_size + 4 * object->NumInstances());
 
-  float* Coords(int key) {
-    return object_groups_.find(key)->second->coords_.data();
+    ObjectsChangedCallback(key, group->num_instances, (*group).coords_,
+                           (*group).angles_, (*group).params_);
   }
-
-  std::size_t CoordsSize(int key) {
-    return object_groups_.find(key)->second->coords_size_;
-  }
-
-  float* Angles(int key) {
-    return object_groups_.find(key)->second->angles_.data();
-  }
-
-  std::size_t AnglesSize(int key) {
-    return object_groups_.find(key)->second->angles_size_;
-  }
-
-  float* Params(int key) {
-    return object_groups_.find(key)->second->params_.data();
-  }
-
-  std::size_t ParamsSize(int key) {
-    return object_groups_.find(key)->second->params_size_;
-  }
-
-  int NumShapes(int key) {
-    Group* group = FindGroup(key);
-    return group->num_shapes;
-  }
-
   void Step() {
     // Сдвигаем таймер на прошедшее с предыдущего шага время.
     Timer::Step(Physics::frame_ms_);
 
     // Первая итерация по всем объектам - смещаем на запрашиваему величину.
-    for (auto const& key_group_pair : object_groups_) {
-      //   Group* group_container = key_group_pair.second;
+    for (auto& g : groups_) {
+      Group& group = *g.second;
+      for (auto& object : group.objects) {
+        object->Step();
+      }
       //   for (auto const& object : group_container->objects) {
       //     object->Step();
       //     // todo физику пока отменяем
@@ -103,7 +78,7 @@ class Physics : protected Timer {
       //   }
     }
     // Вторая итерация - разрешаем коллизии.
-    for (auto const& key_group_pair : object_groups_) {
+    for (const auto& key_group_pair : groups_) {
       Group* group = key_group_pair.second;
       int i = 0;
       for (const auto& object : group->objects) {
@@ -130,9 +105,9 @@ class Physics : protected Timer {
 
  private:
   Group* FindGroup(int key) {
-    auto it = object_groups_.find(key);
-    assert(it != object_groups_.end());
-    return object_groups_.find(key)->second;
+    auto it = groups_.find(key);
+    assert(it != groups_.end());
+    return groups_.find(key)->second;
   }
   static int target_fps_;
   static int frame_ms_;
