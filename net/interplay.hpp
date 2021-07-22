@@ -302,8 +302,10 @@ class Server {
     auto time = std::localtime(&result);
     log_file << std::setfill('0') << std::setw(2) << time->tm_mday << "/"
              << std::setfill('0') << std::setw(2) << time->tm_mon + 1 << "/"
-             << time->tm_year + 1900 << ' ' << time->tm_hour << ":"
-             << time->tm_min << ":" << time->tm_sec << ' ';
+             << time->tm_year + 1900 << ' ' << std::setfill('0') << std::setw(2)
+             << time->tm_hour << ":" << std::setfill('0') << std::setw(2)
+             << time->tm_min << ":" << std::setfill('0') << std::setw(2)
+             << time->tm_sec << ' ';
     log_file << msg << std::endl;
     log_file.close();
   }
@@ -319,10 +321,9 @@ class Server {
 };
 
 //////////////////////////////////////
-
 class Client {
  public:
-  Client() {}
+  Client() { Connect("127.0.0.1", 12345); }
 
   ~Client() { Disconnect(); }
 
@@ -382,6 +383,19 @@ class Client {
  private:
   // This is the thread safe queue of incoming messages from server
   NetQueue message_queue_in_;
+};
+
+class SingletonClient {
+ public:
+  static Client& Instance() {
+    static Client single_instance;
+    return single_instance;
+  }
+
+ private:
+  SingletonClient() {}
+  SingletonClient(const SingletonClient& root) = delete;
+  SingletonClient& operator=(const SingletonClient&) = delete;
 };
 
 }  // namespace Interplay
