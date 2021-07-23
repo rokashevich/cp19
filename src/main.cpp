@@ -72,9 +72,13 @@ int main(int, char **) {  // С пустым main() падает на андро
   // Создаём физический мир и регистрируем в нём колбэк, которым в рендерер
   // будут отправляться изменённые статически данные: указатели на массивы с
   // координатами, углами и параметрами, которые рендерер будет рисовать.
-  Physics physics([&](auto key, auto num_instances, const auto &coords,
-                      const auto &angels, const auto &params) {
-    renderer.OnNumInstancesChanged(key, num_instances, coords, angels, params);
+  Physics physics([&](int key, int num_instances, const float *coords_data,
+                      int coords_size, const float *angles_data,
+                      int angles_size, const float *params_data,
+                      int params_size) {
+    renderer.OnNumInstancesChanged(key, num_instances, coords_data, coords_size,
+                                   angles_data, angles_size, params_data,
+                                   params_size);
   });
 
   for (auto iter : cfgs) {
@@ -121,7 +125,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   //  physics.AddObject(missile, o);
   // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
 
-  Object *player1 = new Player(glm::vec3{0, -4, 0}, glm::vec3{0, 0, 0});
+  Object *player1 = new Player(glm::vec3{0, 0, 0}, glm::vec3{0, 0, 0});
 
   // physics.AddObject(player, player2);
   physics.AddObject(player, player1);

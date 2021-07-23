@@ -20,15 +20,12 @@ void main() {
   vBC = barycentric_in;
 
   float angle;
-  if (offset.y == 0.0) {
-    vColor = vec3(1, 1, 1);
+  if (offset.x == 0.0 && offset.y == 0.0 && offset.z == 0.0) {
+    vColor = vec3(0, 1, 0);
     angle = 45.0;
   } else {
     vColor = vec3(0, 1, 1);
     angle = 0.0;
-  }
-  if (angles_in.x == 2.0) {
-    vColor = vec3(1, 0, 0);
   }
   float s = sin(angle);
   float c = cos(angle);

@@ -7,7 +7,10 @@
 #include "vec.hpp"
 // Солдат.
 class Player : public Object, Shape<Player> {
-  static constexpr int num_shapes_ = 4;
+  // Человечек состоит из 8 фигур: голова, туловище, два плеча, два предплечья,
+  // два бедра и две голени.
+  static constexpr int num_instances_ = 8;
+
   static const std::vector<float> vertices_buffer_;
   int legs_;
   int body_;
