@@ -117,7 +117,7 @@ int main(int, char **) {  // С пустым main() падает на андро
   //     }
   //   }
   // }
-  // Object *o = new Missile(Vec(0, 20, 5, 0, 19, 5), 0.5);
+  // Object *o = new Missile(Vec(0, 20, 5, 0, 19, 5), 0.5);l
   // physics.AddObject(missile, o);
 
   // Тестовые игроки.
@@ -125,7 +125,13 @@ int main(int, char **) {  // С пустым main() падает на андро
   //  physics.AddObject(missile, o);
   // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
 
-  Object *player1 = new Player(glm::vec3{0, 0, 0}, glm::vec3{0, 0, 0});
+  auto const coords = glm::vec3{0, 0, 0};
+  auto const angles = glm::vec3{0, 0, 0};
+  auto const head{1};
+  auto const body{1};
+  auto const arms{1};
+  auto const legs{1};
+  Object *player1 = new Player(coords, angles, head, body, arms, legs);
 
   // physics.AddObject(player, player2);
   physics.AddObject(player, player1);

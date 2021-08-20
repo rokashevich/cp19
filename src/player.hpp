@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 
+#include "animation.hpp"
 #include "object.hpp"
 #include "point.hpp"
 #include "vec.hpp"
@@ -10,16 +11,12 @@ class Player : public Object, Shape<Player> {
   // Человечек состоит из 8 фигур: голова, туловище, два плеча, два предплечья,
   // два бедра и две голени.
   static constexpr int num_instances_ = 8;
-
   static const std::vector<float> vertices_buffer_;
-  int legs_;
-  int body_;
-  int head_;
-  int arms_;
-  int gun_;
+  const Animation animation_;
 
  public:
-  Player(glm::vec3 coords, glm::vec3 angles);
+  Player(glm::vec3 coords, glm::vec3 angles, int head, int body, int arms,
+         int legs);
   ~Player();
   int NumInstances() final;
   void Step() final;

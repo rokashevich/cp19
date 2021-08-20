@@ -2,6 +2,7 @@
 
 #include <cassert>
 
+#include "animation.hpp"
 #include "constants.hpp"
 #include "generator_shape.hpp"
 #include "pixel_player.hpp"
@@ -13,16 +14,16 @@ const ShapeInfo Shape<Player>::objects_static_info_{
 const std::vector<float> Player::vertices_buffer_ =
     ShapeGenerator::Cuboid(1, 1, 1);
 
-Player::Player(glm::vec3 coords, glm::vec3 angles) : Object(coords, angles) {
+Player::Player(glm::vec3 coords, glm::vec3 angles, int head, int body, int arms,
+               int legs)
+    : Object(coords, angles), animation_{head, body, arms, legs} {
   coords_.resize(Object::num_coords * Player::num_instances_);
   angles_.resize(Object::num_angles * Player::num_instances_);
   params_.resize(Object::num_params * Player::num_instances_);
 }
 int Player::NumInstances() { return Player::num_instances_; }
 void Player::Step() {  // Тестовая анимация.
-  static size_t step{0};
-  std::vector<int> a{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-  const auto k{5.0f / a[step]};
+  auto k = animation_.Next();
   coords_.at(0) = k + 1;
   coords_.at(3) = k + 2;
   coords_.at(6) = k + 3;
@@ -31,8 +32,6 @@ void Player::Step() {  // Тестовая анимация.
   coords_.at(15) = k + 6;
   coords_.at(18) = k + 7;
   coords_.at(21) = k + 8;
-  ++step;
-  if (step == a.size()) step = 0;
 }
 
 //{
