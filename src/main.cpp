@@ -31,9 +31,10 @@
 #include "object.hpp"
 #include "physics.hpp"
 #include "player.hpp"
-#include "point.hpp"
+// #include "point.hpp"
 #include "renderer_sdl.hpp"
 #include "shader.hpp"
+#include "tribool.hpp"
 #include "wall.hpp"
 #include "world.hpp"
 
@@ -143,27 +144,20 @@ int main(int, char **) {  // С пустым main() падает на андро
   Object *controlled = player1;
 
   while (!done) {
-    // Внешнее управление!
+    tribool backward_forward, left_right;
+    static bool up;
 
-    // Структура "пожеланий" управления человечком (нами с клавиатуры/телефона
-    // или AI бота). Не факт что физический движок разрешит перемещение в этом
-    // направлении!
-    struct Input {
-      int backward_forward;  // -1 0 +1
-      int left_right;        // -1 0 + 1
-      bool up;               // true false
-    } input{0, 0, false};
     const Uint8 *state = SDL_GetKeyboardState(NULL);
     while (SDL_PollEvent(&renderer.event)) {
       if (renderer.event.type == SDL_QUIT) {
         done = 1;
       } else if (renderer.event.type == SDL_KEYDOWN ||
                  renderer.event.type == SDL_KEYUP) {
-        if (state[SDL_SCANCODE_W]) input.backward_forward += 1;
-        if (state[SDL_SCANCODE_S]) input.backward_forward += -1;
-        if (state[SDL_SCANCODE_A]) input.left_right += -1;
-        if (state[SDL_SCANCODE_D]) input.left_right += 1;
-        if (state[SDL_SCANCODE_SPACE]) input.up = true;
+        if (state[SDL_SCANCODE_W]) ++backward_forward;
+        if (state[SDL_SCANCODE_S]) --backward_forward;
+        if (state[SDL_SCANCODE_A]) --left_right;
+        if (state[SDL_SCANCODE_D]) ++left_right;
+        if (state[SDL_SCANCODE_SPACE]) up = !up;
         if (state[SDL_SCANCODE_T] && renderer.event.type != SDL_KEYUP)
           input_bound_to_object = !input_bound_to_object;
       } else if (renderer.event.type == SDL_MOUSEMOTION &&
@@ -187,36 +181,20 @@ int main(int, char **) {  // С пустым main() падает на андро
     glm::mat4 view;
     // glm::mat4 trans = glm::mat4(1.0f);
     if (input_bound_to_object) {  // Управление объектом.
-      if (input.backward_forward == 1) {
-        // controlled->V().Begin().x += 0.1;
-        controlled->SetOrientation(P{0, 1, 0});
-      }
-      if (input.backward_forward == -1) {
-        // controlled->V().Begin().x -= 0.1;
-        controlled->SetOrientation(P{0, -1, 0});
-      }
-      if (input.left_right == 1) {
-        controlled->SetOrientation(P{0, 0, -1});
-        // trans =
-        //    glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-      }
-      if (input.left_right == -1) {
-        controlled->SetOrientation(P{0, 0, 1});
-        // trans =
-        //    glm::rotate(trans, glm::radians(-90.0f), glm::vec3(0.0,
-        //    0.0, 1.0));
-      }
-      glm::vec3 followed{player1->V().Begin().x, player1->V().Begin().y,
-                         player1->V().Begin().z};
+
+      controlled->Move(backward_forward, left_right, tribool{up});
+
+      glm::vec3 followed{player1->V().Begin().x(), player1->V().Begin().y(),
+                         player1->V().Begin().z()};
       view = glm::lookAt(followed + glm::vec3{-2, 2, 0}, followed,
                          glm::vec3{0, 1, 0});
     } else {  // Управление камерой.
-      if (input.backward_forward == 1) cameraPos += cameraSpeed * cameraFront;
-      if (input.backward_forward == -1) cameraPos -= cameraSpeed * cameraFront;
-      if (input.left_right == 1)
+      if (backward_forward > 0) cameraPos += cameraSpeed * cameraFront;
+      if (backward_forward < 0) cameraPos -= cameraSpeed * cameraFront;
+      if (left_right > 0)
         cameraPos +=
             glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-      if (input.left_right == -1)
+      if (left_right < 0)
         cameraPos -=
             glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
       view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);

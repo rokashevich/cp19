@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "constants.hpp"
-#include "point.hpp"
+#include "p.hpp"
 
 std::vector<float> ShapeGenerator::Cuboid(float width, float height,
                                           float depth) {
@@ -64,20 +64,20 @@ std::vector<float> ShapeGenerator::Icosphere() {
       const auto r = 1;
       const auto t = r * constants::golden_ratio;
 
-      AddVertex(Point(-r, t, 0));
-      AddVertex(Point(r, t, 0));
-      AddVertex(Point(-r, -t, 0));
-      AddVertex(Point(r, -t, 0));
+      AddVertex(P(-r, t, 0));
+      AddVertex(P(r, t, 0));
+      AddVertex(P(-r, -t, 0));
+      AddVertex(P(r, -t, 0));
 
-      AddVertex(Point(0, -r, t));
-      AddVertex(Point(0, r, t));
-      AddVertex(Point(0, -r, -t));
-      AddVertex(Point(0, r, -t));
+      AddVertex(P(0, -r, t));
+      AddVertex(P(0, r, t));
+      AddVertex(P(0, -r, -t));
+      AddVertex(P(0, r, -t));
 
-      AddVertex(Point(t, 0, -r));
-      AddVertex(Point(t, 0, r));
-      AddVertex(Point(-t, 0, -r));
-      AddVertex(Point(-t, 0, r));
+      AddVertex(P(t, 0, -r));
+      AddVertex(P(t, 0, r));
+      AddVertex(P(-t, 0, -r));
+      AddVertex(P(-t, 0, r));
 
       auto faces = std::vector<std::shared_ptr<TriangleIndices>>();
       faces.push_back(std::make_shared<TriangleIndices>(0, 11, 5));
@@ -127,17 +127,17 @@ std::vector<float> ShapeGenerator::Icosphere() {
         this->indices.push_back(tri->v2);
         this->indices.push_back(tri->v3);
 
-        buffer.push_back(vertices.at(tri->v1).x);
-        buffer.push_back(vertices.at(tri->v1).y);
-        buffer.push_back(vertices.at(tri->v1).z);
+        buffer.push_back(vertices.at(tri->v1).x());
+        buffer.push_back(vertices.at(tri->v1).y());
+        buffer.push_back(vertices.at(tri->v1).z());
 
-        buffer.push_back(vertices.at(tri->v2).x);
-        buffer.push_back(vertices.at(tri->v2).y);
-        buffer.push_back(vertices.at(tri->v2).z);
+        buffer.push_back(vertices.at(tri->v2).x());
+        buffer.push_back(vertices.at(tri->v2).y());
+        buffer.push_back(vertices.at(tri->v2).z());
 
-        buffer.push_back(vertices.at(tri->v3).x);
-        buffer.push_back(vertices.at(tri->v3).y);
-        buffer.push_back(vertices.at(tri->v3).z);
+        buffer.push_back(vertices.at(tri->v3).x());
+        buffer.push_back(vertices.at(tri->v3).y());
+        buffer.push_back(vertices.at(tri->v3).z());
       }
       std::cout << "faces count = " << faces.size() << std::endl;
       std::cout << buffer.size() << std::endl;
@@ -146,11 +146,12 @@ std::vector<float> ShapeGenerator::Icosphere() {
     }
 
    private:
-    int AddVertex(Point position) {
-      double length = sqrt(position.x * position.x + position.y * position.y +
-                           position.z * position.z);
-      vertices.push_back(
-          Point(position.x / length, position.y / length, position.z / length));
+    int AddVertex(P position) {
+      double length =
+          sqrt(position.x() * position.x() + position.y() * position.y() +
+               position.z() * position.z());
+      vertices.push_back(P(position.x() / length, position.y() / length,
+                           position.z() / length));
 
       return index++;
     }
@@ -166,11 +167,11 @@ std::vector<float> ShapeGenerator::Icosphere() {
         return foundValueIterator->second;
       }
 
-      Point point1 = vertices[p1];
-      Point point2 = vertices[p2];
-      Point middle =
-          Point((point1.x + point2.x) / 2.0, (point1.y + point2.y) / 2.0,
-                (point1.z + point2.z) / 2.0);
+      P point1 = vertices[p1];
+      P point2 = vertices[p2];
+      P middle =
+          P((point1.x() + point2.x()) / 2.0, (point1.y() + point2.y()) / 2.0,
+            (point1.z() + point2.z()) / 2.0);
 
       int i = this->AddVertex(middle);
 
@@ -179,7 +180,7 @@ std::vector<float> ShapeGenerator::Icosphere() {
     }
 
    public:
-    std::vector<Point> vertices;
+    std::vector<P> vertices;
     std::vector<unsigned int> indices;
 
    private:

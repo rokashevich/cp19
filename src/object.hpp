@@ -7,7 +7,8 @@
 #include <iostream>
 #include <vector>
 
-#include "point.hpp"
+#include "p.hpp"
+#include "tribool.hpp"
 #include "vec.hpp"
 
 struct ShapeInfo {
@@ -51,11 +52,13 @@ class Object {
   // Для обновления параметров для шейдера.
   virtual void Step() {}
 
+  void Move(tribool backward_forward, tribool left_right, tribool down_up);
+
  public:
   // TODO OLD
-  P orientation_;  // В какую сторону смотрит объект.
-  P motion_external_;  // Запрошенное движение извне (кнопками, Ai).
-  P motion_internal_;  // Фактическое движение (блокируемое анимацией).
+  // P orientation_;  // В какую сторону смотрит объект.
+  // P motion_external_;  // Запрошенное движение извне (кнопками, Ai).
+  // P motion_internal_;  // Фактическое движение (блокируемое анимацией).
   int timer_inertia_;  // Таймер отработки анимации.
   Vec v_;
   int weight_;  // >0 обычный объект, =0 стена, <0 артефактphy
@@ -65,10 +68,10 @@ class Object {
   // // Object(Vec v = Vec(), float weight = 0, glm::vec3 angles = {0, 0, 0},
   //        glm::vec3 params = {0, 0, 0});
 
-  P& GetOrientation() { return orientation_; }
-  void SetOrientation(P p) { orientation_ = p; }
+  // P& GetOrientation() { return orientation_; }
+  // void SetOrientation(P p) { orientation_ = p; }
 
-  void SetMotion(P& p) { motion_external_ = p; }
+  // void SetMotion(P& p) { motion_external_ = p; }
   Vec& V() { return v_; }
 
   // Возвращает координты вершин базовой формы: параллелепипеда, куба, шара, и

@@ -3,7 +3,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "point.hpp"
+#include "p.hpp"
 
 class Vec {
   P begin_;
@@ -29,21 +29,23 @@ class Vec {
   }
 
   friend Vec operator/(Vec lhs, const int factor) {
-    lhs.end_.x = lhs.begin_.x + std::fabs(lhs.end_.x - lhs.begin_.x) / factor;
-    lhs.end_.y = lhs.begin_.y + std::fabs(lhs.end_.y - lhs.begin_.y) / factor;
+    lhs.end_.x(lhs.begin_.x() +
+               std::fabs(lhs.end_.x() - lhs.begin_.x()) / factor);
+    lhs.end_.y(lhs.begin_.y() +
+               std::fabs(lhs.end_.y() - lhs.begin_.y()) / factor);
     return lhs;
   }
 
   friend Vec operator>>(Vec lhs, const float fraction) {
-    const float dx = (lhs.End().x - lhs.Begin().x) * fraction;
-    const float dy = (lhs.End().y - lhs.Begin().y) * fraction;
-    const float dz = (lhs.End().z - lhs.Begin().z) * fraction;
-    lhs.Begin().x += dx;
-    lhs.Begin().y += dy;
-    lhs.Begin().z += dz;
-    lhs.End().x += dx;
-    lhs.End().y += dy;
-    lhs.End().z += dz;
+    const float dx = (lhs.End().x() - lhs.Begin().x()) * fraction;
+    const float dy = (lhs.End().y() - lhs.Begin().y()) * fraction;
+    const float dz = (lhs.End().z() - lhs.Begin().z()) * fraction;
+    lhs.Begin().x(lhs.Begin().x() + dx);
+    lhs.Begin().y(lhs.Begin().y() + dy);
+    lhs.Begin().z(lhs.Begin().z() + dz);
+    lhs.End().x(lhs.Begin().x() + dx);
+    lhs.End().y(lhs.Begin().y() + dy);
+    lhs.End().z(lhs.Begin().z() + dz);
     return lhs;
   }
 

@@ -38,7 +38,7 @@ void Physics::Step() {
   for (auto& g : groups_) {
     Group& group = *g.second;
     for (auto& object : group.objects) {
-      object->Step();
+      // object->Step();
     }
     //   for (auto const& object : group_container->objects) {
     //     object->Step();
@@ -58,8 +58,7 @@ void Physics::Step() {
     auto angles_offset{0};
     auto params_offset{0};
     for (const auto& o : g->objects) {
-      // todo физику пока отменяем
-      // const Point b = object->V().Begin();
+      // const P b = object->V().Begin();
       //       object->V() = object->V() >> 0.1;
       auto coords_begin{g->coords_.begin() + coords_offset};
       auto angles_begin{g->angles_.begin() + angles_offset};
@@ -70,6 +69,10 @@ void Physics::Step() {
       coords_offset += o->Coords().size();
       angles_offset += o->Angles().size();
       params_offset += o->Params().size();
+
+      // glm::vec3 m = o->ImpulsePolite();
+      // if (m.x || m.y || m.z)
+      // std::cout << "move:" << m.x << " " << m.y << " " << m.z << '\n';
 
       // g->coords_.at(i + 0) = o->Coords().at(0);
       // g->coords_.at(i + 1) = o->Coords().at(1);

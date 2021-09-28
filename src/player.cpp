@@ -23,6 +23,13 @@ Player::Player(glm::vec3 coords, glm::vec3 angles, int head, int body, int arms,
 }
 int Player::NumInstances() { return Player::num_instances_; }
 void Player::Step() {  // Тестовая анимация.
+
+  static bool animation_started = false;
+  if (!animation_started) {
+    animation_.StartSequence(Animation::Sequence::kWalk);
+    animation_started = true;
+  }
+
   auto k = animation_.Next();
   coords_.at(0) = k + 1;
   coords_.at(3) = k + 2;
