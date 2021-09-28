@@ -3,7 +3,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "point.hpp"
+#include "p.hpp"
 
 class Vec {
   P begin_;

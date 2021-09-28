@@ -1,11 +1,9 @@
 #pragma once
-
+#include <ostream>
 class tribool {
   int state_;  // 1, 0, -1
  public:
-  tribool() : state_{} {}
-  tribool(int i) : state_{i > 0 ? 1 : (i < 0 ? -1 : 0)} {}
-
+  tribool(int i = 0) : state_{i > 0 ? 1 : (i < 0 ? -1 : 0)} {}
   friend int cmp(const tribool& lhs, const tribool& rhs) {
     return lhs.state_ == rhs.state_ ? 0 : (lhs.state_ > rhs.state_ ? 1 : -1);
   }
@@ -15,7 +13,6 @@ class tribool {
   bool operator>(const tribool& rhs) { return cmp(*this, rhs) > 0; }
   bool operator<=(const tribool& rhs) { return cmp(*this, rhs) <= 0; }
   bool operator>=(const tribool& rhs) { return cmp(*this, rhs) >= 0; }
-
   tribool& operator++() {
     state_ = state_ < 0 ? 0 : 1;
     return *this;
@@ -34,9 +31,12 @@ class tribool {
     --*this;
     return t;
   }
-
   tribool& operator+=(tribool& rhs) {
     this->state_ += rhs.state_;
     return *this;
+  }
+  friend std::ostream& operator<<(std::ostream& lhs, tribool& rhs) {
+    lhs << ' ' << rhs.state_ << ' ';
+    return lhs;
   }
 };
