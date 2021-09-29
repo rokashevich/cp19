@@ -52,7 +52,7 @@ void Player::Step() {  // Тестовая анимация.
 // }
 
 // TODO OLD
-// Player::Player(Vec v, int legs, int body, int head, int arms)
+// Player::Player(V v, int legs, int body, int head, int arms)
 //     : Object(v, legs + body + head + arms),
 //       legs_(legs),
 //       body_(body),

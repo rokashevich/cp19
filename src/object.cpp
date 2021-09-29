@@ -24,7 +24,7 @@ void Object::Move(tribool backward_forward, tribool left_right,
 }
 
 // TODO OLD
-// Object::Object(Vec v, float weight, glm::vec3 angles, glm::vec3 params)
+// Object::Object(V v, float weight, glm::vec3 angles, glm::vec3 params)
 //     : v_(v), weight_(weight) {
 //   offsets_old_.resize(1);
 //   offsets_old_.at(0) = {0, 0, 0};

@@ -112,19 +112,19 @@ int main(int, char **) {  // С пустым main() падает на андро
   //   for (float j = 0; j < 5; ++j) {
   //     for (float k = 0; k < 5; ++k) {
   //       Object *o =
-  //           new Missile(Vec(0 + i, 20 + j, 5 + k, 0 + i, 19 + j, 5 + k),
+  //           new Missile(V(0 + i, 20 + j, 5 + k, 0 + i, 19 + j, 5 + k),
   //           0.5);
   //       physics.AddObject(missile, o);
   //     }
   //   }
   // }
-  // Object *o = new Missile(Vec(0, 20, 5, 0, 19, 5), 0.5);l
+  // Object *o = new Missile(V(0, 20, 5, 0, 19, 5), 0.5);l
   // physics.AddObject(missile, o);
 
   // Тестовые игроки.
-  //  Object* o = new ObjectMissile(Vec(0, 20, 5, 0, 21, 5), 10);
+  //  Object* o = new ObjectMissile(V(0, 20, 5, 0, 21, 5), 10);
   //  physics.AddObject(missile, o);
-  // Object* player2 = new ObjectPlayer(Vec(-5, 1, 1, 0, 1, -1));
+  // Object* player2 = new ObjectPlayer(V(-5, 1, 1, 0, 1, -1));
 
   auto const coords = glm::vec3{0, 0, 0};
   auto const angles = glm::vec3{0, 0, 0};
@@ -184,8 +184,8 @@ int main(int, char **) {  // С пустым main() падает на андро
 
       controlled->Move(backward_forward, left_right, tribool{up});
 
-      glm::vec3 followed{player1->V().Begin().x(), player1->V().Begin().y(),
-                         player1->V().Begin().z()};
+      glm::vec3 followed{player1->v().Begin().x(), player1->v().Begin().y(),
+                         player1->v().Begin().z()};
       view = glm::lookAt(followed + glm::vec3{-2, 2, 0}, followed,
                          glm::vec3{0, 1, 0});
     } else {  // Управление камерой.

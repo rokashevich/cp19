@@ -17,7 +17,7 @@ Wall::Wall(glm::vec3 coords, glm::vec3 angles, glm::vec4 params)
 Wall::~Wall() {}
 
 // TODO OLD
-// Wall::Wall(Vec v, glm::vec3 angles, glm::vec3 params)
+// Wall::Wall(V v, glm::vec3 angles, glm::vec3 params)
 //     : Object(v, 0, angles, params) {}
 
 const std::vector<float>* Wall::ShapeVerticesBuffer() {

@@ -21,7 +21,7 @@ class Player : public Object, Shape<Player> {
   int NumInstances() final;
   void Step() final;
   // TODO OLD
-  //  Player(Vec v = Vec(), int legs(9), int body = 9, int head = 9, int arms =
+  //  Player(V v = V(), int legs(9), int body = 9, int head = 9, int arms =
   // 9);
 
   const std::vector<float>* ShapeVerticesBuffer() final;

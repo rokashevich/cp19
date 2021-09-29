@@ -60,19 +60,19 @@ class Object {
   // P motion_external_;  // Запрошенное движение извне (кнопками, Ai).
   // P motion_internal_;  // Фактическое движение (блокируемое анимацией).
   int timer_inertia_;  // Таймер отработки анимации.
-  Vec v_;
+  V v_;
   int weight_;  // >0 обычный объект, =0 стена, <0 артефактphy
   // std::vector<std::array<float, 3>> offsets_old_;
   // std::vector<std::array<float, 3>> angles_old_;
   // std::vector<std::array<float, 3>> params_old_;
-  // // Object(Vec v = Vec(), float weight = 0, glm::vec3 angles = {0, 0, 0},
+  // // Object(V v = V(), float weight = 0, glm::vec3 angles = {0, 0, 0},
   //        glm::vec3 params = {0, 0, 0});
 
   // P& GetOrientation() { return orientation_; }
   // void SetOrientation(P p) { orientation_ = p; }
 
   // void SetMotion(P& p) { motion_external_ = p; }
-  Vec& V() { return v_; }
+  V& v() { return v_; }
 
   // Возвращает координты вершин базовой формы: параллелепипеда, куба, шара, и
   // т.д. в виде: x1,y1,z1,x2,y2,z2,..., где каждая тройка координат

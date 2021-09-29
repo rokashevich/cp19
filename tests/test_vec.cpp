@@ -2,9 +2,9 @@
 
 #include "vec.hpp"
 
-TEST(Vec, Equation) {
-  EXPECT_EQ(Vec(1, 2, 3, 4, 5, 6), Vec(1, 2, 3, 4, 5, 6));
-  EXPECT_EQ(Vec(1, 2, 3), Vec(1, 2, 3));
+TEST(V, Equation) {
+  EXPECT_EQ(V(1, 2, 3, 4, 5, 6), V(1, 2, 3, 4, 5, 6));
+  EXPECT_EQ(V(1, 2, 3), V(1, 2, 3));
 
   //  Vec A{{0, 0, 0}, {1, 0, 0}};
   //  Vec B{{0, 0, 0}, {1, 0, 0}};
@@ -22,14 +22,13 @@ TEST(Vec, Equation) {
 
 // https://onlinemschool.com/math/assistance/vector/calc/
 
-TEST(Vec, Plus) {
-  EXPECT_EQ(Vec(1, 1, 1) + Vec(1, 1, 1), Vec(2, 2, 2));
-  EXPECT_EQ(Vec(1, 1, 1, 2, 2, 2) + Vec(2, 2, 2, 3, 3, 3),
-            Vec(1, 1, 1, 3, 3, 3));
-  EXPECT_EQ(Vec(1, 1, 1, 3, 3, 3) + Vec(0, -1, 0), Vec(1, 1, 1, 3, 2, 3));
+TEST(V, Plus) {
+  EXPECT_EQ(V(1, 1, 1) + V(1, 1, 1), V(2, 2, 2));
+  EXPECT_EQ(V(1, 1, 1, 2, 2, 2) + V(2, 2, 2, 3, 3, 3), V(1, 1, 1, 3, 3, 3));
+  EXPECT_EQ(V(1, 1, 1, 3, 3, 3) + V(0, -1, 0), V(1, 1, 1, 3, 2, 3));
 }
 
-TEST(Vec, Shift) {
-  EXPECT_EQ(Vec(1, 1, 1, 3, 3, 3) >> 0.5, Vec(2, 2, 2, 4, 4, 4));
-  EXPECT_EQ(Vec(3, 3, 3, 1, 1, 1) >> 0.5, Vec(2, 2, 2, 0, 0, 0));
+TEST(V, Shift) {
+  EXPECT_EQ(V(1, 1, 1, 3, 3, 3) >> 0.5, V(2, 2, 2, 4, 4, 4));
+  EXPECT_EQ(V(3, 3, 3, 1, 1, 1) >> 0.5, V(2, 2, 2, 0, 0, 0));
 }

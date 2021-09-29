@@ -35,25 +35,27 @@ void Physics::Step() {
   Timer::Step(Physics::frame_ms_);
 
   // Первая итерация по всем объектам - смещаем на запрашиваему величину.
-  for (auto& g : groups_) {
-    Group& group = *g.second;
-    for (auto& object : group.objects) {
-      // object->Step();
-    }
-    //   for (auto const& object : group_container->objects) {
-    //     object->Step();
-    //     // todo физику пока отменяем
-    //     // const Vec g{0, 0, 0, 0, -0.02, 0};  // ускор свобод падения
-    //     // if (object->Weight() > 0) {  // динамический объект
-    //     //  object->V() = object->V() + g;
-    //     //}
-    //   }
-  }
-  // Вторая итерация - разрешаем коллизии.
+  // for (auto& g : groups_) {
+  // Group& group = *g.second;
+  // for (auto& object : group.objects) {
+  // object->Step();
+  // }
+  //   for (auto const& object : group_container->objects) {
+  //     object->Step();
+  //     // todo физику пока отменяем
+  //     // const V g{0, 0, 0, 0, -0.02, 0};  // ускор свобод падения
+  //     // if (object->Weight() > 0) {  // динамический объект
+  //     //  object->V() = object->V() + g;
+  //     //}
+  //   }
+  // }
+
   for (const auto& key_group_pair : groups_) {
     Group* g = key_group_pair.second;
     // int i = 0;
 
+    // Копируем параметры однотипных объектов в массивы для инстансированного
+    // рендеринга.
     auto coords_offset{0};
     auto angles_offset{0};
     auto params_offset{0};

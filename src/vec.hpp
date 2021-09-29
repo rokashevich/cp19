@@ -5,30 +5,30 @@
 
 #include "p.hpp"
 
-class Vec {
+class V {
   P begin_;
   P end_;
 
  public:
-  Vec() : begin_(0, 0, 0), end_(begin_) {}
-  Vec(float x, float y, float z) : begin_(0, 0, 0), end_(x, y, z) {}
-  Vec(float x, float y, float z, float p, float q, float m)
+  V() : begin_(0, 0, 0), end_(begin_) {}
+  V(float x, float y, float z) : begin_(0, 0, 0), end_(x, y, z) {}
+  V(float x, float y, float z, float p, float q, float m)
       : begin_(x, y, z), end_(p, q, m) {}
-  Vec(P begin, P end) : begin_(begin), end_(end) {}
+  V(P begin, P end) : begin_(begin), end_(end) {}
   P& Begin() { return begin_; }
   P& End() { return end_; }
 
-  friend bool operator==(const Vec& lhs, const Vec& rhs) {
+  friend bool operator==(const V& lhs, const V& rhs) {
     return lhs.begin_ == rhs.begin_ && lhs.end_ == rhs.end_;
   }
 
-  friend Vec operator+(Vec lhs, const Vec& rhs) {
+  friend V operator+(V lhs, const V& rhs) {
     // Под действием rhs изменится только lhs.end_.
     lhs.end_ = lhs.end_ + (rhs.end_ - rhs.begin_);
     return lhs;
   }
 
-  friend Vec operator/(Vec lhs, const int factor) {
+  friend V operator/(V lhs, const int factor) {
     lhs.end_.x(lhs.begin_.x() +
                std::fabs(lhs.end_.x() - lhs.begin_.x()) / factor);
     lhs.end_.y(lhs.begin_.y() +
@@ -36,7 +36,7 @@ class Vec {
     return lhs;
   }
 
-  friend Vec operator>>(Vec lhs, const float fraction) {
+  friend V operator>>(V lhs, const float fraction) {
     const float dx = (lhs.End().x() - lhs.Begin().x()) * fraction;
     const float dy = (lhs.End().y() - lhs.Begin().y()) * fraction;
     const float dz = (lhs.End().z() - lhs.Begin().z()) * fraction;

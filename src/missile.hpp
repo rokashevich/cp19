@@ -13,7 +13,7 @@ class Missile : public Object, Shape<Missile> {
   const float diameter_;
 
  public:
-  // Missile(Vec v = Vec(), float diameter = 1);
+  // Missile(V v = V(), float diameter = 1);
   ~Missile();
   void Step() final {
     // Object::offsets_.at(0).at(3) = diameter_ / 2;
