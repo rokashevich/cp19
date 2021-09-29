@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "p.hpp"
+#include "t.hpp"
 
 TEST(ClassPoint, TestDistance) {
   P A{4, 0, 0};

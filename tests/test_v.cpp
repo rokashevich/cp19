@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "vec.hpp"
+#include "t.hpp"
 
 TEST(V, Equation) {
   EXPECT_EQ(V(1, 2, 3, 4, 5, 6), V(1, 2, 3, 4, 5, 6));

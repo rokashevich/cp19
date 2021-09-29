@@ -3,7 +3,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-#include "tribool.hpp"
+#include "t.hpp"
 
 Object::Object(glm::vec3 coords, glm::vec3 angles, glm::vec4 params) {
   coords_.push_back(coords.x);

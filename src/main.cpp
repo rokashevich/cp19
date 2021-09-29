@@ -34,7 +34,7 @@
 // #include "point.hpp"
 #include "renderer_sdl.hpp"
 #include "shader.hpp"
-#include "tribool.hpp"
+#include "t.hpp"
 #include "wall.hpp"
 #include "world.hpp"
 

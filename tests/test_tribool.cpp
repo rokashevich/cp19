@@ -2,7 +2,7 @@
 
 #include <limits>
 
-#include "tribool.hpp"
+#include "t.hpp"
 
 class TriboolTest : public ::testing::Test {
  protected:

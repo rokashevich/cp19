@@ -7,9 +7,7 @@
 #include <iostream>
 #include <vector>
 
-#include "p.hpp"
-#include "tribool.hpp"
-#include "vec.hpp"
+#include "t.hpp"
 
 struct ShapeInfo {
   std::vector<float> vertices_buffer;
