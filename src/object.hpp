@@ -27,6 +27,8 @@ class Shape {
 
 // Базовый класс физического объекта игрового мира.
 class Object {
+  unsigned int id_;
+
  protected:
   static constexpr int num_instances_ = 1;
   std::vector<float> coords_;
@@ -49,8 +51,8 @@ class Object {
   virtual int NumInstances() { return Object::num_instances_; }
   // Для обновления параметров для шейдера.
   virtual void Step() {}
-
   void Move(tribool backward_forward, tribool left_right, tribool down_up);
+  unsigned int id() { return id_; }
 
  public:
   // TODO OLD

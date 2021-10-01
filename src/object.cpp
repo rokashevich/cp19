@@ -6,6 +6,9 @@
 #include "t.hpp"
 
 Object::Object(glm::vec3 coords, glm::vec3 angles, glm::vec4 params) {
+  static unsigned int max_id{0};
+  id_ = ++max_id;
+
   coords_.push_back(coords.x);
   coords_.push_back(coords.y);
   coords_.push_back(coords.z);
