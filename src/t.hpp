@@ -1,8 +1,14 @@
 #pragma once
+
+// Всякие классы-типы, которые пока не устоканались в логике игры и постоянно
+// меняются, поэтому пока в этом общем файле. По мере устаканивания - вынести
+// в отдельный файл.
+
 #include <cmath>
 #include <iostream>
 #include <ostream>
 
+// Трёхмерная точка.
 class P {
   float x_;
   float y_;
@@ -52,6 +58,7 @@ class P {
   }
 };
 
+// Вектор-отрезок из одной точки в другую.
 class V {
   P begin_;
   P end_;
@@ -99,8 +106,10 @@ class V {
  private:
 };
 
+// Трёхсостоянный бул: 1, 0, -1
 class tribool {
-  int state_;  // 1, 0, -1
+  int state_;
+
  public:
   tribool(int i = 0) : state_{i > 0 ? 1 : (i < 0 ? -1 : 0)} {}
   friend int cmp(const tribool& lhs, const tribool& rhs) {
