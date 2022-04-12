@@ -57,8 +57,10 @@ struct Cfg {
 
 int main(int, char **) {  // С пустым main() падает на андроиде!
   Interplay::SingletonClient::Instance().SendMessage("I'm from main!\n");
-  // Каждому типу объектов - уникальный key.
-  enum { wall, player /*, missile*/ };
+
+  // Все возможные типы объектов:
+  enum { wall, player, weapon, missile, collectable, graffity };
+
   std::unordered_map<int, Cfg> cfgs{
       {wall, {Shape<Wall>::StaticInfo(), false, vertex_wall, pixel_wall}},
       {player,
