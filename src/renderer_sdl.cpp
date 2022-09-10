@@ -6,7 +6,7 @@
 
 RendererSdl::RendererSdl() {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    std::cout << "Could not initialize SDL" << std::endl;
+    std::cout << "SDL_Init: " << SDL_GetError() << std::endl;
     abort();
   }
   window_ = SDL_CreateWindow(nullptr, 0, 0, constants::screen_width,
