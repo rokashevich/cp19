@@ -1,6 +1,7 @@
 {
-    "cmake.sourceDirectory": "${workspaceFolder}/desktop",
+    "cmake.sourceDirectory": "/home/r/cp19",
     "files.associations": {
+        "*.conf": "plaintext",
         "any": "cpp",
         "array": "cpp",
         "atomic": "cpp",
@@ -70,6 +71,8 @@
         "future": "cpp",
         "valarray": "cpp",
         "*.ipp": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "ranges": "cpp",
+        "bitset": "cpp"
     }
 }

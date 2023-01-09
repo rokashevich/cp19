@@ -5,13 +5,13 @@
 
 #include "t.hpp"
 
-Object::Object(glm::vec3 coords, glm::vec3 angles, glm::vec4 params) {
+Object::Object(glm::vec3 c, glm::vec3 angles, glm::vec4 params) {
   static unsigned int max_id{0};
   id_ = ++max_id;
 
-  coords_.push_back(coords.x);
-  coords_.push_back(coords.y);
-  coords_.push_back(coords.z);
+  coords.push_back(c.x);
+  coords.push_back(c.y);
+  coords.push_back(c.z);
   angles_.push_back(angles.x);
   angles_.push_back(angles.y);
   angles_.push_back(angles.z);
@@ -19,11 +19,6 @@ Object::Object(glm::vec3 coords, glm::vec3 angles, glm::vec4 params) {
   params_.push_back(params.y);
   params_.push_back(params.z);
   params_.push_back(params.w);
-}
-
-void Object::Move(tribool backward_forward, tribool left_right,
-                  tribool down_up) {
-  std::cout << backward_forward << left_right << down_up << std::endl;
 }
 
 // TODO OLD

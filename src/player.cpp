@@ -9,36 +9,36 @@
 #include "vertex_player.hpp"
 template <>
 const ShapeInfo Shape<Player>::objects_static_info_{
-    ShapeGenerator::Cuboid(1, 1, 1), vertex_player, pixel_player};
+    ShapeGenerator::Cuboid(2.9, 2.9, 2.9), vertex_player, pixel_player};
 
 const std::vector<float> Player::vertices_buffer_ =
     ShapeGenerator::Cuboid(1, 1, 1);
 
-Player::Player(glm::vec3 coords, glm::vec3 angles, int head, int body, int arms,
+Player::Player(glm::vec3 c, glm::vec3 angles, int head, int body, int arms,
                int legs)
-    : Object(coords, angles), animation_{head, body, arms, legs} {
-  coords_.resize(Object::num_coords * Player::num_instances_);
-  angles_.resize(Object::num_angles * Player::num_instances_);
-  params_.resize(Object::num_params * Player::num_instances_);
+    : Object(c, angles), animation_{head, body, arms, legs} {
+  // coords.resize(Object::num_coords * Player::num_instances_);
+  // angles_.resize(Object::num_angles * Player::num_instances_);
+  // params_.resize(Object::num_params * Player::num_instances_);
 }
 int Player::NumInstances() { return Player::num_instances_; }
 void Player::Step() {  // Тестовая анимация.
 
-  static bool animation_started = false;
-  if (!animation_started) {
-    animation_.StartSequence(Animation::Sequence::kWalk);
-    animation_started = true;
-  }
+  // static bool animation_started = false;
+  // if (!animation_started) {
+  //   animation_.StartSequence(Animation::Sequence::kWalk);
+  //   animation_started = true;
+  // }
 
-  auto k = animation_.Next();
-  coords_.at(0) = k + 1;
-  coords_.at(3) = k + 2;
-  coords_.at(6) = k + 3;
-  coords_.at(9) = k + 4;
-  coords_.at(12) = k + 5;
-  coords_.at(15) = k + 6;
-  coords_.at(18) = k + 7;
-  coords_.at(21) = k + 8;
+  // auto k = animation_.Next();
+  // coords_.at(0) = k + 1;
+  // coords_.at(3) = k + 2;
+  // coords_.at(6) = k + 3;
+  // coords_.at(9) = k + 4;
+  // coords_.at(12) = k + 5;
+  // coords_.at(15) = k + 6;
+  // coords_.at(18) = k + 7;
+  // coords_.at(21) = k + 8;
 }
 
 //{

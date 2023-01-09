@@ -31,18 +31,21 @@ class Object {
 
  protected:
   static constexpr int num_instances_ = 1;
-  std::vector<float> coords_;
   std::vector<float> angles_;
   std::vector<float> params_;
 
  public:
+  std::vector<float> coords;
+  tribool backward_forward;
+  tribool left_right;
+  tribool up_down;
   static constexpr int num_coords = 3;
   static constexpr int num_angles = 3;
   static constexpr int num_params = 4;
-  Object(glm::vec3 coords = {0, 0, 0}, glm::vec3 angles = {0, 0, 0},
+  Object(glm::vec3 coords = {4, 4, 4}, glm::vec3 angles = {0, 0, 0},
          glm::vec4 params = {0, 0, 0, 0});
   virtual ~Object() {}
-  const auto& Coords() { return coords_; }
+  const auto& Coords() { return coords; }
   const auto& Angles() { return angles_; }
   const auto& Params() { return params_; }
   // Из скольки однотипных фигур составлен объект. Например в стене или в
@@ -51,7 +54,10 @@ class Object {
   virtual int NumInstances() { return Object::num_instances_; }
   // Для обновления параметров для шейдера.
   virtual void Step() {}
-  void Move(tribool backward_forward, tribool left_right, tribool down_up);
+
+  // Objects speed: 0 = object cant move, 100 = one cell/second
+  virtual int SpeedCoefficient() { return 1; }
+
   unsigned int id() { return id_; }
 
  public:

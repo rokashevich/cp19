@@ -106,7 +106,7 @@ class V {
  private:
 };
 
-// Трёхсостоянный бул: 1, 0, -1
+// Three state bool: 1, 0, -1.
 class tribool {
   int state_;
 
@@ -117,8 +117,8 @@ class tribool {
   }
   bool operator==(const tribool& rhs) { return cmp(*this, rhs) == 0; }
   bool operator!=(const tribool& rhs) { return cmp(*this, rhs) != 0; }
-  bool operator<(const tribool& rhs) { return cmp(*this, rhs) < 0; }
-  bool operator>(const tribool& rhs) { return cmp(*this, rhs) > 0; }
+  // bool operator<(const tribool& rhs) { return cmp(*this, rhs) < 0; }
+  // bool operator>(const tribool& rhs) { return cmp(*this, rhs) > 0; }
   bool operator<=(const tribool& rhs) { return cmp(*this, rhs) <= 0; }
   bool operator>=(const tribool& rhs) { return cmp(*this, rhs) >= 0; }
   tribool& operator++() {
@@ -147,4 +147,5 @@ class tribool {
     lhs << ' ' << rhs.state_ << ' ';
     return lhs;
   }
+  operator int() const { return state_ ? (state_ > 0 ? 1 : -1) : 0; }
 };

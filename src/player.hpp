@@ -10,7 +10,7 @@
 class Player : public Object, Shape<Player> {
   // Человечек состоит из 8 фигур: голова, туловище, два плеча, два предплечья,
   // два бедра и две голени.
-  static constexpr int num_instances_ = 8;
+  // static constexpr int num_instances_ = 1;  // 8;
   static const std::vector<float> vertices_buffer_;
   Animation animation_;
 

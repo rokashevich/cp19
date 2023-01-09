@@ -4,11 +4,10 @@
 
 using timestamp = std::chrono::time_point<std::chrono::steady_clock,
                                           std::chrono::milliseconds>;
-class Timer
-{
+class Timer {
  public:
   // Зафиксировать отметку о прохождении круга (в цикле рендера, например).
-  static void Step(int target_ticks);
+  static void SleepAlign(int target_ticks);
 
  private:
   // Вспомогательная переменная для хранения отметки времени с предыдущего шага.

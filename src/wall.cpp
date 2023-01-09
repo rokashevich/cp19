@@ -12,8 +12,7 @@ const ShapeInfo Shape<Wall>::objects_static_info_{
 const std::vector<float> Wall::vertices_buffer_ =
     ShapeGenerator::Cuboid(2.9, 2.9, 0.05);
 
-Wall::Wall(glm::vec3 coords, glm::vec3 angles, glm::vec4 params)
-    : Object(coords, angles, params) {}
+Wall::Wall(glm::vec3 coords, glm::vec3 angles) : Object(coords, angles) {}
 Wall::~Wall() {}
 
 // TODO OLD

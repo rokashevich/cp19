@@ -12,7 +12,7 @@ timestamp Timer::previous_timestamp_ =
 long Timer::accumulated_ticks_{0};
 int Timer::accumulated_count_{0};
 
-void Timer::Step(int target_ticks) {
+void Timer::SleepAlign(int target_ticks) {
   const auto delta_ticks =
       std::chrono::duration(
           std::chrono::time_point_cast<std::chrono::milliseconds>(

@@ -73,7 +73,7 @@ void RendererSdl::RenderFrame() {
     if (key == 1) {
       // std::cout << "PLAYER" << std::endl;
       // for (int i = 0; i <= r->coords_size_ / sizeof(float); ++i)
-      //   std::cout << r->coords_data_[i] << " ";
+      //  std::cout << r->coords_data_[i] << " ";
       // std::cout << std::endl;
       // std::cout << r->num_instances_ << std::endl;
     }
