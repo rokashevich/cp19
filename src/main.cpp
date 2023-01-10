@@ -1,6 +1,6 @@
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
-#include <bits/stdint-intn.h>
+//#include <bits/stdint-intn.h>
 #include <time.h>
 
 #include <array>
@@ -24,7 +24,7 @@
 #include "vertex_wall.hpp"
 
 // Заголовочные файлы проекта
-#include "../net/interplay.hpp"
+//#include "../net/interplay.hpp"
 #include "constants.hpp"
 #include "generator_shape.hpp"
 #include "missile.hpp"
@@ -37,15 +37,6 @@
 #include "t.hpp"
 #include "wall.hpp"
 #include "world.hpp"
-
-// Camera initial setup.
-static glm::vec3 cameraPos =
-    glm::vec3(0.0f, 0.0f, .0f);  // отладка: позиция примерно сверху лабиринта
-static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-const float cameraSpeed = 0.2f;
-static float yaw = 0.0f;
-static float pitch = 0.0f;
 
 int main(int, char **) {
   // Possible game bricks:
@@ -119,13 +110,12 @@ int main(int, char **) {
     i += 3;
     glm::vec3 angles = {a, b, c};
     glm::vec4 params = {width, height, health, 0.0f};
-    std::cout << "xyx:" << x << " " << y << " " << z << " " << std::endl;
     Object *o = new Wall(glm::vec3{x, y, z}, angles);
     physics.AddObject(wall, o);
   }
 
   // Generate a player in the position 0,0,0 and put him into physics engine:
-  auto const coords = glm::vec3{0, 1, 0};
+  auto const coords = glm::vec3{-3, -3, 5};
   auto const angles = glm::vec3{0, 0, 0};
   auto const head{1};
   auto const body{1};
@@ -144,6 +134,15 @@ int main(int, char **) {
   //  [3] renderer_draws_everything
   // }
   //
+
+  // Camera initial setup.
+  static glm::vec3 cameraPos =
+      glm::vec3(0.0f, 0.0f, .0f);  // отладка: позиция примерно сверху лабиринта
+  static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+  static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+  const float cameraSpeed = 0.2f;
+  static float yaw = 0.0f;
+  static float pitch = 0.0f;
 
   Object *controlled_object = player1;  // or nullptr for none
   Object *viewed_object = player1;      // or nullptr for freeflight

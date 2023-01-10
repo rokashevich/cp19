@@ -73,6 +73,12 @@
         "*.ipp": "cpp",
         "complex": "cpp",
         "ranges": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "csignal": "cpp",
+        "strstream": "cpp",
+        "codecvt": "cpp",
+        "coroutine": "cpp",
+        "source_location": "cpp",
+        "cfenv": "cpp"
     }
 }

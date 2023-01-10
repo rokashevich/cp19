@@ -11,6 +11,9 @@ RendererSdl::RendererSdl() {
   }
   window_ = SDL_CreateWindow(nullptr, 0, 0, constants::screen_width,
                              constants::screen_height, SDL_WINDOW_OPENGL);
+  // window_ = SDL_CreateWindow("My Game", SDL_WINDOWPOS_UNDEFINED,
+  //                            SDL_WINDOWPOS_UNDEFINED, 0, 0,
+  //                            SDL_WINDOW_FULLSCREEN_DESKTOP);
   if (!window_) {
     std::cout << "Could not initialize Window" << std::endl;
     abort();
