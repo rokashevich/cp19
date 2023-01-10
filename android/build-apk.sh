@@ -9,7 +9,7 @@ PATH="$ANDROID/ndk-bundle/simpleperf/bin:$PATH" # for 'android'
 # openjdk version "1.8.0_242" из Ubuntu
 PATH="$ANDROID/platform-tools:$ANDROID/tools:$PATH" # for 'adb'
 export ANDROID_HOME="$ANDROID"          # for gradle
-export ANDROID_NDK_HOME="$ANDROID/android-ndk-r21e" # for gradle
+export ANDROID_NDK_HOME="$ANDROID/android-ndk-r25b" #1e" # for gradle
 
 PROJECT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd )"
 rm -rf $PROJECT_ROOT/SDL/build/github.rokashevich.cp19
