@@ -25,8 +25,8 @@ class Renderable {
 
   unsigned int vao;
   Renderable(const std::vector<float>* buffer, const char* vertex_shader,
-             const char* pixel_shader)
-      : shader{new Shader{vertex_shader, pixel_shader}},
+             const char* pixel_shader, int key)
+      : shader{new Shader{vertex_shader, pixel_shader, key}},
         num_indices_{int(buffer->size() / 3)} {
     glGenVertexArrays(1, &vao);
     unsigned int vbo;
@@ -66,14 +66,6 @@ class RendererSdl {
                              const float* angles_data, int angles_size,
                              const float* params_data, int params_size);
 
-  void UpdateCommon(float* projection, float* view, float* model) {
-    projection_ = projection;
-    view_ = view;
-    model_ = model;
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  }
-
   // Обновляет информацию по всем одинаково отрисовываемым шейпам.
   // void UpdateDynamic(int key, int num_shapes, const std::vector<float>&
   // coords,
@@ -106,7 +98,7 @@ class RendererSdl {
   // }
   // }
 
-  void RenderFrame();
+  void RenderFrame(float* projection, float* view, float* model);
 
   ~RendererSdl() {
     for (auto& renderable : renderables_) delete renderable.second;

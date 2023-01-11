@@ -79,6 +79,7 @@
         "codecvt": "cpp",
         "coroutine": "cpp",
         "source_location": "cpp",
-        "cfenv": "cpp"
+        "cfenv": "cpp",
+        "span": "cpp"
     }
 }

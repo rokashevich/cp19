@@ -5,28 +5,52 @@
 #include "constants.hpp"
 
 RendererSdl::RendererSdl() {
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
     std::cout << "SDL_Init: " << SDL_GetError() << std::endl;
     abort();
   }
-  window_ = SDL_CreateWindow(nullptr, 0, 0, constants::screen_width,
-                             constants::screen_height, SDL_WINDOW_OPENGL);
+  // SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+  // SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+  // SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+  SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+  // SDL_GL_CONTEXT_PROFILE_ES);
+  /// window_ = SDL_CreateWindow(nullptr, 0, 0, constants::screen_width,
+  ///                           constants::screen_height, SDL_WINDOW_OPENGL);
   // window_ = SDL_CreateWindow("My Game", SDL_WINDOWPOS_UNDEFINED,
   //                            SDL_WINDOWPOS_UNDEFINED, 0, 0,
   //                            SDL_WINDOW_FULLSCREEN_DESKTOP);
+  /// SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN);
+
+  SDL_Rect gScreenRect = {0, 0, 320, 240};
+  SDL_DisplayMode displayMode;
+  if (SDL_GetCurrentDisplayMode(0, &displayMode) == 0) {
+    gScreenRect.w = displayMode.w;
+    gScreenRect.h = displayMode.h;
+  }
+  window_ = SDL_CreateWindow(
+      "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+      gScreenRect.w, gScreenRect.h, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
+
   if (!window_) {
     std::cout << "Could not initialize Window" << std::endl;
     abort();
   }
-  SDL_GL_CreateContext(window_);
-  SDL_SetRelativeMouseMode(SDL_TRUE);
+  SDL_GL_SetSwapInterval(1);
+  SDL_GLContext context = SDL_GL_CreateContext(window_);
+  SDL_GL_MakeCurrent(window_, context);
+  // SDL_SetRelativeMouseMode(SDL_TRUE);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
 }
 void RendererSdl::RegisterObject(int key, const std::vector<float>* buffer,
                                  const char* vertex_shader,
                                  const char* pixel_shader) {
-  renderables_[key] = new Renderable{buffer, vertex_shader, pixel_shader};
+  renderables_[key] = new Renderable{buffer, vertex_shader, pixel_shader, key};
 }
 void RendererSdl::OnNumInstancesChanged(
     int key, int num_instances, const float* coords_data, int coords_size,
@@ -65,22 +89,19 @@ void RendererSdl::OnNumInstancesChanged(
 //   std::cout << std::endl;
 // }
 // }
-void RendererSdl::RenderFrame() {
-  // std::cout << "FRAME" << std::endl;
+void RendererSdl::RenderFrame(float* projection, float* view, float* model) {
+  projection_ = projection;
+  view_ = view;
+  model_ = model;
+  static float xxx = 1.0f;
+  xxx -= 0.01f;
+  if (xxx < 0.0f) xxx = 1.0f;
+  glClearColor(1.0f, xxx, xxx, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
   for (auto& a : renderables_) {
     Renderable* r = a.second;
-
-    //
     const auto key = a.first;
-
-    if (key == 1) {
-      // std::cout << "PLAYER" << std::endl;
-      // for (int i = 0; i <= r->coords_size_ / sizeof(float); ++i)
-      //  std::cout << r->coords_data_[i] << " ";
-      // std::cout << std::endl;
-      // std::cout << r->num_instances_ << std::endl;
-    }
-    //
 
     r->shader->Use();
     glUniformMatrix4fv(glGetUniformLocation(r->shader->Program, "projection"),
@@ -90,6 +111,7 @@ void RendererSdl::RenderFrame() {
     glUniformMatrix4fv(glGetUniformLocation(r->shader->Program, "model"), 1,
                        GL_FALSE, model_);
     glBindVertexArray(r->vao);
+    SDL_Log("glBindVertexArray=%d\n", glGetError());
 
     unsigned int vbo;
     glGenBuffers(1, &vbo);
@@ -142,7 +164,9 @@ void RendererSdl::RenderFrame() {
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
                           (void*)0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    SDL_Log("glBindBuffer=%d\n", glGetError());
     glVertexAttribDivisor(4, 0);
+    SDL_Log("glVertexAttribDivisor=%d\n", glGetError());
 
     // Далее отсылаем в шейдер координаты и поворты родителя (если есть).
     // std::vector<float> parent_offset{2, 2, 2};
@@ -162,8 +186,9 @@ void RendererSdl::RenderFrame() {
     // std::cout << key << " " << renderable->num_indices_ << " "
     //           << renderable->num_instances_ << std::endl;
     glDrawArraysInstanced(GL_TRIANGLES, 0, r->num_indices_, r->num_instances_);
+    SDL_Log("glDrawArraysInstanced=%d\n", glGetError());
     // std::cout << r->num_indices_ << std::endl;
-    glBindVertexArray(0);
+    // glBindVertexArray(0);
   }
   SDL_GL_SwapWindow(window_);
 }

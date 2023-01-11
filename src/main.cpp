@@ -145,7 +145,7 @@ int main(int, char **) {
   static float pitch = 0.0f;
 
   Object *controlled_object = player1;  // or nullptr for none
-  Object *viewed_object = player1;      // or nullptr for freeflight
+  Object *viewed_object = nullptr;      // or nullptr for freeflight
   bool quit = false;  // application will exit when flag set true
   while (!quit) {
     // [1]
@@ -175,7 +175,7 @@ int main(int, char **) {
 
         if (state[SDL_SCANCODE_T])
           viewed_object = controlled_object = viewed_object ? nullptr : player1;
-      } else if (renderer.event.type == SDL_MOUSEMOTION && !viewed_object) {
+      } else if (renderer.event.type == SDL_MOUSEMOTION && (!viewed_object)) {
         static float sensitivity = 0.1f;
         yaw += renderer.event.motion.xrel * sensitivity;
         pitch -= renderer.event.motion.yrel * sensitivity;
@@ -190,6 +190,17 @@ int main(int, char **) {
       }
 #endif
     }
+
+    yaw += 1.0f;
+    pitch += 1.0f;
+    if (yaw > 180.0f) yaw = 0.0f;
+    if (pitch > 180.0f) pitch = 0.0f;
+    glm::vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(front);
+
     if (controlled_object) {
       controlled_object->backward_forward = backward_forward;
       controlled_object->left_right = left_right;
@@ -210,15 +221,16 @@ int main(int, char **) {
                          player1->coords.at(2)};
       view = glm::lookAt(followed + glm::vec3{6, 6, 0}, followed, cameraUp);
     } else {  // Управление камерой.
-      // if (backward_forward > 0) cameraPos += cameraSpeed * cameraFront;
-      // if (backward_forward < 0) cameraPos -= cameraSpeed * cameraFront;
-      // if (left_right > 0)
-      //   cameraPos +=
-      //       glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-      // if (left_right < 0)
-      //   cameraPos -=
-      //       glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-      // view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+      // backward_forward = -1;
+      if (backward_forward > 0) cameraPos += cameraSpeed * cameraFront;
+      if (backward_forward < 0) cameraPos -= cameraSpeed * cameraFront;
+      if (left_right > 0)
+        cameraPos +=
+            glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+      if (left_right < 0)
+        cameraPos -=
+            glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+      view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     }
 
     // pass projection matrix to shader (note that in this case it could change
@@ -235,7 +247,6 @@ int main(int, char **) {
     model =
         glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.1f, 0.0f));
 
-    renderer.UpdateCommon(&projection[0][0], &view[0][0], &model[0][0]);
     // for (const auto &cfg : bricks) {
     //   const int key = cfg.first;
     //   renderer.UpdateDynamic(key, physics.CoordsSize(key),
@@ -244,7 +255,7 @@ int main(int, char **) {
     //                          physics.ParamsSize(key),
     //                          physics.ParamsOLD(key));
     // }
-    renderer.RenderFrame();
+    renderer.RenderFrame(&projection[0][0], &view[0][0], &model[0][0]);
   }
 
   SDL_Quit();
