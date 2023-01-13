@@ -25,8 +25,8 @@ class Renderable {
 
   unsigned int vao;
   Renderable(const std::vector<float>* buffer, const char* vertex_shader,
-             const char* pixel_shader, int key)
-      : shader{new Shader{vertex_shader, pixel_shader, key}},
+             const char* pixel_shader)
+      : shader{new Shader{vertex_shader, pixel_shader}},
         num_indices_{int(buffer->size() / 3)} {
     glGenVertexArrays(1, &vao);
     unsigned int vbo;

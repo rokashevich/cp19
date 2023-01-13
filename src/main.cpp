@@ -135,6 +135,15 @@ int main(int, char **) {
   // }
   //
 
+  const auto numSensors = SDL_NumSensors();
+  SDL_Sensor *accelerometer = nullptr;
+  for (int i = 0; i < numSensors; ++i) {
+    SDL_Sensor *currentSensor = SDL_SensorOpen(i);
+    if (currentSensor && SDL_SensorGetType(currentSensor) == SDL_SENSOR_ACCEL) {
+      accelerometer = currentSensor;
+    }
+  }
+
   // Camera initial setup.
   static glm::vec3 cameraPos =
       glm::vec3(0.0f, 0.0f, .0f);  // отладка: позиция примерно сверху лабиринта
@@ -145,7 +154,7 @@ int main(int, char **) {
   static float pitch = 0.0f;
 
   Object *controlled_object = player1;  // or nullptr for none
-  Object *viewed_object = nullptr;      // or nullptr for freeflight
+  Object *viewed_object = player1;      // or nullptr for freeflight
   bool quit = false;  // application will exit when flag set true
   while (!quit) {
     // [1]
@@ -162,7 +171,37 @@ int main(int, char **) {
         quit = true;
       }
 #if __ANDROID__
-// Here will go Android specific code.
+      // Датчик пространственной ориентации телефона.
+      // Проверял на:
+      //   realme c30, xiaomi a1
+      // Значения "некрсивые" типа 0.167500 -0.110000 9.809999.
+      // Порядок значений:       x   y  z
+      //          Лежит ровно:   0   0 10
+      //        Наклон вперёд: -10   0  0
+      //         Наклон назад:  10   0  0
+      //         Наклон влево:   0 -10  0
+      //        Наклон вправо:   0  10  0
+      // Иногда приходит какой-то шум, например, для ровнолежачего:
+      //   69.375000 0.000000 0.000000
+      //    1.000000 0.000000 0.000000
+      //    5.000000 0.000000 0.000000
+      //    0.000000 0.000000 0.000000
+      //   70.000000 0.000000 0.000000
+      // Пока не знаю что это, но в шумных занчениях обязательно присутствуют
+      // асболютные нули - попробую их игнорировать просто.
+      else if (renderer.event.type == SDL_SENSORUPDATE) {
+        const auto x = renderer.event.sensor.data[0];
+        const auto y = renderer.event.sensor.data[1];
+        const auto z = renderer.event.sensor.data[2];
+        const auto treshold = 2;
+        const auto max = 10;
+        if (x != 0.0f && y != 0.0f && z != 0.0f) {  // асболютные нули
+          if (x < -treshold) ++backward_forward;  // вперёд
+          if (x > treshold) --backward_forward;   // назад
+          if (y < -treshold) --left_right;        // влево
+          if (y > treshold) ++left_right;         // вправо
+        }
+      }
 #else  // PC code
       else if (renderer.event.type == SDL_KEYDOWN ||
                renderer.event.type == SDL_KEYUP) {
@@ -190,18 +229,9 @@ int main(int, char **) {
       }
 #endif
     }
-
-    yaw += 1.0f;
-    pitch += 1.0f;
-    if (yaw > 180.0f) yaw = 0.0f;
-    if (pitch > 180.0f) pitch = 0.0f;
-    glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(front);
-
     if (controlled_object) {
+      // SDL_Log("backward_forward:%d left_right:%d up_down:%d\n",
+      //         backward_forward, left_right, up_down);
       controlled_object->backward_forward = backward_forward;
       controlled_object->left_right = left_right;
       controlled_object->up_down = up_down;

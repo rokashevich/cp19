@@ -112,15 +112,7 @@ class tribool {
 
  public:
   tribool(int i = 0) : state_{i > 0 ? 1 : (i < 0 ? -1 : 0)} {}
-  friend int cmp(const tribool& lhs, const tribool& rhs) {
-    return lhs.state_ == rhs.state_ ? 0 : (lhs.state_ > rhs.state_ ? 1 : -1);
-  }
-  bool operator==(const tribool& rhs) { return cmp(*this, rhs) == 0; }
-  bool operator!=(const tribool& rhs) { return cmp(*this, rhs) != 0; }
-  // bool operator<(const tribool& rhs) { return cmp(*this, rhs) < 0; }
-  // bool operator>(const tribool& rhs) { return cmp(*this, rhs) > 0; }
-  bool operator<=(const tribool& rhs) { return cmp(*this, rhs) <= 0; }
-  bool operator>=(const tribool& rhs) { return cmp(*this, rhs) >= 0; }
+  operator int() const { return state_ ? (state_ > 0 ? 1 : -1) : 0; }
   tribool& operator++() {
     state_ = state_ < 0 ? 0 : 1;
     return *this;
@@ -129,23 +121,4 @@ class tribool {
     state_ = state_ > 0 ? 0 : -1;
     return *this;
   }
-  tribool operator++(int) {
-    tribool t{*this};
-    ++*this;
-    return t;
-  }
-  tribool operator--(int) {
-    tribool t{*this};
-    --*this;
-    return t;
-  }
-  tribool& operator+=(tribool& rhs) {
-    this->state_ += rhs.state_;
-    return *this;
-  }
-  friend std::ostream& operator<<(std::ostream& lhs, tribool& rhs) {
-    lhs << ' ' << rhs.state_ << ' ';
-    return lhs;
-  }
-  operator int() const { return state_ ? (state_ > 0 ? 1 : -1) : 0; }
 };

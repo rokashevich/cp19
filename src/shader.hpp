@@ -13,7 +13,7 @@ class Shader {
  public:
   GLuint Program;
   // Constructor generates the shader on the fly
-  Shader(const char* vShaderCode, const char* fShaderCode, int key) {
+  Shader(const char* vShaderCode, const char* fShaderCode) {
     // 2. Compile shaders
     GLuint vertex, fragment;
     GLint success;
@@ -26,7 +26,6 @@ class Shader {
     glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
     if (!success) {
       glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-      SDL_Log("1 %d %s\n", key, infoLog);
     }
     // Fragment Shader
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -36,7 +35,6 @@ class Shader {
     glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
     if (!success) {
       glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-      SDL_Log("2 %d %s\n", key, infoLog);
     }
     // Shader Program
     this->Program = glCreateProgram();
@@ -47,7 +45,6 @@ class Shader {
     glGetProgramiv(this->Program, GL_LINK_STATUS, &success);
     if (!success) {
       glGetProgramInfoLog(this->Program, 512, NULL, infoLog);
-      SDL_Log("3 %d %s\n", key, infoLog);
     }
     // Delete the shaders as they're linked into our program now and no longer
     // necessery

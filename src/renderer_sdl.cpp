@@ -5,7 +5,7 @@
 #include "constants.hpp"
 
 RendererSdl::RendererSdl() {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_SENSOR) < 0) {
     std::cout << "SDL_Init: " << SDL_GetError() << std::endl;
     abort();
   }
@@ -50,7 +50,7 @@ RendererSdl::RendererSdl() {
 void RendererSdl::RegisterObject(int key, const std::vector<float>* buffer,
                                  const char* vertex_shader,
                                  const char* pixel_shader) {
-  renderables_[key] = new Renderable{buffer, vertex_shader, pixel_shader, key};
+  renderables_[key] = new Renderable{buffer, vertex_shader, pixel_shader};
 }
 void RendererSdl::OnNumInstancesChanged(
     int key, int num_instances, const float* coords_data, int coords_size,
@@ -111,7 +111,6 @@ void RendererSdl::RenderFrame(float* projection, float* view, float* model) {
     glUniformMatrix4fv(glGetUniformLocation(r->shader->Program, "model"), 1,
                        GL_FALSE, model_);
     glBindVertexArray(r->vao);
-    SDL_Log("glBindVertexArray=%d\n", glGetError());
 
     unsigned int vbo;
     glGenBuffers(1, &vbo);
@@ -164,9 +163,7 @@ void RendererSdl::RenderFrame(float* projection, float* view, float* model) {
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
                           (void*)0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    SDL_Log("glBindBuffer=%d\n", glGetError());
     glVertexAttribDivisor(4, 0);
-    SDL_Log("glVertexAttribDivisor=%d\n", glGetError());
 
     // Далее отсылаем в шейдер координаты и поворты родителя (если есть).
     // std::vector<float> parent_offset{2, 2, 2};
@@ -186,7 +183,6 @@ void RendererSdl::RenderFrame(float* projection, float* view, float* model) {
     // std::cout << key << " " << renderable->num_indices_ << " "
     //           << renderable->num_instances_ << std::endl;
     glDrawArraysInstanced(GL_TRIANGLES, 0, r->num_indices_, r->num_instances_);
-    SDL_Log("glDrawArraysInstanced=%d\n", glGetError());
     // std::cout << r->num_indices_ << std::endl;
     // glBindVertexArray(0);
   }
