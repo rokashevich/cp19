@@ -91,7 +91,7 @@ World::World(const int resolution) : panel_size_{3} {
           const float param = i * 100 + health;  // todo del
           const float half = panel_size_ / 2;
           switch (i) {
-            case kSurfaceXY:  // по умолчанию - фронтальная стена
+            case kSurfaceXY:  // по умолчанию - фронтальная стена (blue)
               panels_data_.push_back(panel_size_ * x);
               panels_data_.push_back(panel_size_ * y);
               panels_data_.push_back(panel_size_ * s - half);
@@ -102,7 +102,7 @@ World::World(const int resolution) : panel_size_{3} {
               panels_data_.push_back(0);
               panels_data_.push_back(0);
               break;
-            case kSurfaceYZ:  // стена ребром
+            case kSurfaceYZ:  // стена ребром (red)
               panels_data_.push_back(panel_size_ * s - half);
               panels_data_.push_back(panel_size_ * y);
               panels_data_.push_back(panel_size_ * x);
@@ -114,7 +114,7 @@ World::World(const int resolution) : panel_size_{3} {
               panels_data_.push_back(0);
 
               break;
-            case kSurfaceXZ:  // пол-потолок
+            case kSurfaceXZ:  // пол-потолок (green)
               panels_data_.push_back(panel_size_ * x);
               panels_data_.push_back(panel_size_ * s - half);
               panels_data_.push_back(panel_size_ * y);

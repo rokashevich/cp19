@@ -49,13 +49,13 @@ void main() {
 
   if (angles_in.y == 90.0) {  // yz стена ребром
     pos = vec3(vertex_in.z, vertex_in.y, vertex_in.x);
-    vColor = vec3(0, 1, 0);
+    vColor = vec3(1, 0, 0);
   } else if (angles_in.x == 90.0) {  // xz пол-потолок
     pos = vec3(vertex_in.y, vertex_in.z, vertex_in.x);
-    vColor = vec3(0, 0, 1);
+    vColor = vec3(0, 1, 0);
   } else {  // фронтальная стена xy
     pos = vec3(vertex_in.x, vertex_in.y, vertex_in.z);
-    vColor = vec3(1, 0, 0);
+    vColor = vec3(0, 0, 1);
   }
   gl_Position = projection * view * model * vec4(pos + offset, 1.0);
   vBC = barycentric_in;

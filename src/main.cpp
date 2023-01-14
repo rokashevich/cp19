@@ -1,3 +1,7 @@
+// x +влево -вправо
+// y +вверх -вниз
+// z +назад -вперёд
+
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
 //#include <bits/stdint-intn.h>
@@ -44,9 +48,9 @@ int main(int, char **) {
   // Bricks of the same type have identical shape, but may differ in
   // sizes/colors. Rendering similar shapes is fast.
   //
-  //   wall: parallelepipeds used to construct walls and floors
-  //   player: parallelepipeds used to construct game characters
-  //   weapon: cilinders used to construct guns/chainguns/pistols
+  //   0 wall: parallelepipeds used to construct walls and floors
+  //   1 player: parallelepipeds used to construct game characters
+  //   2 weapon: cilinders used to construct guns/chainguns/pistols
   //   missile: spheres used to construct flying bullets/rockets/etc
   //   collectable: pyramids used to represend items across the level
   //   graffity: panels of different color you can "paint" on other surfaces
@@ -115,7 +119,7 @@ int main(int, char **) {
   }
 
   // Generate a player in the position 0,0,0 and put him into physics engine:
-  auto const coords = glm::vec3{-3, -3, 5};
+  auto const coords = glm::vec3{0, 16, 0};
   auto const angles = glm::vec3{0, 0, 0};
   auto const head{1};
   auto const body{1};
@@ -145,8 +149,8 @@ int main(int, char **) {
   }
 
   // Camera initial setup.
-  static glm::vec3 cameraPos =
-      glm::vec3(0.0f, 0.0f, .0f);  // отладка: позиция примерно сверху лабиринта
+  static glm::vec3 cameraPos = glm::vec3(
+      0.0f, 0.0f, 0.0f);  // отладка: позиция примерно сверху лабиринта
   static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
   static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
   const float cameraSpeed = 0.2f;
@@ -159,9 +163,9 @@ int main(int, char **) {
   while (!quit) {
     // [1]
     // Control variables filled in from user (or AI!) inputs:
-    tribool backward_forward;  // walk forward, stay or backward
-    tribool left_right;        // tend left or right, or stay straight
-    tribool up_down;           // jump
+    tribool forth_back;  // walk forward, stay or backward
+    tribool left_right;  // tend left or right, or stay straight
+    tribool up_down;     // jump
     // TODO shoot
     // TODO plant bomb/explode
 
@@ -206,11 +210,12 @@ int main(int, char **) {
       else if (renderer.event.type == SDL_KEYDOWN ||
                renderer.event.type == SDL_KEYUP) {
 
-        if (state[SDL_SCANCODE_W]) ++backward_forward;
-        if (state[SDL_SCANCODE_S]) --backward_forward;
+        if (state[SDL_SCANCODE_W]) ++forth_back;
+        if (state[SDL_SCANCODE_S]) --forth_back;
         if (state[SDL_SCANCODE_A]) --left_right;
         if (state[SDL_SCANCODE_D]) ++left_right;
-        if (state[SDL_SCANCODE_SPACE]) ++controlled_object->up_down;
+        if (state[SDL_SCANCODE_R]) ++up_down;
+        if (state[SDL_SCANCODE_F]) --up_down;
 
         if (state[SDL_SCANCODE_T])
           viewed_object = controlled_object = viewed_object ? nullptr : player1;
@@ -232,7 +237,7 @@ int main(int, char **) {
     if (controlled_object) {
       // SDL_Log("backward_forward:%d left_right:%d up_down:%d\n",
       //         backward_forward, left_right, up_down);
-      controlled_object->backward_forward = backward_forward;
+      controlled_object->backward_forward = forth_back;
       controlled_object->left_right = left_right;
       controlled_object->up_down = up_down;
     }
@@ -249,11 +254,11 @@ int main(int, char **) {
 
       glm::vec3 followed{player1->coords.at(0), player1->coords.at(1),
                          player1->coords.at(2)};
-      view = glm::lookAt(followed + glm::vec3{6, 6, 0}, followed, cameraUp);
+      view = glm::lookAt(followed + glm::vec3{0, 6, -6}, followed, cameraUp);
     } else {  // Управление камерой.
       // backward_forward = -1;
-      if (backward_forward > 0) cameraPos += cameraSpeed * cameraFront;
-      if (backward_forward < 0) cameraPos -= cameraSpeed * cameraFront;
+      if (forth_back > 0) cameraPos += cameraSpeed * cameraFront;
+      if (forth_back < 0) cameraPos -= cameraSpeed * cameraFront;
       if (left_right > 0)
         cameraPos +=
             glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;

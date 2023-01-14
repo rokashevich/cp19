@@ -37,9 +37,9 @@ void Physics::Step() {
   for (auto& g : groups_) {
     Group& group = *g.second;
     for (auto& object : group.objects) {
-      object->coords[0] += object->backward_forward;
-      object->coords[1] += object->left_right;
-      object->coords[2] += object->up_down;
+      object->coords[2] += object->backward_forward;
+      object->coords[0] -= object->left_right;
+      object->coords[1] += object->up_down;
       object->backward_forward = 0;
       object->left_right = 0;
       object->up_down = 0;
