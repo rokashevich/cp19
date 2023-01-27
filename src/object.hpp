@@ -5,37 +5,20 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <iostream>
+#include <tuple>
 #include <vector>
 
 #include "t.hpp"
 
-struct ShapeInfo {
-  std::vector<float> vertices_buffer;
-  const char* vertex_shader;
-  const char* pixel_shader;
-};
-
-template <class T>
-class Shape {
-  static const ShapeInfo objects_static_info_;
-  static const std::vector<float> vertices_buffer_;
-
- public:
-  static auto& ShapeVerticesBuffer2() { return Shape::vertices_buffer_; }
-  static auto& StaticInfo() { return objects_static_info_; }
-};
-
 // Базовый класс физического объекта игрового мира.
 class Object {
-  unsigned int id_;
-
  protected:
   static constexpr int num_instances_ = 1;
-  std::vector<float> angles_;
-  std::vector<float> params_;
 
  public:
-  std::vector<float> coords;
+  glm::vec3 coords;
+  glm::vec3 angles;
+  glm::vec4 params;
   tribool backward_forward;
   tribool left_right;
   tribool up_down;
@@ -43,14 +26,13 @@ class Object {
   static constexpr int num_angles = 3;
   static constexpr int num_params = 4;
   Object(glm::vec3 coords = {4, 4, 4}, glm::vec3 angles = {0, 0, 0},
-         glm::vec4 params = {0, 0, 0, 0});
+         glm::vec4 params = {0, 0, 0, 0})
+      : coords{coords}, angles{angles}, params{params} {};
   virtual ~Object() {}
-  const auto& Coords() { return coords; }
-  const auto& Angles() { return angles_; }
-  const auto& Params() { return params_; }
+
   // Из скольки однотипных фигур составлен объект. Например в стене или в
-  // снараяде по одной. Человек же состоит из 8: голова, туловище, два плеча,
-  // два предплечья, два бедра, две голени.
+  // снараяде по одной. Человек же состоит из 8: голова, туловище, два
+  // плеча, два предплечья, два бедра, две голени.
   virtual int NumInstances() { return Object::num_instances_; }
   // Для обновления параметров для шейдера.
   virtual void Step() {}
@@ -58,9 +40,6 @@ class Object {
   // Objects speed: 0 = object cant move, 100 = one cell/second
   virtual int SpeedCoefficient() { return 1; }
 
-  unsigned int id() { return id_; }
-
- public:
   // TODO OLD
   // P orientation_;  // В какую сторону смотрит объект.
   // P motion_external_;  // Запрошенное движение извне (кнопками, Ai).
@@ -79,11 +58,6 @@ class Object {
 
   // void SetMotion(P& p) { motion_external_ = p; }
   V& v() { return v_; }
-
-  // Возвращает координты вершин базовой формы: параллелепипеда, куба, шара, и
-  // т.д. в виде: x1,y1,z1,x2,y2,z2,..., где каждая тройка координат
-  // представляет собой тругольник. Передаётся в рендер.
-  virtual const std::vector<float>* ShapeVerticesBuffer() = 0;
 
   // virtual const std::vector<std::array<float, 3>>& Offsets() {
   //   return offsets_old_;

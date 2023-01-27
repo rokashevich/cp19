@@ -7,20 +7,10 @@
 #include "generator_shape.hpp"
 #include "pixel_player.hpp"
 #include "vertex_player.hpp"
-template <>
-const ShapeInfo Shape<Player>::objects_static_info_{
-    ShapeGenerator::Cuboid(2.9, 2.9, 2.9), vertex_player, pixel_player};
-
-const std::vector<float> Player::vertices_buffer_ =
-    ShapeGenerator::Cuboid(1, 1, 1);
 
 Player::Player(glm::vec3 c, glm::vec3 angles, int head, int body, int arms,
                int legs)
-    : Object(c, angles), animation_{head, body, arms, legs} {
-  // coords.resize(Object::num_coords * Player::num_instances_);
-  // angles_.resize(Object::num_angles * Player::num_instances_);
-  // params_.resize(Object::num_params * Player::num_instances_);
-}
+    : Object(c, angles) {}
 int Player::NumInstances() { return Player::num_instances_; }
 void Player::Step() {  // Тестовая анимация.
 
@@ -61,7 +51,3 @@ void Player::Step() {  // Тестовая анимация.
 //   // Object::offsets_old_.resize(2);
 // }
 Player::~Player(){};
-
-const std::vector<float>* Player::ShapeVerticesBuffer() {
-  return &Player::vertices_buffer_;
-}

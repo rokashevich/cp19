@@ -5,7 +5,7 @@
 
 #include "generator_maze2d.hpp"
 
-World::World(const int resolution) : panel_size_{3} {
+World::World(const int resolution, float size) : panel_size_{size} {
   const int surfaces_count = resolution + 1;
   const int floor_panels_count = resolution * resolution;
   const int storey_coherent_walls_count = resolution * surfaces_count;
@@ -131,7 +131,7 @@ World::World(const int resolution) : panel_size_{3} {
       }
     }
   }
-  std::cout << "Wall panels count: " << panels_count_ << std::endl;
+  std::cout << "World panel count = " << panels_count_ << std::endl;
 }
 
 World::~World() {}

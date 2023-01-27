@@ -4,7 +4,6 @@
 
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
-//#include <bits/stdint-intn.h>
 #include <time.h>
 
 #include <array>
@@ -19,88 +18,36 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-// Сгенерированные из glsl файлов.
-#include "pixel_missile.hpp"
-#include "pixel_player.hpp"
-#include "pixel_wall.hpp"
-#include "vertex_missile.hpp"
-#include "vertex_player.hpp"
-#include "vertex_wall.hpp"
-
 // Заголовочные файлы проекта
 //#include "../net/interplay.hpp"
 #include "constants.hpp"
 #include "generator_shape.hpp"
-#include "missile.hpp"
+#include "group.hpp"
 #include "object.hpp"
 #include "physics.hpp"
 #include "player.hpp"
-// #include "point.hpp"
 #include "renderer_sdl.hpp"
 #include "shader.hpp"
 #include "t.hpp"
 #include "wall.hpp"
 #include "world.hpp"
-
+// Шейдеры
+#include "pixel_player.hpp"
+#include "pixel_wall.hpp"
+#include "vertex_player.hpp"
+#include "vertex_wall.hpp"
 int main(int, char **) {
-  // Possible game bricks:
-  //
-  // Bricks of the same type have identical shape, but may differ in
-  // sizes/colors. Rendering similar shapes is fast.
-  //
-  //   0 wall: parallelepipeds used to construct walls and floors
-  //   1 player: parallelepipeds used to construct game characters
-  //   2 weapon: cilinders used to construct guns/chainguns/pistols
-  //   missile: spheres used to construct flying bullets/rockets/etc
-  //   collectable: pyramids used to represend items across the level
-  //   graffity: panels of different color you can "paint" on other surfaces
-  enum { wall, player, weapon, missile, collectable, graffity };
+  // Стены, платформы, игроки, оружие, снаряды, артифакты, граффити
+  // - все объекты игрового мира в одном месте.
+  std::vector<Group> groups;
 
-  // Brick consists of:
-  struct Brick {
-    ShapeInfo static_info;  // geometry (a collection of dot coordinates),
-    const bool is_dynamic;  // sign whether it moves (player, weapon,
-                            // missile, graffity) or fixed (wall, collectable),
-    const char *vertex_shader;  // shared shaders for batched rendering.
-    const char *pixel_shader;
-  };
-
-  // Keep all bricks in one place - allocate storage for this here:
-  std::unordered_map<int, Brick> bricks{
-      {wall, {Shape<Wall>::StaticInfo(), false, vertex_wall, pixel_wall}},
-      {player,
-       {Shape<Player>::StaticInfo(), true, vertex_player, pixel_player}}};
-
-  // Init/generate the maze.
-  World game_world = World(constants::maze_dimension);
-
-  // Init renderer.
-  RendererSdl renderer;
-
-  // Init physics engine.
-  // Physical simulation engine is recalculating coordinates of all objects: how
-  // much a bullet has moved, collision detection with player, etc.
-  // Also, we pass in the render function (callback) - when coordinates
-  // recalculation is done, the physics engine will ask the renderer to redraw.
-  Physics physics([&](int key, int num_instances, const float *coords_data,
-                      int coords_size, const float *angles_data,
-                      int angles_size, const float *params_data,
-                      int params_size) {
-    renderer.OnNumInstancesChanged(key, num_instances, coords_data, coords_size,
-                                   angles_data, angles_size, params_data,
-                                   params_size);
-  });
-
-  // Iterate over all objects types (bricks types),
-  // key is some of wall,player,weapon,missile,collectable,graffity
-  // and brick is a brick type:
-  for (const auto &[key, brick] : bricks) {
-    physics.RegisterObject(key);
-    renderer.RegisterObject(key, &brick.static_info.vertices_buffer,
-                            brick.vertex_shader, brick.pixel_shader);
-  }
-
-  // Put walls coordiantes in physics engine:
+  // Сгенерируем лабиринт и закинем стены в пока пустую структуру.
+  float panel_size = 2.9;
+  float panel_thikness = 0.05;
+  float world_panel_size = panel_size + 2 * panel_thikness;
+  World game_world = World(constants::maze_dimension, world_panel_size);
+  Group walls{true, vertex_wall, pixel_wall,
+              ShapeGenerator::Cuboid(panel_size, panel_size, panel_thikness)};
   for (unsigned long i = 0; i < game_world.panels_data_array().size();) {
     float x = game_world.panels_data_array().at(i++);
     float y = game_world.panels_data_array().at(i++);
@@ -108,17 +55,16 @@ int main(int, char **) {
     float a = game_world.panels_data_array().at(i++);
     float b = game_world.panels_data_array().at(i++);
     float c = game_world.panels_data_array().at(i++);
-    float width = 0;   // game_world.panels_data_array().at(i++);
-    float height = 0;  // game_world.panels_data_array().at(i++);
-    float health = 0;  // game_world.panels_data_array().at(i++);
     i += 3;
     glm::vec3 angles = {a, b, c};
-    glm::vec4 params = {width, height, health, 0.0f};
     Object *o = new Wall(glm::vec3{x, y, z}, angles);
-    physics.AddObject(wall, o);
+    walls.objects.push_back(o);
   }
+  groups.push_back(walls);
 
-  // Generate a player in the position 0,0,0 and put him into physics engine:
+  // Создаём игрока в произвольном месте и аналогично закидываем в структуру.
+  Group players{false, vertex_player, pixel_player,
+                ShapeGenerator::Cuboid(1, 1, 1)};
   auto const coords = glm::vec3{0, 16, 0};
   auto const angles = glm::vec3{0, 0, 0};
   auto const head{1};
@@ -126,49 +72,43 @@ int main(int, char **) {
   auto const arms{1};
   auto const legs{1};
   Object *player1 = new Player(coords, angles, head, body, arms, legs);
-  physics.AddObject(player, player1);
+  players.objects.push_back(player1);
+  groups.push_back(players);
 
-  // Main game cycle:
-  //
-  // Simplified it is:
-  //
-  // while(1) {
-  //  [1] get_inputs (move, turn, shoot)
-  //  [2] physics_calculate_new_coordinats_for_everything
-  //  [3] renderer_draws_everything
-  // }
-  //
-
-  const auto numSensors = SDL_NumSensors();
-  SDL_Sensor *accelerometer = nullptr;
-  for (int i = 0; i < numSensors; ++i) {
-    SDL_Sensor *currentSensor = SDL_SensorOpen(i);
-    if (currentSensor && SDL_SensorGetType(currentSensor) == SDL_SENSOR_ACCEL) {
-      accelerometer = currentSensor;
-    }
-  }
-
-  // Camera initial setup.
-  static glm::vec3 cameraPos = glm::vec3(
-      0.0f, 0.0f, 0.0f);  // отладка: позиция примерно сверху лабиринта
+  // Настройки камеры для полётов по уровню без управления игроком.
+  static glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
   static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
   static glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
   const float cameraSpeed = 0.2f;
   static float yaw = 0.0f;
   static float pitch = 0.0f;
 
-  Object *controlled_object = player1;  // or nullptr for none
-  Object *viewed_object = player1;      // or nullptr for freeflight
-  bool quit = false;  // application will exit when flag set true
-  while (!quit) {
-    // [1]
-    // Control variables filled in from user (or AI!) inputs:
-    tribool forth_back;  // walk forward, stay or backward
-    tribool left_right;  // tend left or right, or stay straight
-    tribool up_down;     // jump
-    // TODO shoot
-    // TODO plant bomb/explode
+  Object *controlled_object = player1;  //кем будем управлять
+  Object *viewed_object = player1;  //за кем будет следить камера
+  // Какие это даёт комбинации:
+  // 1) Обе переменные указывают на игрока - обычный режим игры;
+  // 2) Обе переменные nullptr - режим свободного полёта/просмотра карты;
+  // 3) Контроллируем nullptr, следим за игроком - режим просмотра чей-то игры;
+  // Остальные комбинации бессмысленны :)
 
+  // В самом конце инициаллизируем физический движок и рендерер, передавая им
+  // структуру объектов мира - т.к. они должны о ней знать.
+  Physics physics(&groups);
+  RendererSdl renderer(&groups);
+
+  // Далее начинается классический бесконечный игровой цикл,
+  // по сути while(1){считаем/рисуемкадр}.
+
+  bool quit = false;  //для выхода из вложенных while из игрового цикла
+  while (!quit) {
+    // В начале каждого кадра подготавливаем/обнуляем переменные для управления
+    // игроком. По типу это т.н. трёхсостоянный бул: 1,0,-1.
+    tribool forth_back;  //вперёд,стоять,назад
+    tribool left_right;  //влево,стоять,вправо
+    tribool up_down;     //вверх,стоять,вниз
+    // TODO Добавить другие переменные для стрельбы например.
+
+    // Далее стандартный цикл библиотеки SDL по произошедшим событиям.
     const Uint8 *state = SDL_GetKeyboardState(NULL);
     while (SDL_PollEvent(&renderer.event)) {
       if (renderer.event.type == SDL_QUIT) {
@@ -197,8 +137,8 @@ int main(int, char **) {
         const auto x = renderer.event.sensor.data[0];
         const auto y = renderer.event.sensor.data[1];
         const auto z = renderer.event.sensor.data[2];
-        const auto treshold = 2;
-        const auto max = 10;
+        const auto treshold = 2;  //если меньше считаем телефон в горизонте
+        const auto max = 10;  //если больше - шум с датчика, игнорим такое
         if (x != 0.0f && y != 0.0f && z != 0.0f) {  // асболютные нули
           if (x < -treshold) ++backward_forward;  // вперёд
           if (x > treshold) --backward_forward;   // назад
@@ -210,6 +150,8 @@ int main(int, char **) {
       else if (renderer.event.type == SDL_KEYDOWN ||
                renderer.event.type == SDL_KEYUP) {
 
+        // На PC управляемся классическим WSAD, еще RF - вверх,вниз.
+        // За нулевое состояние отвечает - ненажатие на клавиши.
         if (state[SDL_SCANCODE_W]) ++forth_back;
         if (state[SDL_SCANCODE_S]) --forth_back;
         if (state[SDL_SCANCODE_A]) --left_right;
@@ -217,13 +159,17 @@ int main(int, char **) {
         if (state[SDL_SCANCODE_R]) ++up_down;
         if (state[SDL_SCANCODE_F]) --up_down;
 
+        // T - переключает между контролем/просмотром игрока и свободным
+        // просмотром карты.
         if (state[SDL_SCANCODE_T])
           viewed_object = controlled_object = viewed_object ? nullptr : player1;
       } else if (renderer.event.type == SDL_MOUSEMOTION && (!viewed_object)) {
+        // Какой-то код для возможности крутить головой мышкой. Аналога на
+        // телефоне нет, т.о. это больше для отладки и, наверное, можно это
+        // будет вообще удалить.
         static float sensitivity = 0.1f;
         yaw += renderer.event.motion.xrel * sensitivity;
         pitch -= renderer.event.motion.yrel * sensitivity;
-        // when pitch is out of bounds
         if (pitch > 89.0f) pitch = 89.0f;
         if (pitch < -89.0f) pitch = -89.0f;
         glm::vec3 front;
@@ -234,29 +180,31 @@ int main(int, char **) {
       }
 #endif
     }
+
+    // Не важно, как получено управление, с телефона или с клавиатуры -
+    // выставляем управляемому объекту запрос на перемещение. Но не перемещаем!
+    // Это будет делать физический движок!
     if (controlled_object) {
-      // SDL_Log("backward_forward:%d left_right:%d up_down:%d\n",
-      //         backward_forward, left_right, up_down);
       controlled_object->backward_forward = forth_back;
       controlled_object->left_right = left_right;
       controlled_object->up_down = up_down;
     }
 
-    // [2]
+    // Шаг физического движка: посмотреть кто куда хочет переместиться,
+    // рассчитать столкновения, кого-то переместить. Будет изменена структура
+    // физического мира короче.
     physics.Step();
 
-    // [3]
-    // Преобразуем запрошенное управление из формата кнопок
-    // вперёд-назад/влево-вправо/вверх в вектор в координатах игрового мира
-    glm::mat4 view;
-    // glm::mat4 trans = glm::mat4(1.0f);
-    if (viewed_object) {  // Управление объектом.
+    // Структура физического мира изменена - время отрисовать новый кадр.
 
-      glm::vec3 followed{player1->coords.at(0), player1->coords.at(1),
-                         player1->coords.at(2)};
+    // Сначала изменим положение камеры наблюдателя.
+    glm::mat4 view;
+    if (viewed_object) {  //есть привязанный объект
+      // Классический режим игры от тртеьго лица TPS (Third Person Shooter) -
+      // камера следует за игроком.
+      glm::vec3 followed{player1->coords};
       view = glm::lookAt(followed + glm::vec3{0, 6, -6}, followed, cameraUp);
-    } else {  // Управление камерой.
-      // backward_forward = -1;
+    } else {  //привязанного объекта нет - значит просто летаем по уровню
       if (forth_back > 0) cameraPos += cameraSpeed * cameraFront;
       if (forth_back < 0) cameraPos -= cameraSpeed * cameraFront;
       if (left_right > 0)
@@ -282,14 +230,7 @@ int main(int, char **) {
     model =
         glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.1f, 0.0f));
 
-    // for (const auto &cfg : bricks) {
-    //   const int key = cfg.first;
-    //   renderer.UpdateDynamic(key, physics.CoordsSize(key),
-    //                          physics.CoordsOLD(key), physics.NumShapes(key),
-    //                          physics.AnglesSize(key), physics.AnglesOLD(key),
-    //                          physics.ParamsSize(key),
-    //                          physics.ParamsOLD(key));
-    // }
+    // Наконец, рендерер, имея доступ к структре мировых объектов их рисует!
     renderer.RenderFrame(&projection[0][0], &view[0][0], &model[0][0]);
   }
 

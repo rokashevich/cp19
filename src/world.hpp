@@ -13,7 +13,7 @@ struct Panel {
 };
 class World {
  public:
-  World(int resolution);
+  World(int resolution, float size);
   ~World();
   enum {
     kSurfaceXY = 0,

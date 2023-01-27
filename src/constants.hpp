@@ -11,4 +11,5 @@ const float wall_thickness = 0.1f;
 const int screen_width = 500;
 const int screen_height = 500;
 const int maze_dimension = 5;
+
 }  // namespace constants

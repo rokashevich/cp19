@@ -7,12 +7,11 @@
 // #include "point.hpp"
 // #include "vec.hpp"
 // Солдат.
-class Player : public Object, Shape<Player> {
+class Player : public Object {
   // Человечек состоит из 8 фигур: голова, туловище, два плеча, два предплечья,
   // два бедра и две голени.
   // static constexpr int num_instances_ = 1;  // 8;
   static const std::vector<float> vertices_buffer_;
-  Animation animation_;
 
  public:
   Player(glm::vec3 coords, glm::vec3 angles, int head, int body, int arms,
@@ -20,9 +19,4 @@ class Player : public Object, Shape<Player> {
   ~Player();
   int NumInstances() final;
   void Step() final;
-  // TODO OLD
-  //  Player(V v = V(), int legs(9), int body = 9, int head = 9, int arms =
-  // 9);
-
-  const std::vector<float>* ShapeVerticesBuffer() final;
 };
