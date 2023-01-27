@@ -14,10 +14,8 @@
 
 class RendererSdl {
   std::vector<Group>* groups_;
-  float* projection_;
-  float* view_;
-  float* model_;
-  float w_to_h_;
+  glm::mat4 projection_;
+  glm::mat4 model_;
 
  public:
   SDL_Event event;
@@ -60,9 +58,15 @@ class RendererSdl {
       std::cout << "Could not initialize Window" << std::endl;
       abort();
     }
+
     int width, height;
     SDL_GetWindowSize(window_, &width, &height);
-    w_to_h_ = static_cast<float>(width) / height;
+    projection_ = glm::perspective(
+        glm::radians(100.0f), static_cast<float>(width) / height, 0.1f, 100.0f);
+
+    model_ = glm::rotate(
+        glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)),
+        glm::radians(0.0f), glm::vec3(0.0f, 0.1f, 0.0f));
 
     SDL_GL_SetSwapInterval(1);
     SDL_GLContext context = SDL_GL_CreateContext(window_);
@@ -93,35 +97,20 @@ class RendererSdl {
   }
 
   void RenderFrame(float* view) {
-    glm::mat4 projection =
-        glm::perspective(glm::radians(100.0f), w_to_h_, 0.1f, 100.0f);
-    projection_ = &projection[0][0];
-    for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4; j++) {
-        std::cout << projection[i][j] << " ";
-      }
-      std::cout << std::endl << "-----" << std::endl;
-    }
-
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-    model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.1f, 0.0f));
-    model_ = &model[0][0];
-
-    view_ = view;
-
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);  //цвет мира
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (auto& group : *groups_) {
       group.shader->Use();
+
       glUniformMatrix4fv(
           glGetUniformLocation(group.shader->Program, "projection"), 1,
-          GL_FALSE, projection_);
+          GL_FALSE, &projection_[0][0]);
+
       glUniformMatrix4fv(glGetUniformLocation(group.shader->Program, "view"), 1,
-                         GL_FALSE, view_);
+                         GL_FALSE, view);
       glUniformMatrix4fv(glGetUniformLocation(group.shader->Program, "model"),
-                         1, GL_FALSE, model_);
+                         1, GL_FALSE, &model_[0][0]);
       glBindVertexArray(group.vao);
 
       unsigned int vbo;
