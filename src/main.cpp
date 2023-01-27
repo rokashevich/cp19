@@ -64,7 +64,7 @@ int main(int, char **) {
 
   // Создаём игрока в произвольном месте и аналогично закидываем в структуру.
   Group players{false, vertex_player, pixel_player,
-                ShapeGenerator::Cuboid(1, 1, 1)};
+                ShapeGenerator::Cuboid(3, 3, 3)};
   auto const coords = glm::vec3{0, 16, 0};
   auto const angles = glm::vec3{0, 0, 0};
   auto const head{1};
@@ -216,22 +216,8 @@ int main(int, char **) {
       view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     }
 
-    // pass projection matrix to shader (note that in this case it could change
-    // every frame)
-    glm::mat4 projection =
-        glm::perspective(glm::radians(100.0f),
-                         static_cast<float>(constants::screen_width) /
-                             static_cast<float>(constants::screen_height),
-                         0.1f, 100.0f);
-    // make sure to initialize matrix to identity matrix first
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-    float angle = 0.0f;
-    model =
-        glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.1f, 0.0f));
-
     // Наконец, рендерер, имея доступ к структре мировых объектов их рисует!
-    renderer.RenderFrame(&projection[0][0], &view[0][0], &model[0][0]);
+    renderer.RenderFrame(&view[0][0]);
   }
 
   SDL_Quit();

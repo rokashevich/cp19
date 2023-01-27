@@ -17,6 +17,7 @@ class RendererSdl {
   float* projection_;
   float* view_;
   float* model_;
+  float w_to_h_;
 
  public:
   SDL_Event event;
@@ -59,6 +60,10 @@ class RendererSdl {
       std::cout << "Could not initialize Window" << std::endl;
       abort();
     }
+    int width, height;
+    SDL_GetWindowSize(window_, &width, &height);
+    w_to_h_ = static_cast<float>(width) / height;
+
     SDL_GL_SetSwapInterval(1);
     SDL_GLContext context = SDL_GL_CreateContext(window_);
     SDL_GL_MakeCurrent(window_, context);
@@ -76,7 +81,7 @@ class RendererSdl {
       glBindVertexArray(group.vao);
       glBindBuffer(GL_ARRAY_BUFFER, vbo);
       glBufferData(GL_ARRAY_BUFFER,
-                   sizeof(float) * group.vertices_buffer.size(),
+                   group.vertices_buffer.size() * sizeof(float),
                    group.vertices_buffer.data(), GL_STATIC_DRAW);
       glEnableVertexAttribArray(0);
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0 * sizeof(float),
@@ -84,12 +89,27 @@ class RendererSdl {
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindVertexArray(0);
     }
+    //
   }
 
-  void RenderFrame(float* projection, float* view, float* model) {
-    projection_ = projection;
+  void RenderFrame(float* view) {
+    glm::mat4 projection =
+        glm::perspective(glm::radians(100.0f), w_to_h_, 0.1f, 100.0f);
+    projection_ = &projection[0][0];
+    for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+        std::cout << projection[i][j] << " ";
+      }
+      std::cout << std::endl << "-----" << std::endl;
+    }
+
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.1f, 0.0f));
+    model_ = &model[0][0];
+
     view_ = view;
-    model_ = model;
+
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);  //цвет мира
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
