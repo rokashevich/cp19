@@ -81,4 +81,4 @@ add_dependencies(cp19
   vertex_player
   vertex_wall)
 
-target_link_libraries(cp19 -lboost_thread -lpthread)
+target_link_libraries(cp19 -lpthread)
