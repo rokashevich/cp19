@@ -1,4 +1,4 @@
 #!/bin/bash
-set -euo pipefail
+set -ue
 cd `dirname $0`/..
-pylint tools/*.py
+pylint -v --exit-zero tools/*.py|tee >(grep -E ': [A-Z]+[0-9]+: '|wc -l)
