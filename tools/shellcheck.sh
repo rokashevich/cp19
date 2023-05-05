@@ -3,4 +3,4 @@
 set -euo pipefail
 cd `dirname $0`/..
 set +o pipefail # shellcheck возвращает $?=1 в случае варнингов!
-shellcheck -a -s bash -S style tools/*.sh|tee >(grep -E ' SC[0-9]{4}: '|wc -l)
+shellcheck -a -s bash -S style tools/*.sh|tee >(grep -cE ' SC[0-9]{4}: ')

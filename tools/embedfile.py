@@ -1,3 +1,4 @@
+"""Generate c++ embedable shaders (const chars with shader code)"""
 import sys
 
 if len(sys.argv) != 4:
