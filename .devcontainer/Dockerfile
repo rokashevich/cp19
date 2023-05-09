@@ -8,11 +8,14 @@ RUN \
   clang \
   clang-format \
   cmake \
+  cppcheck \
   git \
   libegl-dev \
   libgles-dev \
   libx11-dev \
   libxext-dev \
   make \
+  pylint \
+  shellcheck \
   && rm -rf /var/lib/apt/lists/* \
   && echo 'export PS1="\W$ "' > ~/.bashrc
