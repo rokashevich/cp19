@@ -1,6 +1,32 @@
-FROM cimg/android:2023.05.1-ndk
-USER root
-RUN \
-  usermod -u 1001 circleci \
-  && groupmod -g 1002 circleci
 
+# Это https://developer.android.com/studio#command-tools надо в /usr/local
+FROM busybox AS COMMANDLINETOOLS
+RUN wget -O commandlinetools.zip \
+  https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip \
+  && unzip commandlinetools.zip -d /unzipped
+
+# Качать отсюда https://services.gradle.org/distributions/
+FROM busybox AS GRADLE
+RUN wget -O /gradle.zip \
+  https://services.gradle.org/distributions/gradle-7.3-bin.zip
+
+FROM debian:11
+COPY --from=COMMANDLINETOOLS /unzipped/* /usr/local
+COPY --from=GRADLE /gradle.zip /gradle.zip
+ARG UNAME=r
+RUN \
+  export DEBIAN_FRONTEND=noninteractive \
+  && apt-get update && apt-get -y install --no-install-recommends default-jdk-headless file \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN useradd -m -u 1000 -U $UNAME && mkdir /a && chown $UNAME:$UNAME /a
+USER $UNAME
+ARG ANDROID_SDK_ROOT=/a
+RUN echo y | sdkmanager --sdk_root=$ANDROID_SDK_ROOT "tools"
+RUN echo y | sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools"
+RUN echo y | sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platforms;android-31"
+RUN echo y | sdkmanager --sdk_root=$ANDROID_SDK_ROOT "build-tools;30.0.2"
+RUN echo y | sdkmanager --sdk_root=$ANDROID_SDK_ROOT "ndk;21.4.7075529"
+
+ENV ANDROID_HOME=/a
+ENV ANDROID_NDK_HOME=/a/ndk-bundle
