@@ -8,18 +8,16 @@ else {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 31
     defaultConfig {
         if (buildAsApplication) {
             applicationId "github.rokashevich.cp19"
         }
         minSdkVersion 28
-        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
         externalNativeBuild {
             ndkBuild {
-                //arguments "APP_PLATFORM=android-28"
                 abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
             }
         }
