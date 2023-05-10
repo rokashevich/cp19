@@ -18,7 +18,6 @@ desktop/native-sdl-demo
 build-*-*
 *CMakeLists.txt.user
 build
-generated
 *.pro.user
 .cache
 .vscode/settings.json
