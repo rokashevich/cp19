@@ -140,8 +140,8 @@ int main(int, char **) {
         const auto treshold = 2;  //если меньше считаем телефон в горизонте
         const auto max = 10;  //если больше - шум с датчика, игнорим такое
         if (x != 0.0f && y != 0.0f && z != 0.0f) {  // асболютные нули
-          if (x < -treshold) ++backward_forward;  // вперёд
-          if (x > treshold) --backward_forward;   // назад
+          if (x < -treshold) ++forth_back;  // вперёд
+          if (x > treshold) --forth_back;   // назад
           if (y < -treshold) --left_right;        // влево
           if (y > treshold) ++left_right;         // вправо
         }
