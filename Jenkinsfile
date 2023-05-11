@@ -1,6 +1,6 @@
 // https://www.jenkins.io/doc/book/pipeline/syntax/#environment
 // https://www.jenkins.io/doc/pipeline/steps/workflow-basic-steps/#pipeline-basic-steps
-// https://[JENKINS URL]/jenkins/pipeline-syntax/globals
+// Локальная информация: https://[JENKINS URL]/jenkins/pipeline-syntax/globals
 pipeline {
   agent any
   stages {
@@ -88,6 +88,7 @@ pipeline {
   }
   post {
     always {
+      archiveArtifacts 'b/cp19', fingerprint: true
       push_metrics("duration_job_total", currentBuild.duration)
     }
   }
