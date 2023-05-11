@@ -25,14 +25,6 @@ pipeline {
         sh 'git submodule update --init --recursive'
       }
     }
-    stage('Сборка') {
-      steps {
-        sh '''docker run --rm \
-        --mount type=bind,source=${HOST_WORKSPACE},target=/w \
-        rokashevich/cp19-amd64-builder bash /w/tools/build.sh
-        '''
-      }
-    }
     stage('Parallel') {
       parallel {
         stage('Cppcheck') {
@@ -83,6 +75,22 @@ pipeline {
             }
           }
         }
+      }
+    }
+    stage('Сборка Desktop') {
+      steps {
+        sh '''docker run --rm \
+        --mount type=bind,source=${HOST_WORKSPACE},target=/w \
+        rokashevich/cp19-amd64-builder bash /w/tools/build.sh -t desktop
+        '''
+      }
+    }
+    stage('Сборка Android') {
+      steps {
+        sh '''docker run --rm \
+        --mount type=bind,source=${HOST_WORKSPACE},target=/w \
+        rokashevich/cp19-android-builder bash /w/tools/build.sh -t android
+        '''
       }
     }
   }
