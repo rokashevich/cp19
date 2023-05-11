@@ -87,7 +87,7 @@ pipeline {
     }
     stage('Сборка Android') {
       steps {
-        sh '''docker run --rm \
+        sh '''docker run --rm --user=root \
         --mount type=bind,source=${HOST_WORKSPACE},target=/w \
         rokashevich/cp19-android-builder bash /w/tools/build.sh -t android
         '''
