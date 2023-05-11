@@ -88,7 +88,8 @@ pipeline {
   }
   post {
     always {
-      archiveArtifacts 'b/cp19', fingerprint: true
+      archiveArtifacts '_desktop/cp19', fingerprint: false
+      archiveArtifacts 'SDL/**/app-release-unsigned.apk', fingerprint: true
       push_metrics("duration_job_total", currentBuild.duration)
     }
   }
