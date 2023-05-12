@@ -100,6 +100,12 @@ pipeline {
       archiveArtifacts artifacts: 'SDL/**/app-release-unsigned.apk', fingerprint: true
       push_metrics("duration_job_total", currentBuild.duration)
     }
+    success {
+      push_metrics("success", 1)
+    }
+    failure {
+      push_metrics("success", 0)
+    }
   }
 }
 def push_metrics(name, value) {
