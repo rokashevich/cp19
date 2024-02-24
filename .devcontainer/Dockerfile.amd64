@@ -17,5 +17,6 @@ RUN \
   make \
   pylint \
   shellcheck \
+  ninja-build \
   && rm -rf /var/lib/apt/lists/* \
   && echo 'export PS1="\W$ "' > ~/.bashrc
